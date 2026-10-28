@@ -4,17 +4,110 @@
    ======================================================== */
 
 let currentSetId = null;
-let currentMode = "mc"; // "mc" or "fb"
+let currentMode = "mc"; // "mc", "tf", "sa", or "full"
 let activeQuestions = [];
 let currentIndex = 0;
-let currentScore = 0;
+let currentScore = 0; // Số câu đúng hoàn toàn
+let currentEarnedPoints = 0; // Điểm đạt được trên thang 10.0
+let currentMaxPoints = 10; // Tổng điểm tối đa của bài làm (luôn = 10.0)
+let partEarnedPoints = { mc: 0, tf: 0, sa: 0 };
+let partMaxPoints = { mc: 0, tf: 0, sa: 0 };
 let hasAnswered = false;
 let isLoadedFromSupabase = false;
+let wrongAnswersList = [];
 
 // DOM Hooks
 let dashboardView, quizView, setsGridContainer, totalMCLabel, totalTFLabel, totalSALabel, totalFBLabel;
 let backToMenuBtn, quizModeBadge, progressCountEl, progressBarEl, scoreCountEl, quizBox;
 let supabaseStatusPill;
+
+/* Định dạng điểm số thang 10 gọn đẹp (tối đa 2 chữ số thập phân) */
+function formatPoints(val, fixedTwo = false) {
+  const num = Math.round((Number(val) || 0) * 100) / 100;
+  if (fixedTwo) return num.toFixed(2);
+  if (Number.isInteger(num)) return num.toFixed(1);
+  return num.toFixed(2).replace(/0$/, '');
+}
+
+/* Quy tắc chấm điểm câu Đúng/Sai (4 mệnh đề a, b, c, d) chuẩn Bộ GD&ĐT:
+   - Đúng 1/4 ý: 10% điểm câu (0.10đ nếu câu 1.0đ)
+   - Đúng 2/4 ý: 25% điểm câu (0.25đ nếu câu 1.0đ)
+   - Đúng 3/4 ý: 50% điểm câu (0.50đ nếu câu 1.0đ)
+   - Đúng 4/4 ý: 100% điểm câu (1.00đ nếu câu 1.0đ) */
+function calculateTfRatio(correctCount, totalItems) {
+  if (!totalItems || totalItems <= 0) return 0;
+  if (totalItems === 4) {
+    const scale = [0, 0.10, 0.25, 0.50, 1.00];
+    return scale[Math.min(4, Math.max(0, correctCount))];
+  }
+  return correctCount / totalItems;
+}
+
+/* Nhận diện mục kiến thức cụ thể từ nội dung câu hỏi để nhắc ôn tập */
+function detectKnowledgePoint(qText, topicId) {
+  const t = (qText || "").trim();
+  // Nếu câu hỏi có nhãn mục ở đầu trước dấu ":" hoặc "—"
+  const prefixMatch = t.match(/^([^:—]{3,48}?)\s*(?:—|:)\s+/);
+  if (prefixMatch) {
+    return prefixMatch[1].trim();
+  }
+  if (/F\s*đẩy|F\s*hút|lực tương tác|khoảng cách/i.test(t)) return "Mô hình động học & Lực tương tác phân tử";
+  if (/thể rắn|thể lỏng|thể khí|cấu trúc chất/i.test(t)) return "Cấu trúc chất rắn, lỏng, khí";
+  if (/Brown|phấn hoa/i.test(t)) return "Thí nghiệm chuyển động Brown";
+  if (/nóng chảy|kết tinh|vô định hình/i.test(t)) return "Sự nóng chảy & Chất rắn kết tinh / vô định hình";
+  if (/bay hơi|sôi|hóa hơi/i.test(t)) return "Sự hóa hơi (Bay hơi & Sôi)";
+  if (/đồ thị|đoạn nằm ngang|đoạn dốc/i.test(t)) return "Phân tích đồ thị nhiệt độ - thời gian";
+  if (/nội năng|thực hiện công|truyền nhiệt/i.test(t)) return "Nội năng U & Cách làm thay đổi nội năng";
+  if (/Định luật I|ΔU\s*=\s*A\s*\+\s*Q|xi lanh|xi-lanh/i.test(t)) return "Định luật I nhiệt động lực học (ΔU = A + Q)";
+  if (/\|A\||độ lớn công/i.test(t)) return "Công thức xác định độ lớn công |A|";
+  if (/Celsius|Kelvin|Fahrenheit|thang nhiệt độ|điểm ba|không tuyệt đối/i.test(t)) return "Thang nhiệt độ (Celsius, Kelvin, Fahrenheit)";
+  if (/nhiệt dung riêng|nhiệt nóng chảy riêng|nhiệt hóa hơi riêng|Q\s*=\s*m/i.test(t)) return "Công thức tính nhiệt lượng Q & Bảng (c, λ, L)";
+  if (/cân bằng nhiệt|nước đá tan|Q\s*tỏa/i.test(t)) return "Phương trình cân bằng nhiệt & Nước đá tan một phần";
+  if (/hiệu suất|cường độ ánh sáng/i.test(t)) return "Hiệu suất động cơ nhiệt & Cường độ ánh sáng";
+  if (/tiếp tuyến|đạo hàm|vận tốc tức thời|gia tốc/i.test(t)) return "Quy tắc tính đạo hàm, Phương trình tiếp tuyến & Vận tốc - Gia tốc";
+  if (/đồng biến|nghịch biến|đơn điệu/i.test(t)) return "Tính đơn điệu (Đồng biến, Nghịch biến) của hàm số";
+  if (/cực đại|cực tiểu|cực trị/i.test(t)) return "Cực trị của hàm số";
+  if (/giá trị lớn nhất|giá trị nhỏ nhất|\bmax\b|\bmin\b|GTLN|GTNN/i.test(t)) return "Giá trị lớn nhất & Giá trị nhỏ nhất (GTLN - GTNN)";
+  if (/tiệm cận đứng|tiệm cận ngang|tiệm cận xiên|tiệm cận/i.test(t)) return "Đường tiệm cận của đồ thị hàm số";
+  if (/bảng biến thiên|đồ thị hàm số|tâm đối xứng/i.test(t)) return "Khảo sát sự biến thiên & Nhận dạng đồ thị hàm số";
+  if (/vectơ|tích vô hướng|trọng tâm|hình hộp|tứ diện/i.test(t)) return "Vectơ & Biểu thức tọa độ các phép toán vectơ trong không gian";
+  if (/khoảng biến thiên|tứ phân vị|phương sai|độ lệch chuẩn|mẫu số liệu ghép nhóm/i.test(t)) return "Các số đặc trưng đo mức độ phân tán mẫu số liệu ghép nhóm";
+  if (/nguyên hàm|tích phân|diện tích hình phẳng|thể tích khối tròn xoay/i.test(t)) return "Nguyên hàm, Tích phân & Ứng dụng hình học";
+  if (/mặt phẳng|đường thẳng|mặt cầu|pháp tuyến|chỉ phương/i.test(t)) return "Phương trình Mặt phẳng, Đường thẳng & Mặt cầu trong Oxyz";
+  if (/xác suất|biến cố|Bayes|toàn phần/i.test(t)) return "Xác suất có điều kiện, Công thức xác suất toàn phần & Bayes";
+
+  const topicSets = window.TOPIC_SETS || [];
+  const found = topicSets.find(s => s.id === topicId || s.id?.toString() === topicId?.toString());
+  return found ? found.title : "Kiến thức trọng tâm trong chuyên đề";
+}
+
+function getMistakeStorageKey() {
+  const subj = window.CURRENT_SUBJECT_ID || "vatli";
+  return `kedu_mistakes_${subj}`;
+}
+
+function getHistoricalMistakes() {
+  try {
+    const raw = localStorage.getItem(getMistakeStorageKey());
+    return raw ? JSON.parse(raw) : { topics: {}, questions: {} };
+  } catch (e) {
+    return { topics: {}, questions: {} };
+  }
+}
+
+function recordMistake(entry) {
+  wrongAnswersList.push(entry);
+  try {
+    const stats = getHistoricalMistakes();
+    const kp = entry.knowledgePoint;
+    stats.topics[kp] = (stats.topics[kp] || 0) + 1;
+    const qKey = (entry.q || "").slice(0, 120);
+    stats.questions[qKey] = (stats.questions[qKey] || 0) + 1;
+    localStorage.setItem(getMistakeStorageKey(), JSON.stringify(stats));
+  } catch (e) {
+    // ignore storage errors
+  }
+}
 
 function getQuestionsForTopic(mode, topicId) {
   // Normalize modes: 'sa' and 'fb' are Trả lời ngắn
@@ -33,9 +126,8 @@ function getQuestionsForTopic(mode, topicId) {
   const num = parseInt(topicId, 10);
   const topicSets = window.TOPIC_SETS || [];
   const setObj = topicSets.find(s => s.id === num || s.id === topicId || s.id?.toString() === topicId?.toString());
-  if (setObj && setObj.isFull) return raw;
-  
-  return raw.filter(item => {
+
+  const directMatches = raw.filter(item => {
     // For MC: [q, opts, correct, explain, topicId, diagram] -> item[4] is topicId
     // For TF/SA: [q, items/answers, explain, topicId, diagram] -> item[3] is topicId
     const val = (normalizedMode === "mc")
@@ -43,7 +135,151 @@ function getQuestionsForTopic(mode, topicId) {
       : (item[3] !== undefined && typeof item[3] !== 'object' ? item[3] : item[item.length - 1]);
     return val === num || val === topicId || val?.toString() === topicId?.toString();
   });
+
+  if (setObj && setObj.isFull) {
+    if (directMatches.length > 0) return directMatches;
+    if (setObj.chapter) {
+      const chapIds = new Set(
+        topicSets.filter(s => s.chapter === setObj.chapter).map(s => s.id?.toString())
+      );
+      return raw.filter(item => {
+        const val = (normalizedMode === "mc")
+          ? item[4]
+          : (item[3] !== undefined && typeof item[3] !== 'object' ? item[3] : item[item.length - 1]);
+        return chapIds.has(val?.toString());
+      });
+    }
+    return raw;
+  }
+
+  return directMatches;
 }
+
+/* ========================================================
+   PHÂN BỔ 10 ĐIỂM / BỘ ĐỀ HỢP LÍ NHẤT CÓ THỂ
+   - Với bộ đề có đủ 3 phần (Trắc nghiệm, Đúng/Sai, Trả lời ngắn):
+     + Bộ đề tiêu chuẩn (1-4 câu Đúng/Sai, 1-6 câu Trả lời ngắn):
+       • Mỗi câu Đúng/Sai (4 ý a,b,c,d) = 1.0 điểm (đúng 1 ý: 0.1đ, 2 ý: 0.25đ, 3 ý: 0.5đ, 4 ý: 1.0đ)
+       • Mỗi câu Trả lời ngắn = 0.5 điểm
+       • Toàn bộ điểm còn lại (7.0đ - 8.0đ) chia đều cho các câu Trắc nghiệm 4 lựa chọn
+     + Bộ đề tổng hợp lớn: Trắc nghiệm 7.0đ + Đúng/Sai 2.0đ + Trả lời ngắn 1.0đ = 10.0đ
+   - Với bộ đề có 1 hoặc 2 phần: Chia theo trọng số (MC: 1, TF: 4, SA: 2) quy tròn tổng = 10.0đ
+   ======================================================== */
+function getSetPointBreakdown(setId) {
+  const mcCount = getQuestionsForTopic("mc", setId).length;
+  const tfCount = getQuestionsForTopic("tf", setId).length;
+  const saCount = getQuestionsForTopic("sa", setId).length;
+  const totalCount = mcCount + tfCount + saCount;
+
+  let mcTotal = 0, tfTotal = 0, saTotal = 0;
+
+  if (mcCount > 0 && tfCount > 0 && saCount > 0) {
+    if (tfCount <= 4 && saCount <= 6 && (tfCount * 1.0 + saCount * 0.5) <= 4.5) {
+      tfTotal = tfCount * 1.0;
+      saTotal = saCount * 0.5;
+      mcTotal = Math.round((10.0 - tfTotal - saTotal) * 100) / 100;
+    } else {
+      mcTotal = 7.0;
+      tfTotal = 2.0;
+      saTotal = 1.0;
+    }
+  } else if (totalCount > 0) {
+    const wMc = mcCount * 1;
+    const wTf = tfCount * 4;
+    const wSa = saCount * 2;
+    const wSum = wMc + wTf + wSa || 1;
+    mcTotal = mcCount > 0 ? Math.round((wMc / wSum) * 20) / 2 : 0;
+    tfTotal = tfCount > 0 ? Math.round((wTf / wSum) * 20) / 2 : 0;
+    saTotal = saCount > 0 ? Math.round((10.0 - mcTotal - tfTotal) * 100) / 100 : 0;
+    if (saCount === 0 && tfCount > 0) {
+      tfTotal = Math.round((10.0 - mcTotal) * 100) / 100;
+    } else if (saCount === 0 && tfCount === 0) {
+      mcTotal = 10.0;
+    }
+  }
+
+  return {
+    mcCount,
+    tfCount,
+    saCount,
+    totalCount,
+    mcTotal,
+    tfTotal,
+    saTotal,
+    mcPerQ: mcCount > 0 ? mcTotal / mcCount : 0,
+    tfPerQ: tfCount > 0 ? tfTotal / tfCount : 0,
+    saPerQ: saCount > 0 ? saTotal / saCount : 0
+  };
+}
+
+function getScoreStorageKey() {
+  const subj = window.CURRENT_SUBJECT_ID || "vatli";
+  return `kedu_scores_${subj}`;
+}
+
+function getAllSavedSetScores() {
+  try {
+    const raw = localStorage.getItem(getScoreStorageKey());
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+/* Lưu lại tỷ lệ điểm đạt được của từng phần để tính tổng điểm 10đ/bộ */
+function saveSetScoreProgress(setId, mode, ratiosByPart) {
+  try {
+    const all = getAllSavedSetScores();
+    const key = String(setId);
+    if (!all[key]) all[key] = { mcRatio: null, tfRatio: null, saRatio: null, bestFullScore: null };
+
+    if (mode === "full") {
+      if (ratiosByPart.mc !== undefined) all[key].mcRatio = Math.max(all[key].mcRatio || 0, ratiosByPart.mc);
+      if (ratiosByPart.tf !== undefined) all[key].tfRatio = Math.max(all[key].tfRatio || 0, ratiosByPart.tf);
+      if (ratiosByPart.sa !== undefined) all[key].saRatio = Math.max(all[key].saRatio || 0, ratiosByPart.sa);
+    } else if (mode === "mc" && ratiosByPart.mc !== undefined) {
+      all[key].mcRatio = Math.max(all[key].mcRatio || 0, ratiosByPart.mc);
+    } else if (mode === "tf" && ratiosByPart.tf !== undefined) {
+      all[key].tfRatio = Math.max(all[key].tfRatio || 0, ratiosByPart.tf);
+    } else if (mode === "sa" && ratiosByPart.sa !== undefined) {
+      all[key].saRatio = Math.max(all[key].saRatio || 0, ratiosByPart.sa);
+    }
+
+    localStorage.setItem(getScoreStorageKey(), JSON.stringify(all));
+  } catch (e) {
+    // ignore storage errors
+  }
+}
+
+function getSetAccumulatedScore(setId) {
+  const bd = getSetPointBreakdown(setId);
+  const all = getAllSavedSetScores();
+  const rec = all[String(setId)];
+  if (!rec) return null;
+
+  const hasAny = rec.mcRatio !== null || rec.tfRatio !== null || rec.saRatio !== null;
+  if (!hasAny) return null;
+
+  const mcPts = (rec.mcRatio || 0) * bd.mcTotal;
+  const tfPts = (rec.tfRatio || 0) * bd.tfTotal;
+  const saPts = (rec.saRatio || 0) * bd.saTotal;
+  const totalPts = mcPts + tfPts + saPts;
+
+  const completedParts = (bd.mcCount > 0 ? (rec.mcRatio !== null ? 1 : 0) : 0)
+    + (bd.tfCount > 0 ? (rec.tfRatio !== null ? 1 : 0) : 0)
+    + (bd.saCount > 0 ? (rec.saRatio !== null ? 1 : 0) : 0);
+  const totalParts = (bd.mcCount > 0 ? 1 : 0) + (bd.tfCount > 0 ? 1 : 0) + (bd.saCount > 0 ? 1 : 0);
+
+  return {
+    mcPts,
+    tfPts,
+    saPts,
+    totalPts,
+    completedParts,
+    totalParts
+  };
+}
+
 
 /* Helper to get clean Chapter name based on Subject */
 function getSubjectChapterName(subjectId) {
@@ -169,10 +405,8 @@ function renderDashboard() {
     const cleanChapTitle = chapName.replace(/^(Chương \d+|Chủ đề \d+|Unit \d+|Phần \d+|Chuyên đề \d+)\s*[:\-–]\s*/i, '').trim() || chapName;
 
     const cardsHtml = sets.map(set => {
-      const mcCount = getQuestionsForTopic("mc", set.id).length;
-      const tfCount = getQuestionsForTopic("tf", set.id).length;
-      const saCount = getQuestionsForTopic("sa", set.id).length;
-      const totalCount = mcCount + tfCount + saCount;
+      const bd = getSetPointBreakdown(set.id);
+      const { mcCount, tfCount, saCount, totalCount } = bd;
       const theme = set.theme || (set.isFull ? "red" : "blue");
 
       const defaultIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
@@ -187,8 +421,6 @@ function renderDashboard() {
         const num = parseInt(set.index, 10);
         lessonName = isNaN(num) ? ("Chuyên đề " + set.index) : ("Bài " + String(num).padStart(2, '0'));
       }
-
-      const descHtml = set.desc ? `<p class="h-card-desc">${set.desc}</p>` : '';
 
       // Build action buttons - only enable formats that have questions
       const mcBtn = mcCount > 0
@@ -227,7 +459,7 @@ function renderDashboard() {
             </div>
           </div>
 
-          <!-- 2. Thông tin chính: Bài, Tên bộ đề, Mô tả, Số câu hỏi -->
+          <!-- 2. Thông tin chính: Bài, Tên bộ đề, Số câu hỏi -->
           <div class="h-card-center">
             <div class="h-card-breadcrumbs">
               <span class="h-badge-lesson">${lessonName}</span>
@@ -246,7 +478,7 @@ function renderDashboard() {
             </div>
           </div>
 
-          <!-- 3. Nút hành động luyện tập 3 dạng thức chuẩn GDPT -->
+          <!-- 3. Nút hành động luyện tập -->
           <div class="h-card-actions">
             ${mcBtn}
             ${tfBtn}
@@ -275,6 +507,7 @@ function renderDashboard() {
   });
 
   setsGridContainer.innerHTML = filterBarHtml + chaptersHtml;
+  renderMathIfAvailable(setsGridContainer);
 }
 
 /* Lọc hiển thị theo chương */
@@ -295,68 +528,116 @@ function filterChapter(chapIdx, btnEl) {
 }
 window.filterChapter = filterChapter;
 
-/* Start Quiz Session (mc: Trắc nghiệm, tf: Đúng sai, sa/fb: Trả lời ngắn) */
+/* Helper tạo câu hỏi chuẩn hóa có gắn điểm từng câu */
+function buildMcQuestionObj(item, maxPoints, setPoints) {
+  const opts = item[1];
+  const correctIdx = item[2];
+  const order = shuffle(opts.map((_, i) => i));
+  return {
+    type: 'mc',
+    q: item[0],
+    options: order.map(i => opts[i]),
+    correct: order.indexOf(correctIdx),
+    explain: item[3],
+    topic: item[4],
+    diagram: item[5] || null,
+    maxPoints: maxPoints,
+    setPoints: setPoints
+  };
+}
+
+function buildTfQuestionObj(item, maxPoints, setPoints) {
+  const items = Array.isArray(item[1]) ? item[1] : null;
+  const singleCorrect = typeof item[1] === 'boolean' ? item[1] : (item[1] === 1 || item[1] === 'Đúng' || item[1] === 'true');
+  return {
+    type: 'tf',
+    q: item[0],
+    items: items,
+    singleCorrect: singleCorrect,
+    explain: item[2] || '',
+    topic: item[3],
+    diagram: item[4] || null,
+    maxPoints: maxPoints,
+    setPoints: setPoints
+  };
+}
+
+function buildSaQuestionObj(item, maxPoints, setPoints) {
+  return {
+    type: 'sa',
+    q: item[0],
+    answers: item[1],
+    explain: item[2],
+    topic: item[3],
+    diagram: item[4] || null,
+    maxPoints: maxPoints,
+    setPoints: setPoints
+  };
+}
+
+/* Start Quiz Session (full: Trọn bộ 10đ, mc: Trắc nghiệm, tf: Đúng sai, sa/fb: Trả lời ngắn) */
 function startQuiz(setId, mode) {
   currentSetId = setId;
   currentMode = (mode === "fb") ? "sa" : mode;
   currentIndex = 0;
   currentScore = 0;
+  currentEarnedPoints = 0;
+  currentMaxPoints = 10.0;
+  partEarnedPoints = { mc: 0, tf: 0, sa: 0 };
+  partMaxPoints = { mc: 0, tf: 0, sa: 0 };
   hasAnswered = false;
+  wrongAnswersList = [];
 
-  const rawList = getQuestionsForTopic(currentMode, setId);
+  const bd = getSetPointBreakdown(setId);
   const topicSets = window.TOPIC_SETS || [];
   const currentSetMeta = topicSets.find(s => s.id?.toString() === setId?.toString());
-  const orderedList = (setId === "all" || currentSetMeta?.isFull) ? shuffle(rawList) : [...rawList];
+  const shouldShuffle = (setId === "all" || currentSetMeta?.isFull);
 
-  if (currentMode === "mc") {
-    activeQuestions = orderedList.map(item => {
-      const opts = item[1];
-      const correctIdx = item[2];
-      const order = shuffle(opts.map((_, i) => i));
-      return {
-        type: 'mc',
-        q: item[0],
-        options: order.map(i => opts[i]),
-        correct: order.indexOf(correctIdx),
-        explain: item[3],
-        topic: item[4],
-        diagram: item[5] || null
-      };
-    });
+  if (currentMode === "full") {
+    const rawMc = getQuestionsForTopic("mc", setId);
+    const rawTf = getQuestionsForTopic("tf", setId);
+    const rawSa = getQuestionsForTopic("sa", setId);
+
+    const listMc = (shouldShuffle ? shuffle(rawMc) : [...rawMc]).map(it => buildMcQuestionObj(it, bd.mcPerQ, bd.mcPerQ));
+    const listTf = (shouldShuffle ? shuffle(rawTf) : [...rawTf]).map(it => buildTfQuestionObj(it, bd.tfPerQ, bd.tfPerQ));
+    const listSa = (shouldShuffle ? shuffle(rawSa) : [...rawSa]).map(it => buildSaQuestionObj(it, bd.saPerQ, bd.saPerQ));
+
+    activeQuestions = [...listMc, ...listTf, ...listSa];
+    partMaxPoints = { mc: bd.mcTotal, tf: bd.tfTotal, sa: bd.saTotal };
+
+    if (quizModeBadge) {
+      quizModeBadge.textContent = "Trọn bộ • 10 điểm";
+      quizModeBadge.className = "quiz-mode-pill badge-state mc";
+    }
+  } else if (currentMode === "mc") {
+    const rawList = getQuestionsForTopic("mc", setId);
+    const orderedList = shouldShuffle ? shuffle(rawList) : [...rawList];
+    const perQ = orderedList.length > 0 ? (10.0 / orderedList.length) : 0;
+    activeQuestions = orderedList.map(it => buildMcQuestionObj(it, perQ, bd.mcPerQ));
+    partMaxPoints = { mc: 10.0, tf: 0, sa: 0 };
+
     if (quizModeBadge) {
       quizModeBadge.textContent = "Trắc nghiệm";
       quizModeBadge.className = "quiz-mode-pill badge-state mc";
     }
   } else if (currentMode === "tf") {
-    // Dạng Đúng / Sai (Phần II)
-    activeQuestions = orderedList.map(item => {
-      // Structure: [questionText, itemsArray: [{text: "...", isCorrect: true/false}], explain, topic, diagram]
-      const items = Array.isArray(item[1]) ? item[1] : null;
-      const singleCorrect = typeof item[1] === 'boolean' ? item[1] : (item[1] === 1 || item[1] === 'Đúng' || item[1] === 'true');
-      return {
-        type: 'tf',
-        q: item[0],
-        items: items,
-        singleCorrect: singleCorrect,
-        explain: item[2] || '',
-        topic: item[3],
-        diagram: item[4] || null
-      };
-    });
+    const rawList = getQuestionsForTopic("tf", setId);
+    const orderedList = shouldShuffle ? shuffle(rawList) : [...rawList];
+    const perQ = orderedList.length > 0 ? (10.0 / orderedList.length) : 0;
+    activeQuestions = orderedList.map(it => buildTfQuestionObj(it, perQ, bd.tfPerQ));
+    partMaxPoints = { mc: 0, tf: 10.0, sa: 0 };
+
     if (quizModeBadge) {
       quizModeBadge.textContent = "Đúng sai";
       quizModeBadge.className = "quiz-mode-pill badge-state tf";
     }
   } else {
-    // Dạng Trả lời ngắn (Phần III)
-    activeQuestions = shuffle(rawList).map(item => ({
-      type: 'sa',
-      q: item[0],
-      answers: item[1],
-      explain: item[2],
-      topic: item[3],
-      diagram: item[4] || null
-    }));
+    const rawList = getQuestionsForTopic("sa", setId);
+    const orderedList = shouldShuffle ? shuffle(rawList) : [...rawList];
+    const perQ = orderedList.length > 0 ? (10.0 / orderedList.length) : 0;
+    activeQuestions = orderedList.map(it => buildSaQuestionObj(it, perQ, bd.saPerQ));
+    partMaxPoints = { mc: 0, tf: 0, sa: 10.0 };
+
     if (quizModeBadge) {
       quizModeBadge.textContent = "Trả lời ngắn";
       quizModeBadge.className = "quiz-mode-pill badge-state sa";
@@ -373,18 +654,174 @@ window.startQuiz = startQuiz;
 window.checkAnswer = checkAnswer;
 window.checkFillBlank = checkFillBlank;
 
+/* Ôn lại riêng những câu vừa làm sai (cũng quy về thang 10 điểm) */
+function retryWrongQuestions() {
+  if (!wrongAnswersList || wrongAnswersList.length === 0) return;
+  const perQ = 10.0 / wrongAnswersList.length;
+  const toRetry = wrongAnswersList.map(item => {
+    const qObj = item.questionObj;
+    if (qObj.type === 'mc' && Array.isArray(qObj.options)) {
+      const correctText = qObj.options[qObj.correct];
+      const shuffledOpts = shuffle(qObj.options);
+      return {
+        ...qObj,
+        options: shuffledOpts,
+        correct: shuffledOpts.indexOf(correctText),
+        maxPoints: perQ
+      };
+    }
+    return { ...qObj, maxPoints: perQ };
+  });
+  activeQuestions = toRetry;
+  currentIndex = 0;
+  currentScore = 0;
+  currentEarnedPoints = 0;
+  currentMaxPoints = 10.0;
+  partEarnedPoints = { mc: 0, tf: 0, sa: 0 };
+  hasAnswered = false;
+  wrongAnswersList = [];
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  renderQuizQuestion();
+}
+window.retryWrongQuestions = retryWrongQuestions;
+
+/* Tạo bảng phân tích lỗi sai & nhắc ôn tập sau khi hoàn thành đề */
+function buildMistakeReviewHtml() {
+  const history = getHistoricalMistakes();
+
+  if (wrongAnswersList.length === 0) {
+    // Nếu bài này đúng 100%, kiểm tra lịch sử xem trước đó có phần nào hay sai không để nhắc nhẹ
+    const pastTopics = Object.entries(history.topics || {})
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3);
+
+    if (pastTopics.length === 0) {
+      return `
+        <div class="mistake-review-panel perfect">
+          <div class="mistake-banner-header">
+            <span class="mistake-banner-icon">🎉</span>
+            <div>
+              <h3 class="mistake-banner-title">Tuyệt vời! Bạn không sai câu nào trong lượt làm đề này</h3>
+              <p class="mistake-banner-sub">Bạn đã nắm rất chắc toàn bộ các ý lý thuyết và công thức của bộ đề này.</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="mistake-review-panel perfect">
+        <div class="mistake-banner-header">
+          <span class="mistake-banner-icon">🎉</span>
+          <div>
+            <h3 class="mistake-banner-title">Hoàn hảo 100% ở lượt này!</h3>
+            <p class="mistake-banner-sub">Lưu ý nhỏ từ lịch sử làm bài: Trước đây bạn từng nhầm ở các mục dưới đây, hãy tiếp tục duy trì phong độ nhé:</p>
+          </div>
+        </div>
+        <div class="mistake-topics-chips">
+          ${pastTopics.map(([kp, cnt]) => `
+            <span class="mistake-topic-chip">
+              <strong>${kp}</strong> <em>(Từng sai ${cnt} lần)</em>
+            </span>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  // Nhóm các câu sai trong bài này theo mục kiến thức (knowledgePoint)
+  const groupedByTopic = {};
+  wrongAnswersList.forEach(item => {
+    const kp = item.knowledgePoint;
+    if (!groupedByTopic[kp]) groupedByTopic[kp] = [];
+    groupedByTopic[kp].push(item);
+  });
+
+  const sortedTopics = Object.entries(groupedByTopic).sort((a, b) => b[1].length - a[1].length);
+  const topWeakNames = sortedTopics.slice(0, 3).map(([kp]) => `<strong>${kp}</strong>`).join(', ');
+
+  const topicsSummaryHtml = sortedTopics.map(([kp, list]) => {
+    const totalHist = (history.topics && history.topics[kp]) ? history.topics[kp] : list.length;
+    return `
+      <div class="mistake-topic-row">
+        <div class="mistake-topic-info">
+          <span class="mistake-topic-dot"></span>
+          <span class="mistake-topic-name">${kp}</span>
+        </div>
+        <div class="mistake-topic-badges">
+          <span class="badge-wrong-now">Sai ${list.length} câu trong đề này</span>
+          ${totalHist > list.length ? `<span class="badge-wrong-hist">Tổng cộng đã sai ${totalHist} lần</span>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const detailCardsHtml = wrongAnswersList.map((item, idx) => {
+    const cleanPrompt = item.q.replace(/___+/g, '<span class="blank-spot">[ ... ]</span>');
+    return `
+      <div class="mistake-detail-card">
+        <div class="mistake-detail-top">
+          <span class="mistake-q-num">Câu ${item.questionNumber}</span>
+          <span class="mistake-q-kp">${item.knowledgePoint}</span>
+        </div>
+        <div class="mistake-q-prompt">${cleanPrompt}</div>
+        <div class="mistake-compare-grid">
+          <div class="mistake-ans-box wrong">
+            <span class="ans-lbl">❌ Câu trả lời của bạn:</span>
+            <div class="ans-val">${item.userAnswer}</div>
+          </div>
+          <div class="mistake-ans-box correct">
+            <span class="ans-lbl">✅ Đáp án đúng cần nhớ:</span>
+            <div class="ans-val">${item.correctAnswer}</div>
+          </div>
+        </div>
+        ${item.explain ? `<div class="mistake-explain-note">📖 <strong>Ôn lại đề cương:</strong> ${item.explain}</div>` : ''}
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="mistake-review-panel">
+      <div class="mistake-banner-header">
+        <span class="mistake-banner-icon">⚠️</span>
+        <div>
+          <h3 class="mistake-banner-title">Nhắc nhở ôn tập: Những điểm bạn hay sai trong đề này</h3>
+          <p class="mistake-banner-sub">
+            Hệ thống phát hiện bạn đang nhầm lẫn ở phần ${topWeakNames}. 
+            Hãy đọc kĩ lại các mục này trong đề cương và bấm nút <strong>"Ôn lại ngay ${wrongAnswersList.length} câu vừa sai"</strong> bên dưới để khắc phục triệt để!
+          </p>
+        </div>
+      </div>
+
+      <div class="mistake-section-block">
+        <h4 class="mistake-section-heading">📌 Các phần kiến thức cần ôn kĩ lại (${sortedTopics.length} mục):</h4>
+        <div class="mistake-topics-list">
+          ${topicsSummaryHtml}
+        </div>
+      </div>
+
+      <div class="mistake-section-block">
+        <h4 class="mistake-section-heading">📝 Chi tiết ${wrongAnswersList.length} câu làm sai & kiến thức cần ghi nhớ:</h4>
+        <div class="mistake-details-list">
+          ${detailCardsHtml}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 /* Tracker Header */
 function updateProgress() {
   const total = activeQuestions.length;
   if (total === 0) {
     if (progressCountEl) progressCountEl.textContent = "0/0";
     if (progressBarEl) progressBarEl.style.width = "0%";
-    if (scoreCountEl) scoreCountEl.textContent = "Điểm: 0";
+    if (scoreCountEl) scoreCountEl.textContent = "Điểm: 0.0 / 10";
     return;
   }
   const answeredCount = Math.min(total, hasAnswered ? currentIndex + 1 : currentIndex);
   if (progressCountEl) progressCountEl.textContent = currentIndex < total ? `Câu ${currentIndex + 1} / ${total}` : "Hoàn thành";
-  if (scoreCountEl) scoreCountEl.textContent = `Điểm: ${currentScore} / ${answeredCount}`;
+  if (scoreCountEl) scoreCountEl.textContent = `Điểm: ${formatPoints(currentEarnedPoints)} / ${formatPoints(currentMaxPoints)}`;
   const pct = total > 0 ? (answeredCount / total) * 100 : 0;
   if (progressBarEl) progressBarEl.style.width = `${pct}%`;
 }
@@ -430,7 +867,7 @@ function renderQuizQuestion() {
     quizBox.innerHTML = `
       <div class="result-board">
         <div class="result-status-badge">Thông báo</div>
-        <div class="result-number">0</div>
+        <div class="result-number">0.0 / 10</div>
         <p class="result-verdict">Chưa tìm thấy câu hỏi phù hợp cho bộ đề này.</p>
         <button class="btn-primary-action" onclick="if(backToMenuBtn) backToMenuBtn.click()">Trở về danh sách bộ đề</button>
       </div>`;
@@ -440,12 +877,24 @@ function renderQuizQuestion() {
   // Finished Review Screen
   if (currentIndex >= activeQuestions.length) {
     const total = activeQuestions.length;
-    const pct = Math.round((currentScore / total) * 100);
+    const finalTenScore = Math.min(10.0, Math.round(currentEarnedPoints * 100) / 100);
+    const pct = Math.round((finalTenScore / 10.0) * 100);
+
+    // Lưu tiến độ điểm của bộ đề vào localStorage
+    const ratiosToSave = {};
+    if (partMaxPoints.mc > 0) ratiosToSave.mc = Math.min(1, partEarnedPoints.mc / partMaxPoints.mc);
+    if (partMaxPoints.tf > 0) ratiosToSave.tf = Math.min(1, partEarnedPoints.tf / partMaxPoints.tf);
+    if (partMaxPoints.sa > 0) ratiosToSave.sa = Math.min(1, partEarnedPoints.sa / partMaxPoints.sa);
+    saveSetScoreProgress(currentSetId, currentMode, ratiosToSave);
+
+    const bd = getSetPointBreakdown(currentSetId);
+    const accScore = getSetAccumulatedScore(currentSetId);
+
     let verdict = "Xuất sắc! Bạn đã nắm vững lý thuyết và các dạng bài tập trọng tâm.";
-    if (pct < 50) {
-      verdict = "Bạn nên mở lại tài liệu tóm tắt lý thuyết để củng cố các khái niệm và công thức cơ bản.";
-    } else if (pct < 80) {
-      verdict = "Kết quả khá tốt! Rà soát lại các câu sai để hoàn thiện điểm số tuyệt đối.";
+    if (finalTenScore < 5.0) {
+      verdict = "Điểm dưới trung bình (< 5.0đ). Bạn hãy xem kĩ bảng phân tích lỗi sai bên dưới để ôn lại các phần còn nhầm lẫn.";
+    } else if (finalTenScore < 8.0) {
+      verdict = "Kết quả khá tốt! Hãy rà soát lại các mục kiến thức bị sai bên dưới để đạt điểm 9 - 10.";
     }
 
     const topicSets = window.TOPIC_SETS || [];
@@ -454,57 +903,127 @@ function renderQuizQuestion() {
     // Record result to Supabase
     recordQuizResultToSupabase(currentScore, total, pct);
 
+    const mistakeReviewHtml = buildMistakeReviewHtml();
+
+    // Bảng chi tiết phân bổ 10 điểm / bộ
+    let setBreakdownBoardHtml = '';
+    if (bd.totalCount > 0) {
+      const mcEarnedInSet = currentMode === 'full'
+        ? partEarnedPoints.mc
+        : (accScore ? accScore.mcPts : 0);
+      const tfEarnedInSet = currentMode === 'full'
+        ? partEarnedPoints.tf
+        : (accScore ? accScore.tfPts : 0);
+      const saEarnedInSet = currentMode === 'full'
+        ? partEarnedPoints.sa
+        : (accScore ? accScore.saPts : 0);
+      const totalSetScore = currentMode === 'full'
+        ? finalTenScore
+        : (accScore ? accScore.totalPts : finalTenScore);
+
+      setBreakdownBoardHtml = `
+        <div class="set-score-breakdown-box">
+          <div class="set-score-box-header">
+            <span>⚖️ Bảng điểm chi tiết theo cơ cấu <strong>10.0 điểm / bộ</strong></span>
+            <span class="set-score-total-badge">Tổng điểm bộ đề: <strong>${formatPoints(totalSetScore, true)} / 10.00 điểm</strong></span>
+          </div>
+          <div class="set-score-parts-grid">
+            ${bd.mcCount > 0 ? `
+              <div class="set-score-part-card ${currentMode === 'mc' || currentMode === 'full' ? 'active-part' : ''}">
+                <div class="part-card-title">Phần I • Trắc nghiệm (${bd.mcCount} câu)</div>
+                <div class="part-card-score">${formatPoints(mcEarnedInSet, true)} <span>/ ${formatPoints(bd.mcTotal, true)} đ</span></div>
+                <div class="part-card-sub">Mỗi câu đúng: <strong>${formatPoints(bd.mcPerQ)} điểm</strong></div>
+              </div>
+            ` : ''}
+            ${bd.tfCount > 0 ? `
+              <div class="set-score-part-card ${currentMode === 'tf' || currentMode === 'full' ? 'active-part' : ''}">
+                <div class="part-card-title">Phần II • Đúng / Sai (${bd.tfCount} câu)</div>
+                <div class="part-card-score">${formatPoints(tfEarnedInSet, true)} <span>/ ${formatPoints(bd.tfTotal, true)} đ</span></div>
+                <div class="part-card-sub">Tối đa <strong>${formatPoints(bd.tfPerQ)}đ/câu</strong> (1 ý: 10%, 2 ý: 25%, 3 ý: 50%, 4 ý: 100%)</div>
+              </div>
+            ` : ''}
+            ${bd.saCount > 0 ? `
+              <div class="set-score-part-card ${currentMode === 'sa' || currentMode === 'full' ? 'active-part' : ''}">
+                <div class="part-card-title">Phần III • Trả lời ngắn (${bd.saCount} câu)</div>
+                <div class="part-card-score">${formatPoints(saEarnedInSet, true)} <span>/ ${formatPoints(bd.saTotal, true)} đ</span></div>
+                <div class="part-card-sub">Mỗi câu đúng: <strong>${formatPoints(bd.saPerQ)} điểm</strong></div>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    const activeFormatsCount = (bd.mcCount > 0 ? 1 : 0) + (bd.tfCount > 0 ? 1 : 0) + (bd.saCount > 0 ? 1 : 0);
+
     quizBox.innerHTML = `
       <div class="result-board">
         <div class="result-status-badge">${currentSetObj.title}</div>
-        <div class="result-number">${currentScore} / ${total}</div>
-        <p class="result-verdict">Đạt tỷ lệ chính xác <strong>${pct}%</strong>. ${verdict}</p>
+        <div class="result-number">${formatPoints(finalTenScore, true)} <span style="font-size:0.52em; font-weight:700; opacity:0.75;">/ 10 điểm</span></div>
+        <p class="result-verdict">Đạt <strong>${formatPoints(finalTenScore, true)} / 10.00 điểm</strong> (Tỷ lệ chính xác <strong>${pct}%</strong>). ${verdict}</p>
 
         <div class="metrics-table">
           <div class="metric-box">
-            <div class="metric-box-val">${total}</div>
-            <div class="metric-box-lbl">Tổng câu hỏi</div>
+            <div class="metric-box-val" style="color:var(--dol-red);">${formatPoints(finalTenScore, true)}đ</div>
+            <div class="metric-box-lbl">Điểm thang 10</div>
           </div>
           <div class="metric-box">
-            <div class="metric-box-val" style="color:var(--dol-green);">${currentScore}</div>
-            <div class="metric-box-lbl">Số câu đúng</div>
+            <div class="metric-box-val" style="color:var(--dol-green);">${currentScore} / ${total}</div>
+            <div class="metric-box-lbl">Số câu đúng trọn vẹn</div>
           </div>
           <div class="metric-box">
-            <div class="metric-box-val" style="color:var(--dol-red);">${total - currentScore}</div>
-            <div class="metric-box-lbl">Số câu sai</div>
+            <div class="metric-box-val" style="color:#EA580C;">${wrongAnswersList.length}</div>
+            <div class="metric-box-lbl">Số câu cần ôn lại</div>
           </div>
         </div>
 
+        ${setBreakdownBoardHtml}
+
         <div id="supabaseSaveNotice" style="font-size:12.5px; color:var(--dol-green); font-weight:600; margin:14px 0;"></div>
 
-        <div class="footer-actions" style="justify-content:center;">
+        <div class="footer-actions" style="justify-content:center; margin-bottom: 24px;">
+          ${wrongAnswersList.length > 0 ? `
+            <button class="btn-primary-action" style="background: linear-gradient(135deg, #EA580C 0%, #D42525 100%);" onclick="retryWrongQuestions()">
+              🔥 Ôn lại ngay ${wrongAnswersList.length} câu vừa sai
+            </button>
+          ` : ''}
+          ${currentMode !== 'full' && activeFormatsCount > 1 ? `
+            <button class="btn-primary-action" style="background: linear-gradient(135deg, #0F2657 0%, #1E40AF 100%);" onclick="startQuiz('${currentSetId}', 'full')">
+              🎯 Làm trọn bộ (${bd.totalCount} câu • 10đ)
+            </button>
+          ` : ''}
           <button class="btn-primary-action" onclick="startQuiz('${currentSetId}', '${currentMode}')">
-            Làm lại bộ đề này
+            Làm lại bài này
           </button>
-          ${currentMode !== 'mc' && getQuestionsForTopic('mc', currentSetId).length > 0 ? `
+          ${currentMode !== 'mc' && bd.mcCount > 0 ? `
             <button class="btn-secondary-action" onclick="startQuiz('${currentSetId}', 'mc')">
-              Làm dạng Trắc nghiệm (${getQuestionsForTopic('mc', currentSetId).length} câu)
+              Phần Trắc nghiệm (${bd.mcCount} câu • ${formatPoints(bd.mcTotal)}đ)
             </button>
           ` : ''}
-          ${currentMode !== 'tf' && getQuestionsForTopic('tf', currentSetId).length > 0 ? `
+          ${currentMode !== 'tf' && bd.tfCount > 0 ? `
             <button class="btn-secondary-action" onclick="startQuiz('${currentSetId}', 'tf')">
-              Làm dạng Đúng sai (${getQuestionsForTopic('tf', currentSetId).length} câu)
+              Phần Đúng sai (${bd.tfCount} câu • ${formatPoints(bd.tfTotal)}đ)
             </button>
           ` : ''}
-          ${currentMode !== 'sa' && getQuestionsForTopic('sa', currentSetId).length > 0 ? `
+          ${currentMode !== 'sa' && bd.saCount > 0 ? `
             <button class="btn-secondary-action" onclick="startQuiz('${currentSetId}', 'sa')">
-              Làm dạng Trả lời ngắn (${getQuestionsForTopic('sa', currentSetId).length} câu)
+              Phần Trả lời ngắn (${bd.saCount} câu • ${formatPoints(bd.saTotal)}đ)
             </button>
           ` : ''}
           <button class="btn-secondary-action" onclick="if(backToMenuBtn) backToMenuBtn.click()">
             Trở về danh sách bộ đề
           </button>
         </div>
+
+        ${mistakeReviewHtml}
       </div>`;
+    renderMathIfAvailable(quizBox);
     return;
   }
 
   const q = activeQuestions[currentIndex];
+  const qType = q.type || currentMode;
+  const qMaxPts = q.maxPoints || (10.0 / activeQuestions.length);
   hasAnswered = false;
 
   const topicSets = window.TOPIC_SETS || [];
@@ -512,18 +1031,27 @@ function renderQuizQuestion() {
   const diagrams = window.DIAGRAMS || {};
   const diagramHtml = q.diagram && diagrams[q.diagram] ? diagrams[q.diagram] : "";
 
-  if (currentMode === "mc") {
+  if (currentMode === "full" && quizModeBadge) {
+    const partLabel = qType === "mc" ? "Phần I: Trắc nghiệm" : (qType === "tf" ? "Phần II: Đúng / Sai" : "Phần III: Trả lời ngắn");
+    quizModeBadge.textContent = `Trọn bộ 10đ • ${partLabel}`;
+    quizModeBadge.className = `quiz-mode-pill badge-state ${qType}`;
+  }
+
+  if (qType === "mc") {
     // 1. DẠNG TRẮC NGHIỆM 4 LỰA CHỌN / ĐIỀN KHUYẾT (PHẦN I)
     const mcPromptDisplay = q.q.includes("___")
       ? q.q.replace(/___+/g, '<span class="blank-spot" id="mcBlankSpot">___</span>')
       : q.q;
-    const modeLabel = q.q.includes("___") ? "Trắc nghiệm điền khuyết" : "Trắc nghiệm 4 lựa chọn";
+    const modeLabel = q.q.includes("___") ? "Phần I: Trắc nghiệm điền khuyết" : "Phần I: Trắc nghiệm 4 lựa chọn";
 
     quizBox.innerHTML = `
       <div class="question-pane">
         <div class="q-meta-row">
           <span class="q-topic-tag">${currentSetObj.title} • ${modeLabel}</span>
-          <span class="keyboard-hint">Nhấn phím 1, 2, 3, 4 để chọn nhanh</span>
+          <div class="q-meta-right">
+            <span class="q-point-pill">🎯 Điểm câu này: <strong>+${formatPoints(qMaxPts)} đ</strong></span>
+            <span class="keyboard-hint">Phím 1-4</span>
+          </div>
         </div>
 
         ${diagramHtml}
@@ -543,7 +1071,7 @@ function renderQuizQuestion() {
         <div class="footer-actions" id="actionsRow" style="display:none;"></div>
       </div>
     `;
-  } else if (currentMode === "tf") {
+  } else if (qType === "tf") {
     // 2. DẠNG TRẮC NGHIỆM ĐÚNG / SAI (PHẦN II)
     userTfChoices = {};
     if (q.items && q.items.length > 0) {
@@ -551,8 +1079,10 @@ function renderQuizQuestion() {
       quizBox.innerHTML = `
         <div class="question-pane">
           <div class="q-meta-row">
-            <span class="q-topic-tag">${currentSetObj.title} • Trắc nghiệm Đúng / Sai</span>
-            <span class="keyboard-hint">Chọn Đúng hoặc Sai cho từng mệnh đề</span>
+            <span class="q-topic-tag">${currentSetObj.title} • Phần II: Trắc nghiệm Đúng / Sai</span>
+            <div class="q-meta-right">
+              <span class="q-point-pill tf">🎯 Tối đa: <strong>+${formatPoints(qMaxPts)} đ</strong> (1 ý: 10% • 2 ý: 25% • 3 ý: 50% • 4 ý: 100%)</span>
+            </div>
           </div>
 
           ${diagramHtml}
@@ -584,8 +1114,10 @@ function renderQuizQuestion() {
       quizBox.innerHTML = `
         <div class="question-pane">
           <div class="q-meta-row">
-            <span class="q-topic-tag">${currentSetObj.title} • Trắc nghiệm Đúng / Sai</span>
-            <span class="keyboard-hint">Chọn Đúng hoặc Sai</span>
+            <span class="q-topic-tag">${currentSetObj.title} • Phần II: Trắc nghiệm Đúng / Sai</span>
+            <div class="q-meta-right">
+              <span class="q-point-pill tf">🎯 Điểm câu này: <strong>+${formatPoints(qMaxPts)} đ</strong></span>
+            </div>
           </div>
 
           ${diagramHtml}
@@ -617,8 +1149,11 @@ function renderQuizQuestion() {
     quizBox.innerHTML = `
       <div class="question-pane">
         <div class="q-meta-row">
-          <span class="q-topic-tag">${currentSetObj.title} • Trả lời ngắn</span>
-          <span class="keyboard-hint">Gõ câu trả lời ngắn và nhấn Enter</span>
+          <span class="q-topic-tag">${currentSetObj.title} • Phần III: Trả lời ngắn</span>
+          <div class="q-meta-right">
+            <span class="q-point-pill sa">🎯 Điểm câu này: <strong>+${formatPoints(qMaxPts)} đ</strong></span>
+            <span class="keyboard-hint">Nhấn Enter để nộp</span>
+          </div>
         </div>
 
         ${diagramHtml}
@@ -655,6 +1190,7 @@ function renderQuizQuestion() {
       };
     }
   }
+  renderMathIfAvailable(quizBox);
 }
 
 /* MCQ Answer Verification */
@@ -664,9 +1200,25 @@ function checkAnswer(selectedIdx, btnEl) {
   hasAnswered = true;
 
   const q = activeQuestions[currentIndex];
+  const qMaxPts = q.maxPoints || (10.0 / activeQuestions.length);
   const isCorrect = (selectedIdx === q.correct);
+  const earnedPts = isCorrect ? qMaxPts : 0;
 
-  if (isCorrect) currentScore++;
+  if (isCorrect) {
+    currentScore++;
+    currentEarnedPoints += earnedPts;
+    partEarnedPoints.mc += earnedPts;
+  } else {
+    recordMistake({
+      questionNumber: currentIndex + 1,
+      q: q.q,
+      userAnswer: `${String.fromCharCode(65 + selectedIdx)}. ${q.options[selectedIdx]}`,
+      correctAnswer: `${String.fromCharCode(65 + q.correct)}. ${q.options[q.correct]}`,
+      explain: q.explain,
+      knowledgePoint: detectKnowledgePoint(q.q, q.topic),
+      questionObj: q
+    });
+  }
 
   const blankEl = document.getElementById("mcBlankSpot");
   if (blankEl) {
@@ -687,7 +1239,7 @@ function checkAnswer(selectedIdx, btnEl) {
     ? `<strong>Chính xác!</strong> ${q.explain}`
     : `<strong>Chưa chính xác!</strong> Đáp án đúng là <strong>${String.fromCharCode(65 + q.correct)}. ${q.options[q.correct]}</strong>.<br>${q.explain}`;
 
-  showFeedback(isCorrect, message);
+  showFeedback(isCorrect, message, earnedPts, qMaxPts);
 }
 
 /* Fill-in-the-Blank Answer Verification */
@@ -697,8 +1249,10 @@ function checkFillBlank(revealOnly) {
   const input = document.getElementById("blankInput");
   if (!input) return;
 
-  const val = normalizeVietnamese(input.value.trim());
+  const rawTyped = input.value.trim();
+  const val = normalizeVietnamese(rawTyped);
   const q = activeQuestions[currentIndex];
+  const qMaxPts = q.maxPoints || (10.0 / activeQuestions.length);
 
   if (!val && !revealOnly) {
     input.focus();
@@ -713,8 +1267,24 @@ function checkFillBlank(revealOnly) {
   if (submitBtn) submitBtn.disabled = true;
   if (showBtn) showBtn.disabled = true;
 
-  const isMatch = !revealOnly && q.answers.some(ans => normalizeVietnamese(ans) === val);
-  if (isMatch) currentScore++;
+  const isMatch = !revealOnly && q.answers.some(ans => isShortAnswerMatch(rawTyped, ans));
+  const earnedPts = isMatch ? qMaxPts : 0;
+
+  if (isMatch) {
+    currentScore++;
+    currentEarnedPoints += earnedPts;
+    partEarnedPoints.sa += earnedPts;
+  } else {
+    recordMistake({
+      questionNumber: currentIndex + 1,
+      q: q.q,
+      userAnswer: revealOnly ? "(Bấm xem đáp án)" : (rawTyped || "(Bỏ trống)"),
+      correctAnswer: q.answers.join(" hoặc "),
+      explain: q.explain,
+      knowledgePoint: detectKnowledgePoint(q.q, q.topic),
+      questionObj: q
+    });
+  }
 
   input.classList.add(isMatch ? "correct" : "wrong", isMatch ? "is-correct" : "is-wrong");
 
@@ -723,19 +1293,28 @@ function checkFillBlank(revealOnly) {
     ? `<strong>Chính xác!</strong> ${q.explain}`
     : `<strong>${revealOnly ? "Đáp án chính xác:" : "Chưa chính xác!"}</strong> Từ cần điền là: ${acceptedList}.<br>${q.explain}`;
 
-  showFeedback(isMatch, message);
+  showFeedback(isMatch, message, earnedPts, qMaxPts);
 }
 
 /* Inline Feedback */
-function showFeedback(isCorrect, messageHtml) {
+function showFeedback(isCorrect, messageHtml, earnedPts = 0, maxPts = 0) {
   const fbContainer = document.getElementById("feedbackContainer");
   const actRow = document.getElementById("actionsRow");
   if (!fbContainer || !actRow) return;
 
+  const ptsBadge = maxPts > 0
+    ? `<span class="feedback-pts-pill ${earnedPts > 0 ? 'earned' : 'zero'}">+${formatPoints(earnedPts)} / ${formatPoints(maxPts)} điểm</span>`
+    : '';
+
+  const statusText = isCorrect
+    ? "● Chính xác"
+    : (earnedPts > 0 ? "● Đúng một phần" : "● Chưa chính xác");
+
   fbContainer.innerHTML = `
     <div class="feedback-callout ${isCorrect ? "correct" : "wrong"}">
-      <div class="feedback-status">
-        ${isCorrect ? "● Chính xác" : "● Chưa chính xác"}
+      <div class="feedback-status" style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+        <span>${statusText}</span>
+        ${ptsBadge}
       </div>
       <div class="feedback-detail">${messageHtml}</div>
     </div>
@@ -745,7 +1324,7 @@ function showFeedback(isCorrect, messageHtml) {
   const isLast = (currentIndex + 1 >= activeQuestions.length);
   actRow.innerHTML = `
     <button class="btn-primary-action" id="nextQuestionBtn">
-      <span>${isLast ? "Xem kết quả bài làm" : "Câu tiếp theo"}</span>
+      <span>${isLast ? "Xem kết quả & Điểm số" : "Câu tiếp theo"}</span>
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
     </button>
   `;
@@ -759,7 +1338,52 @@ function showFeedback(isCorrect, messageHtml) {
     };
   }
 
+  renderMathIfAvailable(fbContainer);
   updateProgress();
+}
+
+/* Render KaTeX math expressions if KaTeX auto-render is loaded */
+function renderMathIfAvailable(container) {
+  const target = container || quizBox || document.body;
+  if (window.renderMathInElement && target) {
+    try {
+      window.renderMathInElement(target, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "$", right: "$", display: false },
+          { left: "\\(", right: "\\)", display: false },
+          { left: "\\[", right: "\\]", display: true }
+        ],
+        throwOnError: false
+      });
+    } catch (e) {
+      // ignore math render errors
+    }
+  }
+}
+
+/* So khớp đáp án Trả lời ngắn chuẩn cho cả Số âm / Số thập phân (Toán, Lí, Hóa) và Văn bản */
+function isShortAnswerMatch(userTyped, acceptedAns) {
+  const uRaw = String(userTyped || "").trim();
+  const aRaw = String(acceptedAns || "").trim();
+  if (!uRaw || !aRaw) return false;
+
+  // Chuẩn hóa dấu trừ Unicode (–, −) thành '-'
+  const uNumStr = uRaw.replace(/[–−]/g, "-").replace(/\s+/g, "").replace(",", ".");
+  const aNumStr = aRaw.replace(/[–−]/g, "-").replace(/\s+/g, "").replace(",", ".");
+
+  const numRegex = /^-?\d+(\.\d+)?$/;
+  if (numRegex.test(uNumStr) && numRegex.test(aNumStr)) {
+    return Math.abs(parseFloat(uNumStr) - parseFloat(aNumStr)) < 1e-9;
+  }
+
+  // Nếu một trong hai là số âm mà bên kia không có dấu trừ thì không khớp
+  if ((uNumStr.startsWith("-") && !aNumStr.startsWith("-")) || (!uNumStr.startsWith("-") && aNumStr.startsWith("-"))) {
+    return false;
+  }
+
+  if (uNumStr.toLowerCase() === aNumStr.toLowerCase()) return true;
+  return normalizeVietnamese(uRaw) === normalizeVietnamese(aRaw);
 }
 
 /* String Normalization */
@@ -783,20 +1407,9 @@ function shuffle(array) {
   return arr;
 }
 
-/* TV Presentation Mode */
-function setTvMode(enable) {
-  if (enable) {
-    document.body.classList.add("tv-mode");
-    localStorage.setItem("bp_tv_mode", "true");
-    const tvText = document.getElementById("tvToggleText");
-    if (tvText) tvText.textContent = "Tắt TV Mode";
-  } else {
-    document.body.classList.remove("tv-mode");
-    localStorage.setItem("bp_tv_mode", "false");
-    const tvText = document.getElementById("tvToggleText");
-    if (tvText) tvText.textContent = "Chế độ TV";
-  }
-}
+/* TV Mode removed */
+localStorage.removeItem("bp_tv_mode");
+document.body.classList.remove("tv-mode");
 
 /* ========================================================
    SUPABASE LIVE DATA SYNC
@@ -933,22 +1546,12 @@ function initApp() {
     backToMenuBtn.onclick = () => {
       if (quizView) quizView.classList.remove("active");
       if (dashboardView) dashboardView.classList.add("active");
+      renderDashboard();
       window.scrollTo({ top: 0, behavior: "smooth" });
     };
   }
-
-  // Restore TV mode preference
-  if (localStorage.getItem("bp_tv_mode") === "true") {
-    setTvMode(true);
-  }
-
-  const tvBtn = document.getElementById("tvToggleBtn");
-  if (tvBtn) {
-    tvBtn.onclick = () => {
-      const isTv = document.body.classList.contains("tv-mode");
-      setTvMode(!isTv);
-    };
-  }
+  localStorage.removeItem("bp_tv_mode");
+  document.body.classList.remove("tv-mode");
 
   // Initial dashboard render
   renderDashboard();
@@ -986,7 +1589,9 @@ document.addEventListener("keydown", (e) => {
   }
 
   // MCQ keyboard selection: 1-4 or A-D
-  if (currentMode === "mc" && !hasAnswered) {
+  const activeQ = activeQuestions[currentIndex];
+  const activeType = activeQ ? (activeQ.type || currentMode) : currentMode;
+  if (activeType === "mc" && !hasAnswered) {
     const key = e.key.toUpperCase();
     let optIndex = -1;
     if (["1", "2", "3", "4"].includes(key)) optIndex = parseInt(key, 10) - 1;
@@ -1019,9 +1624,25 @@ function handleSingleTf(choice, btnEl) {
   if (hasAnswered) return;
   hasAnswered = true;
   const q = activeQuestions[currentIndex];
+  const qMaxPts = q.maxPoints || (10.0 / activeQuestions.length);
   const isCorrect = (choice === q.singleCorrect);
+  const earnedPts = isCorrect ? qMaxPts : 0;
 
-  if (isCorrect) currentScore++;
+  if (isCorrect) {
+    currentScore++;
+    currentEarnedPoints += earnedPts;
+    partEarnedPoints.tf += earnedPts;
+  } else {
+    recordMistake({
+      questionNumber: currentIndex + 1,
+      q: q.q,
+      userAnswer: choice ? "ĐÚNG" : "SAI",
+      correctAnswer: q.singleCorrect ? "ĐÚNG" : "SAI",
+      explain: q.explain,
+      knowledgePoint: detectKnowledgePoint(q.q, q.topic),
+      questionObj: q
+    });
+  }
 
   const allBtns = document.querySelectorAll(".option-row");
   allBtns.forEach(b => b.disabled = true);
@@ -1031,13 +1652,14 @@ function handleSingleTf(choice, btnEl) {
     ? `<strong>Chính xác!</strong> Câu trả lời là: <strong>${q.singleCorrect ? "ĐÚNG" : "SAI"}</strong>.<br>${q.explain}`
     : `<strong>Chưa chính xác!</strong> Đáp án đúng là: <strong>${q.singleCorrect ? "ĐÚNG" : "SAI"}</strong>.<br>${q.explain}`;
 
-  showFeedback(isCorrect, message);
+  showFeedback(isCorrect, message, earnedPts, qMaxPts);
 }
 window.handleSingleTf = handleSingleTf;
 
 function submitTfAnswer() {
   if (hasAnswered) return;
   const q = activeQuestions[currentIndex];
+  const qMaxPts = q.maxPoints || (10.0 / activeQuestions.length);
 
   if (!q.items || q.items.length === 0) return;
 
@@ -1049,10 +1671,13 @@ function submitTfAnswer() {
 
   hasAnswered = true;
   let correctCount = 0;
+  const wrongSubItems = [];
+  const letters = ["a", "b", "c", "d"];
 
   q.items.forEach((it, idx) => {
     const correctVal = typeof it === 'object' ? it.isCorrect : false;
     const userVal = userTfChoices[idx];
+    const subText = typeof it === 'object' ? it.text : it;
     const row = document.querySelector(`.tf-item-row[data-sub-idx="${idx}"]`);
     if (row) {
       row.querySelectorAll('.btn-tf-choice').forEach(b => b.disabled = true);
@@ -1064,6 +1689,12 @@ function submitTfAnswer() {
         chosenBtn?.classList.add('wrong-highlight');
         const correctBtn = row.querySelector(`.btn-tf-choice[data-choice="${correctVal}"]`);
         correctBtn?.classList.add('correct-highlight');
+        wrongSubItems.push({
+          letter: letters[idx] || (idx + 1),
+          text: subText,
+          user: userVal ? "Đúng" : "Sai",
+          correct: correctVal ? "Đúng" : "Sai"
+        });
       }
     }
   });
@@ -1071,11 +1702,28 @@ function submitTfAnswer() {
   const submitBtn = document.querySelector('.btn-tf-submit');
   if (submitBtn) submitBtn.disabled = true;
 
+  const tfRatio = calculateTfRatio(correctCount, q.items.length);
+  const earnedPts = qMaxPts * tfRatio;
+  currentEarnedPoints += earnedPts;
+  partEarnedPoints.tf += earnedPts;
+
   const isFullCorrect = (correctCount === q.items.length);
-  if (isFullCorrect) currentScore++;
+  if (isFullCorrect) {
+    currentScore++;
+  } else {
+    recordMistake({
+      questionNumber: currentIndex + 1,
+      q: q.q,
+      userAnswer: wrongSubItems.map(w => `Ý ${w.letter}) chọn ${w.user}`).join("; "),
+      correctAnswer: wrongSubItems.map(w => `Ý ${w.letter}) phải là ${w.correct} (${w.text})`).join("<br>"),
+      explain: q.explain,
+      knowledgePoint: detectKnowledgePoint(q.q, q.topic),
+      questionObj: q
+    });
+  }
 
-  const message = `<strong>${isFullCorrect ? "Xuất sắc!" : "Kết quả:"}</strong> Bạn đã trả lời đúng <strong>${correctCount} / ${q.items.length}</strong> mệnh đề.<br>${q.explain}`;
+  const message = `<strong>${isFullCorrect ? "Xuất sắc!" : "Kết quả:"}</strong> Bạn trả lời đúng <strong>${correctCount} / ${q.items.length}</strong> mệnh đề — đạt <strong>+${formatPoints(earnedPts)} / ${formatPoints(qMaxPts)} điểm</strong>.<br>${q.explain}`;
 
-  showFeedback(isFullCorrect, message);
+  showFeedback(isFullCorrect, message, earnedPts, qMaxPts);
 }
 window.submitTfAnswer = submitTfAnswer;

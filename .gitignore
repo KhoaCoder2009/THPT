@@ -3,3 +3,7 @@ scratch/
 database/backup/
 *.log
 .DS_Store
+*.pdf
+assets/videos/
+__pycache__/
+*.pyc
