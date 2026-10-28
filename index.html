@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KEdu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="assets/images/logo_kedu.png">
+<link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script>
+  // Supabase Live Status Checker
+  async function checkSupabasePortal() {
+    const statusPill = document.getElementById("supabaseStatusPill");
+    if (!statusPill) return;
+    const client = window.getSupabaseClient ? window.getSupabaseClient() : null;
+    if (!client) {
+      statusPill.innerHTML = '<span class="sb-dot-warning"></span> Supabase: Sẵn sàng kết nối';
+      statusPill.title = "Đang kiểm tra kết nối Supabase...";
+      return;
+    }
+    try {
+      const { count, error } = await client.from('questions').select('*', { count: 'exact', head: true });
+      if (!error) {
+        if (statusPill) {
+          const qCount = (count !== null && count !== undefined) ? count : 0;
+          statusPill.innerHTML = '<span class="sb-dot-success"></span> Supabase Live: ' + (qCount > 0 ? (qCount + ' câu hỏi trực tuyến') : '0 câu hỏi (Đang chờ nạp)');
+          statusPill.classList.add("connected");
+        }
+      } else {
+        if (statusPill) {
+          statusPill.innerHTML = '<span class="sb-dot-warning"></span> Supabase: Chưa tạo bảng (' + error.code + ')';
+        }
+      }
+    } catch(e) {
+      if (statusPill) {
+        statusPill.innerHTML = '<span class="sb-dot-warning"></span> Supabase: Sẵn sàng kết nối';
+      }
+    }
+  }
+  document.addEventListener('DOMContentLoaded', checkSupabasePortal);
+  </script>
+</head>
+<body class="dol-main-theme">
+
+<!-- KEdu HEADER -->
+<header class="sh">
+  <div class="sh-inner">
+    <a href="index.html" class="sh-logo-group" title="KEdu">
+      <img src="assets/images/logo_kedu.png" alt="KEdu Logo" class="bp-logo-img">
+      <div class="bp-brand-text-block">
+        <span class="bp-brand-short">KEdu</span>
+        <span class="bp-brand-full">HỆ THỐNG ÔN THI THPT</span>
+      </div>
+    </a>
+
+    <nav class="sh-nav" aria-label="Main navigation">
+      <a href="index.html" class="sh-nav-item active">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Trang chủ</span>
+      </a>
+      
+      <button class="sh-nav-item btn-tv-toggle" id="tvToggleBtn" type="button" title="Bật/Tắt chế độ cỡ chữ lớn cho Tivi & Màn hình lớp học">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
+        <span id="tvToggleText">Chế độ TV</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<!-- MAIN APP BODY -->
+<main class="app-main">
+  <!-- HERO BANNER -->
+  <div class="hero-wrapper">
+    <div class="landing-title">
+      <div class="hero-lt">
+        <span class="hero-lt-text">Đề ôn luyện Lớp 12</span>
+        <div class="hero-corner"><span>8 MÔN HỌC</span></div>
+      </div>
+    </div>
+
+    <p class="hero-desc">
+      Hệ thống ngân hàng câu hỏi ôn luyện chuẩn cấu trúc đề thi Tốt nghiệp THPT mới với 3 dạng thức chính thức: Trắc nghiệm 4 lựa chọn, Trắc nghiệm Đúng / Sai và Trắc nghiệm Trả lời ngắn, tích hợp lời giải chi tiết và chế độ trình chiếu TV thông minh.
+    </p>
+
+    <div class="hero-hl">
+      <div class="hero-hl-spec">
+        <span class="hero-hl-label">Người biên soạn</span>
+        <div class="hero-hl-value" style="color:var(--dol-red);">TRẦN ĐĂNG KHOA</div>
+      </div>
+      <div class="hero-hl-div"></div>
+      <div class="hero-hl-spec">
+        <span class="hero-hl-label">Môn Học</span>
+        <div class="hero-hl-value" id="totalSubjectsLabel">8 Môn</div>
+      </div>
+      <div class="hero-hl-div"></div>
+      <div class="hero-hl-spec">
+        <span class="hero-hl-label">Dạng bài thi</span>
+        <div class="hero-hl-value">Trắc nghiệm • Đúng sai • Trả lời ngắn</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION BAR -->
+  <div class="section-bar">
+    <div class="section-title">
+      <span class="section-dot"></span>
+      <span>Chọn bộ môn để bắt đầu ôn luyện</span>
+    </div>
+  </div>
+
+  <!-- 8 SUBJECT CARDS (CHỌN THEO MÔN HỌC) -->
+  <div class="square-subjects-grid">
+    <!-- 1. MÔN TOÁN -->
+    <a href="pages/toan-hoc.html" class="square-subject-card" title="Vào ôn tập môn Toán">
+      <div class="sq-card-top">
+        <span class="sq-subj-level">LỚP 12</span>
+      </div>
+
+      <div class="sq-card-center">
+        <div class="sq-subj-icon">
+          <img src="assets/images/subjects/toan.png" alt="Logo Toán học" class="sq-subj-logo-img">
+        </div>
+        <h3 class="sq-subj-name">Toán học</h3>
+      </div>
+
+      <div class="sq-card-bottom">
+        <div class="sq-subj-action">
+          <span>Vào ôn luyện</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </div>
+      </div>
+    </a>
+
+    <!-- 2. MÔN VẬT LÍ -->
+    <a href="pages/vat-li.html" class="square-subject-card" title="Vào ôn tập môn Vật lí">
+      <div class="sq-card-top">
+        <span class="sq-subj-level">LỚP 12</span>
+        <span class="sq-subj-ready">104 CÂU HỎI</span>
+      </div>
+
+      <div class="sq-card-center">
+        <div class="sq-subj-icon">
+          <img src="assets/images/subjects/vat-li.png" alt="Logo Vật lí" class="sq-subj-logo-img">
+        </div>
+        <h3 class="sq-subj-name">Vật lí</h3>
+      </div>
+
+      <div class="sq-card-bottom">
+        <div class="sq-subj-action">
+          <span>Vào ôn luyện</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </div>
+      </div>
+    </a>
+
+    <!-- 3. MÔN HÓA HỌC -->
+    <a href="pages/hoa-hoc.html" class="square-subject-card" title="Vào ôn tập môn Hóa học">
+      <div class="sq-card-top">
+        <span class="sq-subj-level">LỚP 12</span>
+      </div>
+
+      <div class="sq-card-center">
+        <div class="sq-subj-icon">
+          <img src="assets/images/subjects/hoa-hoc.png" alt="Logo Hóa học" class="sq-subj-logo-img">
+        </div>
+        <h3 class="sq-subj-name">Hóa học</h3>
+      </div>
+
+      <div class="sq-card-bottom">
+        <div class="sq-subj-action">
+          <span>Vào ôn luyện</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </div>
+      </div>
+    </a>
+
+    <!-- 4. MÔN SINH HỌC -->
+    <a href="pages/sinh-hoc.html" class="square-subject-card" title="Vào ôn tập môn Sinh học">
+      <div class="sq-card-top">
+        <span class="sq-subj-level">LỚP 12</span>
+      </div>
+
+      <div class="sq-card-center">
+        <div class="sq-subj-icon">
+          <img src="assets/images/subjects/sinh-hoc.png" alt="Logo Sinh học" class="sq-subj-logo-img">
+        </div>
+        <h3 class="sq-subj-name">Sinh học</h3>
+      </div>
+
+      <div class="sq-card-bottom">
+        <div class="sq-subj-action">
+          <span>Vào ôn luyện</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </div>
+      </div>
+    </a>
+
+    <!-- 5. MÔN TIN HỌC -->
+    <a href="pages/tin-hoc.html" class="square-subject-card" title="Vào ôn tập môn Tin học">
+      <div class="sq-card-top">
+        <span class="sq-subj-level">LỚP 12</span>
+      </div>
+
+      <div class="sq-card-center">
+        <div class="sq-subj-icon">
+          <img src="assets/images/subjects/tin-hoc.png" alt="Logo Tin học" class="sq-subj-logo-img">
+        </div>
+        <h3 class="sq-subj-name">Tin học</h3>
+      </div>
+
+      <div class="sq-card-bottom">
+        <div class="sq-subj-action">
+          <span>Vào ôn luyện</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </div>
+      </div>
+    </a>
+
+    <!-- 6. MÔN NGỮ VĂN -->
+    <a href="pages/ngu-van.html" class="square-subject-card" title="Vào ôn tập môn Ngữ văn">
+      <div class="sq-card-top">
+        <span class="sq-subj-level">LỚP 12</span>
+      </div>
+
+      <div class="sq-card-center">
+        <div class="sq-subj-icon">
+          <img src="assets/images/subjects/ngu-van.png" alt="Logo Ngữ văn" class="sq-subj-logo-img">
+        </div>
+        <h3 class="sq-subj-name">Ngữ văn</h3>
+      </div>
+
+      <div class="sq-card-bottom">
+        <div class="sq-subj-action">
+          <span>Vào ôn luyện</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </div>
+      </div>
+    </a>
+
+    <!-- 7. MÔN LỊCH SỬ -->
+    <a href="pages/lich-su.html" class="square-subject-card" title="Vào ôn tập môn Lịch Sử">
+      <div class="sq-card-top">
+        <span class="sq-subj-level">LỚP 12</span>
+      </div>
+
+      <div class="sq-card-center">
+        <div class="sq-subj-icon">
+          <img src="assets/images/subjects/lich-su.png" alt="Logo Lịch sử" class="sq-subj-logo-img">
+        </div>
+        <h3 class="sq-subj-name">Lịch sử</h3>
+      </div>
+
+      <div class="sq-card-bottom">
+        <div class="sq-subj-action">
+          <span>Vào ôn luyện</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </div>
+      </div>
+    </a>
+
+    <!-- 8. MÔN NGOẠI NGỮ -->
+    <a href="pages/ngoai-ngu.html" class="square-subject-card" title="Vào ôn tập môn Ngoại ngữ">
+      <div class="sq-card-top">
+        <span class="sq-subj-level">LỚP 12</span>
+      </div>
+
+      <div class="sq-card-center">
+        <div class="sq-subj-icon">
+          <img src="assets/images/subjects/ngoai-ngu.png" alt="Logo Ngoại ngữ" class="sq-subj-logo-img">
+        </div>
+        <h3 class="sq-subj-name">Ngoại ngữ</h3>
+      </div>
+
+      <div class="sq-card-bottom">
+        <div class="sq-subj-action">
+          <span>Vào ôn luyện</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </div>
+      </div>
+    </a>
+  </div>
+</main>
+
+<!-- SITE FOOTER -->
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div class="footer-meta">
+      Biên soạn & phát triển: <strong>TRẦN ĐĂNG KHOA</strong>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Tự động đếm số lượng môn học đang có
+const subjCardsCount = document.querySelectorAll(".square-subject-card").length;
+const totalSubjEl = document.getElementById("totalSubjectsLabel");
+if (totalSubjEl && subjCardsCount > 0) {
+  totalSubjEl.textContent = subjCardsCount + " Môn";
+}
+
+// TV Mode support
+if (localStorage.getItem("bp_tv_mode") === "true") {
+  document.body.classList.add("tv-mode");
+  const tvText = document.getElementById("tvToggleText");
+  if (tvText) tvText.textContent = "Tắt TV Mode";
+}
+document.getElementById("tvToggleBtn").onclick = () => {
+  const isTv = document.body.classList.contains("tv-mode");
+  if (!isTv) {
+    document.body.classList.add("tv-mode");
+    localStorage.setItem("bp_tv_mode", "true");
+    document.getElementById("tvToggleText").textContent = "Tắt TV Mode";
+  } else {
+    document.body.classList.remove("tv-mode");
+    localStorage.setItem("bp_tv_mode", "false");
+    document.getElementById("tvToggleText").textContent = "Chế độ TV";
+  }
+};
+</script>
+</body>
+</html>

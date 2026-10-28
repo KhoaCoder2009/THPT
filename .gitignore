@@ -1,0 +1,5 @@
+node_modules/
+scratch/
+database/backup/
+*.log
+.DS_Store
