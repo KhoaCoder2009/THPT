@@ -79,31 +79,51 @@
   font-size: 13.5px;
   font-weight: 600;
   color: var(--dol-text-primary, #1b2b43);
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .user-profile-btn:hover,
 .user-profile-btn.active {
   background: var(--dol-bg-soft, #f8fafc);
-  border-color: var(--dol-red-border, #fecaca);
-  box-shadow: 0 2px 8px rgba(212, 37, 37, 0.12);
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  transform: translateY(-1px);
+}
+
+.user-profile-btn:focus-visible {
+  outline: none;
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.18);
 }
 
 .user-avatar-badge {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #d42525, #ea7575);
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
   color: #ffffff;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
   font-weight: 800;
-  font-size: 12.5px;
+  font-size: 13px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 2px 6px rgba(212, 37, 37, 0.3);
+  letter-spacing: 0;
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25);
+  border: 1.5px solid #ffffff;
+  flex-shrink: 0;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+}
+
+.user-profile-btn:hover .user-avatar-badge {
+  transform: scale(1.05);
+}
+
+.user-avatar-badge .avatar-crown-svg {
+  stroke: #ffffff;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.15));
 }
 
 .user-display-name {
@@ -156,23 +176,33 @@
 .user-dropdown-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 6px 8px 10px;
+  gap: 12px;
+  padding: 8px 10px 12px;
   border-bottom: 1px solid var(--dol-border-subtle, #f0f2f5);
 }
 
 .user-dropdown-avatar-lg {
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #d42525, #ea7575);
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
   color: #ffffff;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
   font-weight: 800;
-  font-size: 16px;
+  font-size: 18px;
   flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.22);
+  border: 2px solid #ffffff;
+  outline: 1px solid rgba(220, 38, 38, 0.15);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.user-dropdown-avatar-lg .avatar-crown-svg-lg {
+  stroke: #ffffff;
+  filter: drop-shadow(0 1.5px 2px rgba(0, 0, 0, 0.18));
 }
 
 .user-dropdown-meta {
@@ -316,20 +346,27 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 18px;
-  background: #ffffff;
-  border-radius: 14px;
-  border: 1px solid #fee2e2;
-  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.08);
+  width: 62px;
+  height: 62px;
+  background: radial-gradient(circle at 50% 0%, #ffffff 0%, #fffafa 100%);
+  border-radius: 18px;
+  border: 1.5px solid rgba(254, 226, 226, 0.85);
+  box-shadow: 0 10px 24px -4px rgba(220, 38, 38, 0.14), 0 2px 6px rgba(15, 23, 42, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9);
   margin-bottom: 14px;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+}
+
+.auth-modal-brand-badge:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 14px 28px -4px rgba(220, 38, 38, 0.2), 0 4px 10px rgba(15, 23, 42, 0.06);
 }
 
 .auth-modal-logo {
-  height: 38px;
-  width: auto;
-  max-width: 170px;
+  width: 44px;
+  height: 44px;
   object-fit: contain;
   display: block;
+  filter: drop-shadow(0 2px 4px rgba(15, 23, 42, 0.08));
 }
 
 .auth-modal-title {
@@ -790,37 +827,58 @@
 
 /* --- 4. ROLE-BASED ACCESS & ADMIN PANEL --- */
 .user-avatar-badge.is-admin {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.4);
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.38), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  border: 1.5px solid #ffffff;
 }
 
 .user-dropdown-avatar-lg.is-admin {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.32), inset 0 1px 1.5px rgba(255, 255, 255, 0.45);
+  border: 2px solid #ffffff;
+  outline: 1px solid rgba(245, 158, 11, 0.35);
 }
 
 .user-role-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   font-size: 11px;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 6px;
-  margin-top: 3px;
-  line-height: 1.2;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  margin-top: 4px;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+  transition: all 0.2s ease;
+}
+
+.user-role-badge .role-badge-icon {
+  flex-shrink: 0;
 }
 
 .user-role-badge.role-admin {
-  background: #fef3c7;
-  color: #b45309;
+  background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%);
+  color: #92400e;
   border: 1px solid #fde68a;
+  box-shadow: 0 1px 2px rgba(217, 119, 6, 0.08);
+}
+
+.user-role-badge.role-admin .role-badge-icon {
+  stroke: #d97706;
 }
 
 .user-role-badge.role-student {
-  background: #f1f5f9;
+  background: #f8fafc;
   color: #475569;
   border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.user-role-badge.role-student .role-badge-icon {
+  stroke: #64748b;
 }
 
 .user-dropdown-item-btn.item-admin {

@@ -16,6 +16,7 @@
   // Đường dẫn tương đối dựa trên vị trí trang (root vs pages/)
   const isSubPage = window.location.pathname.includes("/pages/");
   const ASSETS_PATH = isSubPage ? "../assets/images/logo_kedu_horizontal.png" : "assets/images/logo_kedu_horizontal.png";
+  const AUTH_BADGE_LOGO_PATH = isSubPage ? "../assets/images/logo_kedu_square.png" : "assets/images/logo_kedu_square.png";
 
   const SUBJECTS = [
     { id: "toan", name: "Toán học", prefix: "TOAN" },
@@ -711,7 +712,7 @@
 
           <div class="auth-modal-top">
             <div class="auth-modal-brand-badge">
-              <img src="${ASSETS_PATH}" alt="KEdu Logo" class="auth-modal-logo">
+              <img src="${AUTH_BADGE_LOGO_PATH}" alt="KEdu Logo" class="auth-modal-logo">
             </div>
             <h3 class="auth-modal-title" id="authModalTitle">Chào mừng bạn đến với KEdu</h3>
           </div>
@@ -1592,7 +1593,9 @@
             </td>
             <td>
               <span class="user-role-badge ${isAdminRole ? 'role-admin' : 'role-student'}">
-                ${isAdminRole ? '👑 Quản trị viên' : '🎓 Học viên'}
+                ${isAdminRole
+                  ? `<svg class="role-badge-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg><span>Quản trị viên</span>`
+                  : `<svg class="role-badge-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg><span>Học viên</span>`}
               </span>
             </td>
             <td>
@@ -1804,25 +1807,50 @@
     } else {
       // Đã đăng nhập
       const userIsAdmin = currentUser.role === "admin";
-      const initial = userIsAdmin ? "👑" : (currentUser.username).charAt(0).toUpperCase();
       const displayName = currentUser.username;
+
+      // Icon Avatar chuẩn SVG theo UI/UX Design System (loại bỏ emoji thô sơ)
+      const adminCrownSvgSmall = `
+        <svg class="avatar-crown-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/>
+        </svg>
+      `;
+
+      const adminCrownSvgLarge = `
+        <svg class="avatar-crown-svg-lg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/>
+        </svg>
+      `;
+
+      const studentInitial = escapeHTML((currentUser.username || "U").charAt(0).toUpperCase());
+      const avatarContentSmall = userIsAdmin ? adminCrownSvgSmall : `<span>${studentInitial}</span>`;
+      const avatarContentLarge = userIsAdmin ? adminCrownSvgLarge : `<span>${studentInitial}</span>`;
+
+      // Role Badge chuẩn SVG
+      const roleBadgeHTML = userIsAdmin
+        ? `<span class="user-role-badge role-admin">
+            <svg class="role-badge-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>
+            <span>Quản trị viên</span>
+          </span>`
+        : `<span class="user-role-badge role-student">
+            <svg class="role-badge-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>
+            <span>Học viên</span>
+          </span>`;
 
       authSlot.innerHTML = `
         <div class="user-menu-wrapper" id="userMenuWrapper">
           <button type="button" class="user-profile-btn" id="userProfileBtn" title="Tài khoản cá nhân: @${escapeHTML(currentUser.username)}" aria-expanded="false">
-            <span class="user-avatar-badge ${userIsAdmin ? 'is-admin' : ''}">${initial}</span>
+            <span class="user-avatar-badge ${userIsAdmin ? 'is-admin' : ''}">${avatarContentSmall}</span>
             <span class="user-display-name">${escapeHTML(displayName)}</span>
             <svg class="user-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
 
           <div class="user-dropdown-panel" id="userDropdownPanel">
             <div class="user-dropdown-header">
-              <div class="user-dropdown-avatar-lg ${userIsAdmin ? 'is-admin' : ''}">${initial}</div>
+              <div class="user-dropdown-avatar-lg ${userIsAdmin ? 'is-admin' : ''}">${avatarContentLarge}</div>
               <div class="user-dropdown-meta">
                 <div class="user-dropdown-username">@${escapeHTML(displayName)}</div>
-                <span class="user-role-badge ${userIsAdmin ? 'role-admin' : 'role-student'}">
-                  ${userIsAdmin ? '👑 Quản trị viên' : '🎓 Học viên'}
-                </span>
+                ${roleBadgeHTML}
               </div>
             </div>
 
