@@ -276,6 +276,27 @@ body.tv-mode .bp-logo-img {
   border-color: #BFDBFE;
   box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12);
 }
+.btn-section-history {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  color: #0f2657;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+.btn-section-history:hover {
+  background: #eff6ff;
+  border-color: #93c5fd;
+  color: #1d4ed8;
+  transform: translateY(-1px);
+}
 .sh-actions {
   display: flex;
   align-items: center;
@@ -3512,6 +3533,28 @@ body.tv-mode .fb-text-field {
 
 .feedback-callout.wrong {
   border-left-color: var(--dol-red);
+}
+
+/* Diagrams & Graphs */
+.quiz-diagram-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 16px 0 20px;
+  padding: 12px;
+  background: #ffffff;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.quiz-diagram-img {
+  max-width: 100%;
+  max-height: 340px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  border-radius: 6px;
 }
 
 /* 6. Professional Site Footer */

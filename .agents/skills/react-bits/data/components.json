@@ -1,0 +1,2494 @@
+[
+  {
+    "name": "AnimatedContent",
+    "category": "Animations",
+    "description": "Wrapper that reveals its content on scroll with slides, blur, 3D tilts, soft wipes and staggered children.",
+    "docsUrl": "https://reactbits.dev/animations/animated-content",
+    "tags": [],
+    "dependencies": [
+      "gsap@3.13.0"
+    ],
+    "cli": "AnimatedContent"
+  },
+  {
+    "name": "BlobCursor",
+    "category": "Animations",
+    "description": "Liquid metal blob cursor that stretches, sloshes and bursts into droplets, in chrome, jelly, pearl or ink.",
+    "docsUrl": "https://reactbits.dev/animations/blob-cursor",
+    "tags": [],
+    "dependencies": [
+      "three@0.180.0"
+    ],
+    "cli": "BlobCursor"
+  },
+  {
+    "name": "ClickSpark",
+    "category": "Animations",
+    "description": "Bursts of sparks at every click, as dashes, comets, dots or stars, that can spill around buttons.",
+    "docsUrl": "https://reactbits.dev/animations/click-spark",
+    "tags": [],
+    "dependencies": [],
+    "cli": "ClickSpark"
+  },
+  {
+    "name": "Crosshair",
+    "category": "Animations",
+    "description": "Crosshair cursor with live coordinates that locks onto links and buttons and measures them.",
+    "docsUrl": "https://reactbits.dev/animations/crosshair",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Crosshair"
+  },
+  {
+    "name": "Cubes",
+    "category": "Animations",
+    "description": "A grid of outlined 3D cubes that turn to face the cursor, spin when swept and ripple on click.",
+    "docsUrl": "https://reactbits.dev/animations/cubes",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Cubes"
+  },
+  {
+    "name": "ElectricBorder",
+    "category": "Animations",
+    "description": "Wraps any element in crackling strands of current that surge near the cursor and leap off in sparks.",
+    "docsUrl": "https://reactbits.dev/animations/electric-border",
+    "tags": [],
+    "dependencies": [],
+    "cli": "ElectricBorder"
+  },
+  {
+    "name": "FadeContent",
+    "category": "Animations",
+    "description": "Wrapper that fades content in on scroll, plain or out of focus, from washed-out gray, or through grain, mist and pixel blocks.",
+    "docsUrl": "https://reactbits.dev/animations/fade-content",
+    "tags": [],
+    "dependencies": [
+      "gsap@3.13.0"
+    ],
+    "cli": "FadeContent"
+  },
+  {
+    "name": "GlareHover",
+    "category": "Animations",
+    "description": "A glossy light streak that sweeps across any element in the direction the cursor moves.",
+    "docsUrl": "https://reactbits.dev/animations/glare-hover",
+    "tags": [],
+    "dependencies": [],
+    "cli": "GlareHover"
+  },
+  {
+    "name": "GradualBlur",
+    "category": "Animations",
+    "description": "Progressive edge blur for headers, footers, captions and carousels, with an optional fade to color that hides at the ends of a scroll.",
+    "docsUrl": "https://reactbits.dev/animations/gradual-blur",
+    "tags": [],
+    "dependencies": [],
+    "cli": "GradualBlur"
+  },
+  {
+    "name": "CrystalizedBall",
+    "category": "Animations",
+    "description": "A glass ball with a crackling electric rim and glowing dust that swirls with the cursor.",
+    "docsUrl": "https://reactbits.dev/animations/crystalized-ball",
+    "tags": [
+      "webgl",
+      "ogl",
+      "orb",
+      "electric",
+      "particles",
+      "glow",
+      "interactive"
+    ],
+    "dependencies": [
+      "ogl@1.0.11"
+    ],
+    "cli": "CrystalizedBall"
+  },
+  {
+    "name": "ElectricLogo",
+    "category": "Animations",
+    "description": "Turns any logo into a living lightning outline, with arcs that leap off its edges.",
+    "docsUrl": "https://reactbits.dev/animations/electric-logo",
+    "tags": [],
+    "dependencies": [
+      "ogl@1.0.11"
+    ],
+    "cli": "ElectricLogo"
+  },
+  {
+    "name": "DitherVeil",
+    "category": "Animations",
+    "description": "A 1-bit dithered photo the cursor burns through to full colour, knitting back cell by cell.",
+    "docsUrl": "https://reactbits.dev/animations/dither-veil",
+    "tags": [],
+    "dependencies": [
+      "ogl@1.0.11"
+    ],
+    "cli": "DitherVeil"
+  },
+  {
+    "name": "GlowCursor",
+    "category": "Animations",
+    "description": "Light that pours from the cursor, drifts softly through the air and cools as it fades.",
+    "docsUrl": "https://reactbits.dev/animations/glow-cursor",
+    "tags": [],
+    "dependencies": [],
+    "cli": "GlowCursor"
+  },
+  {
+    "name": "GhostCursor",
+    "category": "Animations",
+    "description": "A ghost of glowing smoke that floats after the cursor and curls away as it rises.",
+    "docsUrl": "https://reactbits.dev/animations/ghost-cursor",
+    "tags": [],
+    "dependencies": [],
+    "cli": "GhostCursor"
+  },
+  {
+    "name": "ImageTrail",
+    "category": "Animations",
+    "description": "Cursor-based image trail with several built-in variants.",
+    "docsUrl": "https://reactbits.dev/animations/image-trail",
+    "tags": [],
+    "dependencies": [
+      "gsap@3.13.0"
+    ],
+    "cli": "ImageTrail"
+  },
+  {
+    "name": "LogoLoop",
+    "category": "Animations",
+    "description": "Continuously looping marquee of brand or tech logos with seamless repeat and hover pause.",
+    "docsUrl": "https://reactbits.dev/animations/logo-loop",
+    "tags": [],
+    "dependencies": [],
+    "cli": "LogoLoop"
+  },
+  {
+    "name": "Magnet",
+    "category": "Animations",
+    "description": "Elements magnetically ease toward the cursor then settle back with spring physics.",
+    "docsUrl": "https://reactbits.dev/animations/magnet",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Magnet"
+  },
+  {
+    "name": "MetaBalls",
+    "category": "Animations",
+    "description": "Liquid metaballs that merge, stretch and pinch apart, with a cursor blob that pushes through them.",
+    "docsUrl": "https://reactbits.dev/animations/meta-balls",
+    "tags": [],
+    "dependencies": [],
+    "cli": "MetaBalls"
+  },
+  {
+    "name": "Strands",
+    "category": "Animations",
+    "description": "Spectral strands that twist inside a frosted glass orb and swell into a smooth bulge where they come together, like the new Siri.",
+    "docsUrl": "https://reactbits.dev/animations/strands",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Strands"
+  },
+  {
+    "name": "MetallicPaint",
+    "category": "Animations",
+    "description": "Liquid chrome that flows over your logo or text, adapted from Paper's Liquid Metal shader.",
+    "docsUrl": "https://reactbits.dev/animations/metallic-paint",
+    "tags": [],
+    "dependencies": [],
+    "cli": "MetallicPaint"
+  },
+  {
+    "name": "Noise",
+    "category": "Animations",
+    "description": "Film grain overlay for photos and pages, from fine 35mm grain to dust, paper and TV static.",
+    "docsUrl": "https://reactbits.dev/animations/noise",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Noise"
+  },
+  {
+    "name": "PixelTrail",
+    "category": "Animations",
+    "description": "Glossy pixels melt into a fluid goo trail behind the cursor, with color shifts and drips.",
+    "docsUrl": "https://reactbits.dev/animations/pixel-trail",
+    "tags": [],
+    "dependencies": [],
+    "cli": "PixelTrail"
+  },
+  {
+    "name": "PixelTransition",
+    "category": "Animations",
+    "description": "Retro pixel dissolve that covers a card in solid pixels, swaps the content underneath and clears again.",
+    "docsUrl": "https://reactbits.dev/animations/pixel-transition",
+    "tags": [],
+    "dependencies": [],
+    "cli": "PixelTransition"
+  },
+  {
+    "name": "PixelSwap",
+    "category": "Animations",
+    "description": "New content builds in pixel by pixel in a springy wave that starts wherever the cursor enters.",
+    "docsUrl": "https://reactbits.dev/animations/pixel-swap",
+    "tags": [],
+    "dependencies": [],
+    "cli": "PixelSwap"
+  },
+  {
+    "name": "Ribbons",
+    "category": "Animations",
+    "description": "Springy ribbons that trail the cursor, in lens, comet or even shapes with an optional wave.",
+    "docsUrl": "https://reactbits.dev/animations/ribbons",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Ribbons"
+  },
+  {
+    "name": "ShapeBlur",
+    "category": "Animations",
+    "description": "A crisp logo or shape that drifts out of focus under the pointer like a camera lens.",
+    "docsUrl": "https://reactbits.dev/animations/shape-blur",
+    "tags": [],
+    "dependencies": [],
+    "cli": "ShapeBlur"
+  },
+  {
+    "name": "SplashCursor",
+    "category": "Animations",
+    "description": "A fluid simulation that trails the cursor in swirling ink and bursts into a splash on click.",
+    "docsUrl": "https://reactbits.dev/animations/splash-cursor",
+    "tags": [],
+    "dependencies": [],
+    "cli": "SplashCursor"
+  },
+  {
+    "name": "StarBorder",
+    "category": "Animations",
+    "description": "A twinkling star that travels the exact outline of any button, pill or card, trailing light and stardust.",
+    "docsUrl": "https://reactbits.dev/animations/star-border",
+    "tags": [],
+    "dependencies": [],
+    "cli": "StarBorder"
+  },
+  {
+    "name": "StickerPeel",
+    "category": "Animations",
+    "description": "A die-cut sticker you can peel at any edge, drag, throw and swing, in gloss, matte or holographic finishes.",
+    "docsUrl": "https://reactbits.dev/animations/sticker-peel",
+    "tags": [],
+    "dependencies": [],
+    "cli": "StickerPeel"
+  },
+  {
+    "name": "TargetCursor",
+    "category": "Animations",
+    "description": "A reticle cursor whose corner brackets snap around targets, matching their shape.",
+    "docsUrl": "https://reactbits.dev/animations/target-cursor",
+    "tags": [],
+    "dependencies": [
+      "react-dom@19.0.0"
+    ],
+    "cli": "TargetCursor"
+  },
+  {
+    "name": "LaserFlow",
+    "category": "Animations",
+    "description": "A beam of light that splashes onto your content and pours over its corners.",
+    "docsUrl": "https://reactbits.dev/animations/laser-flow",
+    "tags": [],
+    "dependencies": [],
+    "cli": "LaserFlow"
+  },
+  {
+    "name": "Antigravity",
+    "category": "Backgrounds",
+    "description": "A field of particles that lifts into a glowing ring around the cursor and bursts outward on click.",
+    "docsUrl": "https://reactbits.dev/backgrounds/antigravity",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Antigravity"
+  },
+  {
+    "name": "OrbitImages",
+    "category": "Animations",
+    "description": "SVG Path customizable orbiting images effect",
+    "docsUrl": "https://reactbits.dev/animations/orbit-images",
+    "tags": [],
+    "dependencies": [],
+    "cli": "OrbitImages"
+  },
+  {
+    "name": "ASCIIText",
+    "category": "TextAnimations",
+    "description": "Waving ASCII text that tilts toward the pointer, scrambles on hover and ripples on click.",
+    "docsUrl": "https://reactbits.dev/text-animations/ascii-text",
+    "tags": [],
+    "dependencies": [],
+    "cli": "ASCIIText"
+  },
+  {
+    "name": "BlurText",
+    "category": "TextAnimations",
+    "description": "Text starts blurred then crisply resolves for a soft-focus reveal effect.",
+    "docsUrl": "https://reactbits.dev/text-animations/blur-text",
+    "tags": [],
+    "dependencies": [
+      "motion@12.23.12"
+    ],
+    "cli": "BlurText"
+  },
+  {
+    "name": "CircularText",
+    "category": "TextAnimations",
+    "description": "Layouts characters around a circle with optional rotation animation.",
+    "docsUrl": "https://reactbits.dev/text-animations/circular-text",
+    "tags": [],
+    "dependencies": [
+      "motion@12.23.12"
+    ],
+    "cli": "CircularText"
+  },
+  {
+    "name": "CountUp",
+    "category": "TextAnimations",
+    "description": "Animated number counter supporting formatting and decimals.",
+    "docsUrl": "https://reactbits.dev/text-animations/count-up",
+    "tags": [],
+    "dependencies": [
+      "motion@12.23.12"
+    ],
+    "cli": "CountUp"
+  },
+  {
+    "name": "CurvedLoop",
+    "category": "TextAnimations",
+    "description": "Flowing looping text path along a customizable curve with drag interaction.",
+    "docsUrl": "https://reactbits.dev/text-animations/curved-loop",
+    "tags": [],
+    "dependencies": [],
+    "cli": "CurvedLoop"
+  },
+  {
+    "name": "DecryptedText",
+    "category": "TextAnimations",
+    "description": "Hacker-style decryption cycling random glyphs until resolving to real text.",
+    "docsUrl": "https://reactbits.dev/text-animations/decrypted-text",
+    "tags": [],
+    "dependencies": [
+      "motion@12.23.12"
+    ],
+    "cli": "DecryptedText"
+  },
+  {
+    "name": "FallingText",
+    "category": "TextAnimations",
+    "description": "Text that breaks apart and tumbles into a pile you can drag, throw and swipe, then flies back into place.",
+    "docsUrl": "https://reactbits.dev/text-animations/falling-text",
+    "tags": [],
+    "dependencies": [
+      "matter-js@0.20.0"
+    ],
+    "cli": "FallingText"
+  },
+  {
+    "name": "FuzzyText",
+    "category": "TextAnimations",
+    "description": "Vibrating fuzzy text with controllable hover intensity.",
+    "docsUrl": "https://reactbits.dev/text-animations/fuzzy-text",
+    "tags": [],
+    "dependencies": [],
+    "cli": "FuzzyText"
+  },
+  {
+    "name": "GlitchText",
+    "category": "TextAnimations",
+    "description": "RGB split and distortion glitch effect with jitter effects.",
+    "docsUrl": "https://reactbits.dev/text-animations/glitch-text",
+    "tags": [],
+    "dependencies": [],
+    "cli": "GlitchText"
+  },
+  {
+    "name": "GradientText",
+    "category": "TextAnimations",
+    "description": "Living gradients inside your text: a sliding sweep, a drifting mesh or a swinging conic fan.",
+    "docsUrl": "https://reactbits.dev/text-animations/gradient-text",
+    "tags": [],
+    "dependencies": [],
+    "cli": "GradientText"
+  },
+  {
+    "name": "RotatingText",
+    "category": "TextAnimations",
+    "description": "Cycles through multiple phrases with 3D rotate / flip transitions.",
+    "docsUrl": "https://reactbits.dev/text-animations/rotating-text",
+    "tags": [],
+    "dependencies": [
+      "motion@12.23.12"
+    ],
+    "cli": "RotatingText"
+  },
+  {
+    "name": "ScrambledText",
+    "category": "TextAnimations",
+    "description": "Detects cursor position and applies a distortion effect to text.",
+    "docsUrl": "https://reactbits.dev/text-animations/scrambled-text",
+    "tags": [],
+    "dependencies": [
+      "gsap@3.13.0"
+    ],
+    "cli": "ScrambledText"
+  },
+  {
+    "name": "ScrollFloat",
+    "category": "TextAnimations",
+    "description": "Text gently floats / parallax shifts on scroll.",
+    "docsUrl": "https://reactbits.dev/text-animations/scroll-float",
+    "tags": [],
+    "dependencies": [
+      "gsap@3.13.0"
+    ],
+    "cli": "ScrollFloat"
+  },
+  {
+    "name": "ScrollReveal",
+    "category": "TextAnimations",
+    "description": "Text gently unblurs and reveals on scroll.",
+    "docsUrl": "https://reactbits.dev/text-animations/scroll-reveal",
+    "tags": [],
+    "dependencies": [
+      "gsap@3.13.0"
+    ],
+    "cli": "ScrollReveal"
+  },
+  {
+    "name": "ScrollVelocity",
+    "category": "TextAnimations",
+    "description": "Text marquee animatio - speed and distortion scale with user's scroll velocity.",
+    "docsUrl": "https://reactbits.dev/text-animations/scroll-velocity",
+    "tags": [],
+    "dependencies": [
+      "motion@12.23.12"
+    ],
+    "cli": "ScrollVelocity"
+  },
+  {
+    "name": "ShinyText",
+    "category": "TextAnimations",
+    "description": "A sheen of light that sweeps across text, from soft bands to chrome-like reflections.",
+    "docsUrl": "https://reactbits.dev/text-animations/shiny-text",
+    "tags": [],
+    "dependencies": [],
+    "cli": "ShinyText"
+  },
+  {
+    "name": "SplitText",
+    "category": "TextAnimations",
+    "description": "Splits text into characters / words for staggered entrance animation.",
+    "docsUrl": "https://reactbits.dev/text-animations/split-text",
+    "tags": [],
+    "dependencies": [
+      "gsap@3.13.0",
+      "@gsap/react@2.1.2"
+    ],
+    "cli": "SplitText"
+  },
+  {
+    "name": "TextCursor",
+    "category": "TextAnimations",
+    "description": "Text or emoji that trails your cursor as stamped copies, a following chain or a ribbon of letters.",
+    "docsUrl": "https://reactbits.dev/text-animations/text-cursor",
+    "tags": [],
+    "dependencies": [],
+    "cli": "TextCursor"
+  },
+  {
+    "name": "TextPressure",
+    "category": "TextAnimations",
+    "description": "Characters scale / warp interactively based on pointer pressure zone.",
+    "docsUrl": "https://reactbits.dev/text-animations/text-pressure",
+    "tags": [],
+    "dependencies": [],
+    "cli": "TextPressure"
+  },
+  {
+    "name": "TextType",
+    "category": "TextAnimations",
+    "description": "Typewriter effect with blinking cursor and adjustable typing cadence.",
+    "docsUrl": "https://reactbits.dev/text-animations/text-type",
+    "tags": [],
+    "dependencies": [
+      "gsap@3.13.0"
+    ],
+    "cli": "TextType"
+  },
+  {
+    "name": "TrueFocus",
+    "category": "TextAnimations",
+    "description": "Applies dynamic blur / clarity based over a series of words in order.",
+    "docsUrl": "https://reactbits.dev/text-animations/true-focus",
+    "tags": [],
+    "dependencies": [
+      "motion@12.23.12"
+    ],
+    "cli": "TrueFocus"
+  },
+  {
+    "name": "VariableProximity",
+    "category": "TextAnimations",
+    "description": "Letter styling changes continuously with pointer distance mapping.",
+    "docsUrl": "https://reactbits.dev/text-animations/variable-proximity",
+    "tags": [],
+    "dependencies": [],
+    "cli": "VariableProximity"
+  },
+  {
+    "name": "Shuffle",
+    "category": "TextAnimations",
+    "description": "Animated text reveal where characters shuffle before settling.",
+    "docsUrl": "https://reactbits.dev/text-animations/shuffle",
+    "tags": [],
+    "dependencies": [
+      "gsap@3.13.0",
+      "@gsap/react@2.1.2"
+    ],
+    "cli": "Shuffle"
+  },
+  {
+    "name": "ParticleText",
+    "category": "TextAnimations",
+    "description": "Text assembles from drifting particles that scatter and reform on demand.",
+    "docsUrl": "https://reactbits.dev/text-animations/particle-text",
+    "tags": [],
+    "dependencies": [],
+    "cli": "ParticleText"
+  },
+  {
+    "name": "SplitFlapText",
+    "category": "TextAnimations",
+    "description": "Mechanical split-flap departure board that clacks through to each new phrase.",
+    "docsUrl": "https://reactbits.dev/text-animations/split-flap-text",
+    "tags": [],
+    "dependencies": [],
+    "cli": "SplitFlapText"
+  },
+  {
+    "name": "WarpText",
+    "category": "TextAnimations",
+    "description": "WebGL warp that bends and refracts the text around the pointer.",
+    "docsUrl": "https://reactbits.dev/text-animations/warp-text",
+    "tags": [],
+    "dependencies": [
+      "ogl@1.0.11"
+    ],
+    "cli": "WarpText"
+  },
+  {
+    "name": "TechText",
+    "category": "TextAnimations",
+    "description": "A wordmark whose letters turn into dashed vector paths under the cursor.",
+    "docsUrl": "https://reactbits.dev/text-animations/tech-text",
+    "tags": [],
+    "dependencies": [],
+    "cli": "TechText"
+  },
+  {
+    "name": "StrokeText",
+    "category": "TextAnimations",
+    "description": "Outlined letterforms draw themselves on, then flood with fill.",
+    "docsUrl": "https://reactbits.dev/text-animations/stroke-text",
+    "tags": [],
+    "dependencies": [
+      "gsap@3.13.0"
+    ],
+    "cli": "StrokeText"
+  },
+  {
+    "name": "DepthText",
+    "category": "TextAnimations",
+    "description": "Layered extruded type with parallax that shifts against the pointer.",
+    "docsUrl": "https://reactbits.dev/text-animations/depth-text",
+    "tags": [],
+    "dependencies": [],
+    "cli": "DepthText"
+  },
+  {
+    "name": "FoldText",
+    "category": "TextAnimations",
+    "description": "Lines unfold into place like creased paper opening flat.",
+    "docsUrl": "https://reactbits.dev/text-animations/fold-text",
+    "tags": [],
+    "dependencies": [
+      "gsap@3.13.0"
+    ],
+    "cli": "FoldText"
+  },
+  {
+    "name": "EchoText",
+    "category": "TextAnimations",
+    "description": "Ghosted copies trail behind the text and settle into a single word.",
+    "docsUrl": "https://reactbits.dev/text-animations/echo-text",
+    "tags": [],
+    "dependencies": [],
+    "cli": "EchoText"
+  },
+  {
+    "name": "MaskedHeading",
+    "category": "TextAnimations",
+    "description": "A headline with a drifting colour mesh or image showing through, revealed word by word.",
+    "docsUrl": "https://reactbits.dev/text-animations/masked-heading",
+    "tags": [],
+    "dependencies": [
+      "gsap@3.13.0"
+    ],
+    "cli": "MaskedHeading"
+  },
+  {
+    "name": "TextLoop",
+    "category": "TextAnimations",
+    "description": "A seamless text marquee that flows along curved SVG paths.",
+    "docsUrl": "https://reactbits.dev/text-animations/text-loop",
+    "tags": [],
+    "dependencies": [
+      "gsap@3.13.0"
+    ],
+    "cli": "TextLoop"
+  },
+  {
+    "name": "AnimatedList",
+    "category": "Components",
+    "description": "A scrolling list whose rows spring into view, with a gliding selection and arrow keys.",
+    "docsUrl": "https://reactbits.dev/components/animated-list",
+    "tags": [],
+    "dependencies": [
+      "@hugeicons/react@1.1.10",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "AnimatedList"
+  },
+  {
+    "name": "BounceCards",
+    "category": "Components",
+    "description": "A fan of photo cards that bounce in, then spread apart and straighten the one you hover.",
+    "docsUrl": "https://reactbits.dev/components/bounce-cards",
+    "tags": [],
+    "dependencies": [],
+    "cli": "BounceCards"
+  },
+  {
+    "name": "BubbleMenu",
+    "category": "Components",
+    "description": "Floating circular expanding menu with staggered item reveal.",
+    "docsUrl": "https://reactbits.dev/components/bubble-menu",
+    "tags": [],
+    "dependencies": [
+      "gsap@3.13.0"
+    ],
+    "cli": "BubbleMenu"
+  },
+  {
+    "name": "CardNav",
+    "category": "Components",
+    "description": "A navigation bar that springs open into a row of cards, each with its own links.",
+    "docsUrl": "https://reactbits.dev/components/card-nav",
+    "tags": [],
+    "dependencies": [
+      "@hugeicons/react@1.1.10",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "CardNav"
+  },
+  {
+    "name": "CardSwap",
+    "category": "Components",
+    "description": "A 3D stack of cards that sends the front card to the back on a timer, or when you fling it.",
+    "docsUrl": "https://reactbits.dev/components/card-swap",
+    "tags": [],
+    "dependencies": [
+      "@hugeicons/react@1.1.10",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "CardSwap"
+  },
+  {
+    "name": "Carousel",
+    "category": "Components",
+    "description": "Swipeable cards for feature tours, stories and galleries, with five transitions and an autoplay timer.",
+    "docsUrl": "https://reactbits.dev/components/carousel",
+    "tags": [],
+    "dependencies": [
+      "@hugeicons/react@1.1.10",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "Carousel"
+  },
+  {
+    "name": "ChromaGrid",
+    "category": "Components",
+    "description": "A grid of grayscale photo cards where a spotlight follows the cursor and brings back color.",
+    "docsUrl": "https://reactbits.dev/components/chroma-grid",
+    "tags": [],
+    "dependencies": [],
+    "cli": "ChromaGrid"
+  },
+  {
+    "name": "HoloCard",
+    "category": "Components",
+    "description": "Collectible trading card with a real holographic foil and glitter that sparkles as it tilts.",
+    "docsUrl": "https://reactbits.dev/components/holo-card",
+    "tags": [],
+    "dependencies": [],
+    "cli": "HoloCard"
+  },
+  {
+    "name": "CircularCarousel",
+    "category": "Components",
+    "description": "A 3D ring of images with bendable cards, momentum drag, snapping and click to focus.",
+    "docsUrl": "https://reactbits.dev/components/circular-carousel",
+    "tags": [],
+    "dependencies": [],
+    "cli": "CircularCarousel"
+  },
+  {
+    "name": "FlexCarousel",
+    "category": "Components",
+    "description": "An infinite image row that flows through invisible liquid glass at its edges.",
+    "docsUrl": "https://reactbits.dev/components/flex-carousel",
+    "tags": [],
+    "dependencies": [
+      "ogl@1.0.11"
+    ],
+    "cli": "FlexCarousel"
+  },
+  {
+    "name": "DepthCarousel",
+    "category": "Components",
+    "description": "Cards recede into depth on a 3D rail, with drag, keyboard and auto-advance.",
+    "docsUrl": "https://reactbits.dev/components/depth-carousel",
+    "tags": [],
+    "dependencies": [
+      "gsap@3.13.0"
+    ],
+    "cli": "DepthCarousel"
+  },
+  {
+    "name": "AccordionGallery",
+    "category": "Components",
+    "description": "Panels expand on hover or focus, revealing parallax imagery and captions.",
+    "docsUrl": "https://reactbits.dev/components/accordion-gallery",
+    "tags": [],
+    "dependencies": [
+      "gsap@3.13.0"
+    ],
+    "cli": "AccordionGallery"
+  },
+  {
+    "name": "MorphSlider",
+    "category": "Components",
+    "description": "WebGL slider that melts between images with a displacement transition.",
+    "docsUrl": "https://reactbits.dev/components/morph-slider",
+    "tags": [],
+    "dependencies": [
+      "ogl@1.0.11",
+      "gsap@3.13.0"
+    ],
+    "cli": "MorphSlider"
+  },
+  {
+    "name": "DriftWall",
+    "category": "Components",
+    "description": "An endless perspective wall of tiles drifting past, lifting on hover.",
+    "docsUrl": "https://reactbits.dev/components/drift-wall",
+    "tags": [],
+    "dependencies": [],
+    "cli": "DriftWall"
+  },
+  {
+    "name": "CircularGallery",
+    "category": "Components",
+    "description": "A curved image gallery you can drag, scroll or tab through, with cards that open to the full image.",
+    "docsUrl": "https://reactbits.dev/components/circular-gallery",
+    "tags": [],
+    "dependencies": [],
+    "cli": "CircularGallery"
+  },
+  {
+    "name": "Counter",
+    "category": "Components",
+    "description": "An odometer-style number whose digits roll to every new value, with currency, separators and locales.",
+    "docsUrl": "https://reactbits.dev/components/counter",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Counter"
+  },
+  {
+    "name": "DecayCard",
+    "category": "Components",
+    "description": "An image card that tears and melts as the pointer moves, then pulls itself back together.",
+    "docsUrl": "https://reactbits.dev/components/decay-card",
+    "tags": [],
+    "dependencies": [],
+    "cli": "DecayCard"
+  },
+  {
+    "name": "Dock",
+    "category": "Components",
+    "description": "macOS style dock with smooth magnification, launch bounce, badges and context menus.",
+    "docsUrl": "https://reactbits.dev/components/dock",
+    "tags": [],
+    "dependencies": [
+      "react-dom@19.0.0"
+    ],
+    "cli": "Dock"
+  },
+  {
+    "name": "DomeGallery",
+    "category": "Components",
+    "description": "Immersive 3D dome gallery projecting images on a hemispheric surface.",
+    "docsUrl": "https://reactbits.dev/components/dome-gallery",
+    "tags": [],
+    "dependencies": [
+      "@use-gesture/react@10.2.27"
+    ],
+    "cli": "DomeGallery"
+  },
+  {
+    "name": "ElasticSlider",
+    "category": "Components",
+    "description": "A slider that grows under your cursor and stretches like rubber when pulled past either end, then springs back.",
+    "docsUrl": "https://reactbits.dev/components/elastic-slider",
+    "tags": [],
+    "dependencies": [
+      "@hugeicons/react@1.1.10",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "ElasticSlider"
+  },
+  {
+    "name": "FlowingMenu",
+    "category": "Components",
+    "description": "A full-height menu with a liquid band that glides between rows and reveals a scrolling marquee of each item.",
+    "docsUrl": "https://reactbits.dev/components/flowing-menu",
+    "tags": [],
+    "dependencies": [
+      "@hugeicons/react@1.1.10",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "FlowingMenu"
+  },
+  {
+    "name": "FluidGlass",
+    "category": "Components",
+    "description": "A 3D glass object that refracts your headline, image or video, follows the cursor and melts between shapes.",
+    "docsUrl": "https://reactbits.dev/components/fluid-glass",
+    "tags": [],
+    "dependencies": [],
+    "cli": "FluidGlass"
+  },
+  {
+    "name": "FlyingPosters",
+    "category": "Components",
+    "description": "3D posters that twist and flip as you scroll or drag through an endless column.",
+    "docsUrl": "https://reactbits.dev/components/flying-posters",
+    "tags": [],
+    "dependencies": [],
+    "cli": "FlyingPosters"
+  },
+  {
+    "name": "Folder",
+    "category": "Components",
+    "description": "Folder that drops its flap open or swings open like a book, with pages you can pick.",
+    "docsUrl": "https://reactbits.dev/components/folder",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Folder"
+  },
+  {
+    "name": "GlassIcons",
+    "category": "Components",
+    "description": "Liquid glass icons that bend the color behind them, for app grids, docks and social links.",
+    "docsUrl": "https://reactbits.dev/components/glass-icons",
+    "tags": [],
+    "dependencies": [],
+    "cli": "GlassIcons"
+  },
+  {
+    "name": "GlassSurface",
+    "category": "Components",
+    "description": "Apple-style liquid glass that bends what is behind it, in a rounded panel or any logo shape.",
+    "docsUrl": "https://reactbits.dev/components/glass-surface",
+    "tags": [],
+    "dependencies": [],
+    "cli": "GlassSurface"
+  },
+  {
+    "name": "GooeyNav",
+    "category": "Components",
+    "description": "A navigation bar whose active pill breaks into goo that flows over to the item you pick.",
+    "docsUrl": "https://reactbits.dev/components/gooey-nav",
+    "tags": [],
+    "dependencies": [],
+    "cli": "GooeyNav"
+  },
+  {
+    "name": "InfiniteSpiral",
+    "category": "Components",
+    "description": "An endlessly looping 3D helix of images with adjustable motion, depth and spacing.",
+    "docsUrl": "https://reactbits.dev/components/infinite-spiral",
+    "tags": [],
+    "dependencies": [],
+    "cli": "InfiniteSpiral"
+  },
+  {
+    "name": "InfiniteMenu",
+    "category": "Components",
+    "description": "A draggable sphere of image tiles that snaps the nearest one forward and shows its title.",
+    "docsUrl": "https://reactbits.dev/components/infinite-menu",
+    "tags": [],
+    "dependencies": [],
+    "cli": "InfiniteMenu"
+  },
+  {
+    "name": "Lanyard",
+    "category": "Components",
+    "description": "Swinging 3D badge on a stretchy woven band that you can drag, throw or click to flip.",
+    "docsUrl": "https://reactbits.dev/components/lanyard",
+    "tags": [],
+    "dependencies": [
+      "three@0.180.0"
+    ],
+    "cli": "Lanyard"
+  },
+  {
+    "name": "MagicBento",
+    "category": "Components",
+    "description": "A bento grid of feature cards with live artwork, edge light that follows the cursor and a click wave.",
+    "docsUrl": "https://reactbits.dev/components/magic-bento",
+    "tags": [],
+    "dependencies": [
+      "@hugeicons/react@1.1.10",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "MagicBento"
+  },
+  {
+    "name": "Masonry",
+    "category": "Components",
+    "description": "A masonry gallery that springs into place, reflows as it resizes and opens images in a lightbox.",
+    "docsUrl": "https://reactbits.dev/components/masonry",
+    "tags": [],
+    "dependencies": [
+      "react-dom@19.0.0",
+      "@hugeicons/react@1.1.10",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "Masonry"
+  },
+  {
+    "name": "ModelViewer",
+    "category": "Components",
+    "description": "A product-style 3D model viewer that frames itself and floats over a soft shadow.",
+    "docsUrl": "https://reactbits.dev/components/model-viewer",
+    "tags": [],
+    "dependencies": [
+      "@react-three/fiber@9.3.0",
+      "@react-three/drei@10.7.4",
+      "three@0.180.0"
+    ],
+    "cli": "ModelViewer"
+  },
+  {
+    "name": "PillNav",
+    "category": "Components",
+    "description": "A pill navigation bar where a fill rises through each link as its label rolls over, with a sliding active dot.",
+    "docsUrl": "https://reactbits.dev/components/pill-nav",
+    "tags": [],
+    "dependencies": [],
+    "cli": "PillNav"
+  },
+  {
+    "name": "PixelCard",
+    "category": "Components",
+    "description": "A card that fills with twinkling pixels on hover, rippling out from the center or the cursor.",
+    "docsUrl": "https://reactbits.dev/components/pixel-card",
+    "tags": [],
+    "dependencies": [],
+    "cli": "PixelCard"
+  },
+  {
+    "name": "ProfileCard",
+    "category": "Components",
+    "description": "A framed profile card that tilts toward the cursor, with holographic foil shining through a tiled pattern.",
+    "docsUrl": "https://reactbits.dev/components/profile-card",
+    "tags": [],
+    "dependencies": [
+      "@hugeicons/react@1.1.10",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "ProfileCard"
+  },
+  {
+    "name": "ScrollStack",
+    "category": "Components",
+    "description": "Cards pin and stack as you scroll, settling back into a dimmed deck with smooth, jitter-free motion.",
+    "docsUrl": "https://reactbits.dev/components/scroll-stack",
+    "tags": [],
+    "dependencies": [],
+    "cli": "ScrollStack"
+  },
+  {
+    "name": "SpotlightCard",
+    "category": "Components",
+    "description": "Card lit by a soft spotlight that follows the pointer, catches its edge and reaches nearby cards.",
+    "docsUrl": "https://reactbits.dev/components/spotlight-card",
+    "tags": [],
+    "dependencies": [],
+    "cli": "SpotlightCard"
+  },
+  {
+    "name": "BorderGlow",
+    "category": "Components",
+    "description": "Glowing mesh-gradient border that follows cursor direction and intensifies near edges.",
+    "docsUrl": "https://reactbits.dev/components/border-glow",
+    "tags": [],
+    "dependencies": [],
+    "cli": "BorderGlow"
+  },
+  {
+    "name": "LineSidebar",
+    "category": "Components",
+    "description": "Static list navigation with a cursor-proximity effect that shifts and highlights nearby items.",
+    "docsUrl": "https://reactbits.dev/components/line-sidebar",
+    "tags": [],
+    "dependencies": [],
+    "cli": "LineSidebar"
+  },
+  {
+    "name": "OptionWheel",
+    "category": "Components",
+    "description": "Curved option picker that spins with scroll, drag or arrow keys, tilting items away.",
+    "docsUrl": "https://reactbits.dev/components/option-wheel",
+    "tags": [],
+    "dependencies": [],
+    "cli": "OptionWheel"
+  },
+  {
+    "name": "SpecularButton",
+    "category": "Components",
+    "description": "Glass button whose edge catches the light, with a highlight that glides toward the cursor.",
+    "docsUrl": "https://reactbits.dev/components/specular-button",
+    "tags": [],
+    "dependencies": [],
+    "cli": "SpecularButton"
+  },
+  {
+    "name": "ElasticMesh",
+    "category": "Animations",
+    "description": "Turns text or any logo into a puffy inflated shape you can press, poke and stretch like jelly.",
+    "docsUrl": "https://reactbits.dev/animations/elastic-mesh",
+    "tags": [],
+    "dependencies": [],
+    "cli": "ElasticMesh"
+  },
+  {
+    "name": "RippleDistortion",
+    "category": "Animations",
+    "description": "Pointer-driven water displacement that warps content and leaves a decaying wake.",
+    "docsUrl": "https://reactbits.dev/animations/ripple-distortion",
+    "tags": [],
+    "dependencies": [
+      "ogl@1.0.11"
+    ],
+    "cli": "RippleDistortion"
+  },
+  {
+    "name": "SwarmCursor",
+    "category": "Animations",
+    "description": "A liquid swarm of particles that flows after the cursor, curls into eddies and pours around hovered buttons.",
+    "docsUrl": "https://reactbits.dev/animations/swarm-cursor",
+    "tags": [],
+    "dependencies": [],
+    "cli": "SwarmCursor"
+  },
+  {
+    "name": "HalftoneReveal",
+    "category": "Animations",
+    "description": "A halftone print of an image whose dots swell into the real photo under the cursor.",
+    "docsUrl": "https://reactbits.dev/animations/halftone-reveal",
+    "tags": [],
+    "dependencies": [],
+    "cli": "HalftoneReveal"
+  },
+  {
+    "name": "ScrollExpand",
+    "category": "Animations",
+    "description": "A rounded media frame that grows to full bleed as it scrolls through the viewport.",
+    "docsUrl": "https://reactbits.dev/animations/scroll-expand",
+    "tags": [],
+    "dependencies": [],
+    "cli": "ScrollExpand"
+  },
+  {
+    "name": "CursorGrid",
+    "category": "Animations",
+    "description": "A crisp grid whose cells light up and fade behind the cursor, with grid styles, tiles and click pulses.",
+    "docsUrl": "https://reactbits.dev/animations/cursor-grid",
+    "tags": [],
+    "dependencies": [],
+    "cli": "CursorGrid"
+  },
+  {
+    "name": "CurvedInput",
+    "category": "Components",
+    "description": "Arc-bent input bar with text, caret and submit button all following the curve.",
+    "docsUrl": "https://reactbits.dev/components/curved-input",
+    "tags": [],
+    "dependencies": [],
+    "cli": "CurvedInput"
+  },
+  {
+    "name": "Stack",
+    "category": "Components",
+    "description": "Pile of cards you can drag, flick or click through, with thrown cards tucking underneath.",
+    "docsUrl": "https://reactbits.dev/components/stack",
+    "tags": [],
+    "dependencies": [
+      "motion@12.23.12"
+    ],
+    "cli": "Stack"
+  },
+  {
+    "name": "Stepper",
+    "category": "Components",
+    "description": "A multi-step flow with a gliding step indicator, spring transitions and horizontal or vertical layouts.",
+    "docsUrl": "https://reactbits.dev/components/stepper",
+    "tags": [],
+    "dependencies": [
+      "@hugeicons/react@1.1.10",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "Stepper"
+  },
+  {
+    "name": "TiltedCard",
+    "category": "Components",
+    "description": "A 3D card that tilts toward the cursor, with glare, a soft shadow, floating layers and a flip side.",
+    "docsUrl": "https://reactbits.dev/components/tilted-card",
+    "tags": [],
+    "dependencies": [],
+    "cli": "TiltedCard"
+  },
+  {
+    "name": "StaggeredMenu",
+    "category": "Components",
+    "description": "Menu with staggered item animations and smooth transitions on open/close.",
+    "docsUrl": "https://reactbits.dev/components/staggered-menu",
+    "tags": [],
+    "dependencies": [
+      "gsap@3.13.0"
+    ],
+    "cli": "StaggeredMenu"
+  },
+  {
+    "name": "ReflectiveCard",
+    "category": "Components",
+    "description": "A metal ID card that reflects your camera or a looping video and catches the light as it tilts.",
+    "docsUrl": "https://reactbits.dev/components/reflective-card",
+    "tags": [],
+    "dependencies": [
+      "@hugeicons/react@1.1.10",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "ReflectiveCard"
+  },
+  {
+    "name": "PatternWaves",
+    "category": "Backgrounds",
+    "description": "A lit halftone surface of dots, lines or glyphs that moves like draped silk.",
+    "docsUrl": "https://reactbits.dev/backgrounds/pattern-waves",
+    "tags": [
+      "webgl",
+      "ogl",
+      "halftone",
+      "pattern",
+      "waves",
+      "ascii",
+      "interactive",
+      "procedural"
+    ],
+    "dependencies": [
+      "ogl@1.0.11"
+    ],
+    "cli": "PatternWaves"
+  },
+  {
+    "name": "MicroSlats",
+    "category": "Backgrounds",
+    "description": "A wall of tiny slats that becomes a rolling sea in perspective, with glinting crests.",
+    "docsUrl": "https://reactbits.dev/backgrounds/micro-slats",
+    "tags": [
+      "webgl",
+      "ogl",
+      "grid",
+      "waves",
+      "interactive",
+      "procedural"
+    ],
+    "dependencies": [
+      "ogl@1.0.11"
+    ],
+    "cli": "MicroSlats"
+  },
+  {
+    "name": "ShapeWaves",
+    "category": "Backgrounds",
+    "description": "A field of triangles, circles and squares that brighten and grow along rolling waves.",
+    "docsUrl": "https://reactbits.dev/backgrounds/shape-waves",
+    "tags": [
+      "webgpu",
+      "vgpu",
+      "grid",
+      "shapes",
+      "text",
+      "procedural"
+    ],
+    "dependencies": [
+      "vgpu@0.3.1"
+    ],
+    "cli": "ShapeWaves"
+  },
+  {
+    "name": "AeroShards",
+    "category": "Backgrounds",
+    "description": "Silk ribbons of thick glass shards streaming on layered depths among survey markers, catching light along their edges.",
+    "docsUrl": "https://reactbits.dev/backgrounds/aero-shards",
+    "tags": [
+      "webgpu",
+      "vgpu",
+      "particles",
+      "procedural",
+      "post-processing",
+      "interactive"
+    ],
+    "dependencies": [
+      "vgpu@0.3.1"
+    ],
+    "cli": "AeroShards"
+  },
+  {
+    "name": "GhostFibers",
+    "category": "Backgrounds",
+    "description": "Layered ribbons of fine glowing fibers that twist, fold and drift through soft depth of field.",
+    "docsUrl": "https://reactbits.dev/backgrounds/ghost-fibers",
+    "tags": [],
+    "dependencies": [],
+    "cli": "GhostFibers"
+  },
+  {
+    "name": "Aurora",
+    "category": "Backgrounds",
+    "description": "A soft, calm aurora that flows across the top of the page and drifts toward the cursor.",
+    "docsUrl": "https://reactbits.dev/backgrounds/aurora",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Aurora"
+  },
+  {
+    "name": "Balatro",
+    "category": "Backgrounds",
+    "description": "The swirling Balatro paint shader, with crisp pixels, a cursor that stirs the paint and click whirlpools.",
+    "docsUrl": "https://reactbits.dev/backgrounds/balatro",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Balatro"
+  },
+  {
+    "name": "Ballpit",
+    "category": "Backgrounds",
+    "description": "A soft-lit pit of physics balls you can shove with the cursor, grab, throw and blast apart.",
+    "docsUrl": "https://reactbits.dev/backgrounds/ballpit",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Ballpit"
+  },
+  {
+    "name": "Beams",
+    "category": "Backgrounds",
+    "description": "Glossy ribbons that ripple in the dark and catch the light, which follows your cursor.",
+    "docsUrl": "https://reactbits.dev/backgrounds/beams",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Beams"
+  },
+  {
+    "name": "ColorBends",
+    "category": "Backgrounds",
+    "description": "Vibrant color bends with smooth flowing animation.",
+    "docsUrl": "https://reactbits.dev/backgrounds/color-bends",
+    "tags": [],
+    "dependencies": [
+      "three@0.180.0"
+    ],
+    "cli": "ColorBends"
+  },
+  {
+    "name": "CRTWarp",
+    "category": "Backgrounds",
+    "description": "A blocky plasma glowing on a curved CRT, with real scanlines, a phosphor mask, afterglow and a power-on intro.",
+    "docsUrl": "https://reactbits.dev/backgrounds/crt-warp",
+    "tags": [],
+    "dependencies": [],
+    "cli": "CRTWarp"
+  },
+  {
+    "name": "DarkVeil",
+    "category": "Backgrounds",
+    "description": "A silky veil of light that drifts in the dark and bends around the cursor.",
+    "docsUrl": "https://reactbits.dev/backgrounds/dark-veil",
+    "tags": [],
+    "dependencies": [],
+    "cli": "DarkVeil"
+  },
+  {
+    "name": "Dither",
+    "category": "Backgrounds",
+    "description": "Retro dithered waves with Bayer, halftone, line and noise patterns, palettes and cursor trails.",
+    "docsUrl": "https://reactbits.dev/backgrounds/dither",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Dither"
+  },
+  {
+    "name": "DotField",
+    "category": "Backgrounds",
+    "description": "A gradient dot field seen through a lens that follows the cursor, magnifying, pinching or swirling the dots.",
+    "docsUrl": "https://reactbits.dev/backgrounds/dot-field",
+    "tags": [],
+    "dependencies": [],
+    "cli": "DotField"
+  },
+  {
+    "name": "DotGrid",
+    "category": "Backgrounds",
+    "description": "A springy dot grid that the cursor flicks and drags through like jelly, with click shockwaves.",
+    "docsUrl": "https://reactbits.dev/backgrounds/dot-grid",
+    "tags": [],
+    "dependencies": [],
+    "cli": "DotGrid"
+  },
+  {
+    "name": "FaultyTerminal",
+    "category": "Backgrounds",
+    "description": "A flickering CRT terminal of glowing glyphs, with phosphor trails under the cursor and glitches on click.",
+    "docsUrl": "https://reactbits.dev/backgrounds/faulty-terminal",
+    "tags": [],
+    "dependencies": [],
+    "cli": "FaultyTerminal"
+  },
+  {
+    "name": "Galaxy",
+    "category": "Backgrounds",
+    "description": "Endless flight through a twinkling starfield with warp jumps, cursor repulsion and star palettes.",
+    "docsUrl": "https://reactbits.dev/backgrounds/galaxy",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Galaxy"
+  },
+  {
+    "name": "GradientBlinds",
+    "category": "Backgrounds",
+    "description": "Satin gradient blinds lit by a spotlight that follows the cursor, swaying and turning toward the light.",
+    "docsUrl": "https://reactbits.dev/backgrounds/gradient-blinds",
+    "tags": [],
+    "dependencies": [],
+    "cli": "GradientBlinds"
+  },
+  {
+    "name": "Lightfall",
+    "category": "Backgrounds",
+    "description": "Streaks of light falling down a curved tunnel, bending around the cursor and stretching into warp trails on hold.",
+    "docsUrl": "https://reactbits.dev/backgrounds/lightfall",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Lightfall"
+  },
+  {
+    "name": "FluxLines",
+    "category": "Backgrounds",
+    "description": "Glowing flux lines tracing a churning magnetic fluid. The cursor magnet reveals and curls them.",
+    "docsUrl": "https://reactbits.dev/backgrounds/flux-lines",
+    "tags": [
+      "webgl",
+      "lines",
+      "flow",
+      "glow",
+      "magnetic",
+      "interactive"
+    ],
+    "dependencies": [],
+    "cli": "FluxLines"
+  },
+  {
+    "name": "Ferrofluid",
+    "category": "Backgrounds",
+    "description": "A glossy sea of magnetic fluid where swells of spikes roll in and the cursor raises a crown.",
+    "docsUrl": "https://reactbits.dev/backgrounds/ferrofluid",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Ferrofluid"
+  },
+  {
+    "name": "MoltenMetal",
+    "category": "Backgrounds",
+    "description": "Swirling caustic filaments with white-hot cores that heat up under the cursor and flare on click.",
+    "docsUrl": "https://reactbits.dev/backgrounds/molten-metal",
+    "tags": [],
+    "dependencies": [],
+    "cli": "MoltenMetal"
+  },
+  {
+    "name": "GradientWaves",
+    "category": "Backgrounds",
+    "description": "Lit satin waves rolling in from a hazy horizon, with a light that follows the cursor and swells on click.",
+    "docsUrl": "https://reactbits.dev/backgrounds/gradient-waves",
+    "tags": [],
+    "dependencies": [],
+    "cli": "GradientWaves"
+  },
+  {
+    "name": "WebThreads",
+    "category": "Backgrounds",
+    "description": "Glowing threads woven through luminous pinch points that light up under the cursor and carry light on click.",
+    "docsUrl": "https://reactbits.dev/backgrounds/web-threads",
+    "tags": [],
+    "dependencies": [],
+    "cli": "WebThreads"
+  },
+  {
+    "name": "Topography",
+    "category": "Backgrounds",
+    "description": "A 3D landscape drawn in glowing contour lines that rises under the cursor, with light pulses on click.",
+    "docsUrl": "https://reactbits.dev/backgrounds/topography",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Topography"
+  },
+  {
+    "name": "LightTunnel",
+    "category": "Backgrounds",
+    "description": "A swirling fibre-optic tunnel where comets of light race into depth, steered by the cursor.",
+    "docsUrl": "https://reactbits.dev/backgrounds/light-tunnel",
+    "tags": [],
+    "dependencies": [],
+    "cli": "LightTunnel"
+  },
+  {
+    "name": "SlicedWaves",
+    "category": "Backgrounds",
+    "description": "Waves of colored light sliced into glowing bars, seen in depth with a focus that follows the cursor.",
+    "docsUrl": "https://reactbits.dev/backgrounds/sliced-waves",
+    "tags": [],
+    "dependencies": [],
+    "cli": "SlicedWaves"
+  },
+  {
+    "name": "AcidSquares",
+    "category": "Backgrounds",
+    "description": "A rolling field of glossy squares that ripples under two drifting colored lights.",
+    "docsUrl": "https://reactbits.dev/backgrounds/acid-squares",
+    "tags": [],
+    "dependencies": [],
+    "cli": "AcidSquares"
+  },
+  {
+    "name": "Scanner",
+    "category": "Backgrounds",
+    "description": "Glowing interference lines swept by a scan beam, with a CRT finish, cursor lensing and click pings.",
+    "docsUrl": "https://reactbits.dev/backgrounds/scanner",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Scanner"
+  },
+  {
+    "name": "GradientASCII",
+    "category": "Backgrounds",
+    "description": "Soft gradient glows drawn in ASCII characters that scramble under the cursor.",
+    "docsUrl": "https://reactbits.dev/backgrounds/gradient-ascii",
+    "tags": [],
+    "dependencies": [],
+    "cli": "GradientASCII"
+  },
+  {
+    "name": "Grainient",
+    "category": "Backgrounds",
+    "description": "Flowing grainy gradients you can stir with the cursor.",
+    "docsUrl": "https://reactbits.dev/backgrounds/grainient",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Grainient"
+  },
+  {
+    "name": "GridScan",
+    "category": "Backgrounds",
+    "description": "A 3D grid room swept by a scanning light that follows your view.",
+    "docsUrl": "https://reactbits.dev/backgrounds/grid-scan",
+    "tags": [],
+    "dependencies": [],
+    "cli": "GridScan"
+  },
+  {
+    "name": "GridDistortion",
+    "category": "Backgrounds",
+    "description": "Image background that breaks into a grid of blocks under the cursor and settles back into place.",
+    "docsUrl": "https://reactbits.dev/backgrounds/grid-distortion",
+    "tags": [],
+    "dependencies": [],
+    "cli": "GridDistortion"
+  },
+  {
+    "name": "GridMotion",
+    "category": "Backgrounds",
+    "description": "A tilted wall of drifting tiles that slides with the pointer and lights up where it rests.",
+    "docsUrl": "https://reactbits.dev/backgrounds/grid-motion",
+    "tags": [],
+    "dependencies": [],
+    "cli": "GridMotion"
+  },
+  {
+    "name": "Hyperspeed",
+    "category": "Backgrounds",
+    "description": "Night highway of glowing light trails on a winding road that warps into hyperspace while you hold.",
+    "docsUrl": "https://reactbits.dev/backgrounds/hyperspeed",
+    "tags": [],
+    "dependencies": [
+      "three@0.180.0"
+    ],
+    "cli": "Hyperspeed"
+  },
+  {
+    "name": "Iridescence",
+    "category": "Backgrounds",
+    "description": "Liquid iridescent surface with shifting folds that you can stir with the cursor.",
+    "docsUrl": "https://reactbits.dev/backgrounds/iridescence",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Iridescence"
+  },
+  {
+    "name": "LetterGlitch",
+    "category": "Backgrounds",
+    "description": "A calm field of letters that flicker, scramble and glitch in color, stirred by the cursor and torn by clicks.",
+    "docsUrl": "https://reactbits.dev/backgrounds/letter-glitch",
+    "tags": [],
+    "dependencies": [],
+    "cli": "LetterGlitch"
+  },
+  {
+    "name": "LightRays",
+    "category": "Backgrounds",
+    "description": "Volumetric light rays from any edge, with source glow and haze. The cursor steers the beam and casts a shadow.",
+    "docsUrl": "https://reactbits.dev/backgrounds/light-rays",
+    "tags": [],
+    "dependencies": [],
+    "cli": "LightRays"
+  },
+  {
+    "name": "Lightning",
+    "category": "Backgrounds",
+    "description": "Crackling, branching lightning that bends toward the cursor and strikes wherever you click.",
+    "docsUrl": "https://reactbits.dev/backgrounds/lightning",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Lightning"
+  },
+  {
+    "name": "LineWaves",
+    "category": "Backgrounds",
+    "description": "Fine lines that flow in silky waves while a band of light drifts through them.",
+    "docsUrl": "https://reactbits.dev/backgrounds/line-waves",
+    "tags": [],
+    "dependencies": [],
+    "cli": "LineWaves"
+  },
+  {
+    "name": "EvilEye",
+    "category": "Backgrounds",
+    "description": "Procedural evil eye shader with animated iris, slit pupil, and fiery outer glow.",
+    "docsUrl": "https://reactbits.dev/backgrounds/evil-eye",
+    "tags": [],
+    "dependencies": [
+      "ogl@1.0.11"
+    ],
+    "cli": "EvilEye"
+  },
+  {
+    "name": "Radar",
+    "category": "Backgrounds",
+    "description": "A radar scope whose sweep leaves a phosphor afterglow and picks up moving contacts.",
+    "docsUrl": "https://reactbits.dev/backgrounds/radar",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Radar"
+  },
+  {
+    "name": "SoftAurora",
+    "category": "Backgrounds",
+    "description": "Soft aurora borealis shader with 3D Perlin noise and cosine gradient palettes.",
+    "docsUrl": "https://reactbits.dev/backgrounds/soft-aurora",
+    "tags": [],
+    "dependencies": [],
+    "cli": "SoftAurora"
+  },
+  {
+    "name": "MagicRings",
+    "category": "Backgrounds",
+    "description": "Glowing rings that pulse outward in a wave, swell toward the cursor and flare on click.",
+    "docsUrl": "https://reactbits.dev/backgrounds/magic-rings",
+    "tags": [],
+    "dependencies": [],
+    "cli": "MagicRings"
+  },
+  {
+    "name": "LiquidChrome",
+    "category": "Backgrounds",
+    "description": "Soft ribbons of liquid chrome that swirl through a dark pool, ripple under the cursor and catch the light as it moves.",
+    "docsUrl": "https://reactbits.dev/backgrounds/liquid-chrome",
+    "tags": [],
+    "dependencies": [],
+    "cli": "LiquidChrome"
+  },
+  {
+    "name": "Orb",
+    "category": "Backgrounds",
+    "description": "A glowing ring of swirling color that breathes, trails an orbiting light and reaches toward the cursor.",
+    "docsUrl": "https://reactbits.dev/backgrounds/orb",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Orb"
+  },
+  {
+    "name": "Particles",
+    "category": "Backgrounds",
+    "description": "A drifting 3D field of particles with glow, twinkle, constellation lines and cursor interaction.",
+    "docsUrl": "https://reactbits.dev/backgrounds/particles",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Particles"
+  },
+  {
+    "name": "PixelBlast",
+    "category": "Backgrounds",
+    "description": "Dithered pixel clouds that drift, shimmer and light up under the cursor, with ripples, shapes and a perspective floor.",
+    "docsUrl": "https://reactbits.dev/backgrounds/pixel-blast",
+    "tags": [],
+    "dependencies": [],
+    "cli": "PixelBlast"
+  },
+  {
+    "name": "Plasma",
+    "category": "Backgrounds",
+    "description": "Folds of satin light twisting slowly through the dark, turning to follow the cursor.",
+    "docsUrl": "https://reactbits.dev/backgrounds/plasma",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Plasma"
+  },
+  {
+    "name": "PlasmaWave",
+    "category": "Backgrounds",
+    "description": "Two ribbons of plasma curling through each other, with soft glow and white-hot cores.",
+    "docsUrl": "https://reactbits.dev/backgrounds/plasma-wave",
+    "tags": [],
+    "dependencies": [],
+    "cli": "PlasmaWave"
+  },
+  {
+    "name": "Prism",
+    "category": "Backgrounds",
+    "description": "Rotating prism of glowing spectral light with configurable shape, colors and motion.",
+    "docsUrl": "https://reactbits.dev/backgrounds/prism",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Prism"
+  },
+  {
+    "name": "PrismaticBurst",
+    "category": "Backgrounds",
+    "description": "A burst of prismatic light rays that leans toward the cursor and sends a wave of light outward on click.",
+    "docsUrl": "https://reactbits.dev/backgrounds/prismatic-burst",
+    "tags": [],
+    "dependencies": [],
+    "cli": "PrismaticBurst"
+  },
+  {
+    "name": "RippleGrid",
+    "category": "Backgrounds",
+    "description": "A crisp grid that ripples like water, bending and lighting up as waves pass through it.",
+    "docsUrl": "https://reactbits.dev/backgrounds/ripple-grid",
+    "tags": [],
+    "dependencies": [],
+    "cli": "RippleGrid"
+  },
+  {
+    "name": "Silk",
+    "category": "Backgrounds",
+    "description": "Flowing satin folds with glossy highlights that turn toward the cursor and ripple on click.",
+    "docsUrl": "https://reactbits.dev/backgrounds/silk",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Silk"
+  },
+  {
+    "name": "SideRays",
+    "category": "Backgrounds",
+    "description": "Shafts of light that fan in from a corner or side, shimmer slowly and lean toward the cursor.",
+    "docsUrl": "https://reactbits.dev/backgrounds/side-rays",
+    "tags": [],
+    "dependencies": [],
+    "cli": "SideRays"
+  },
+  {
+    "name": "ShapeGrid",
+    "category": "Backgrounds",
+    "description": "A drifting grid of shapes that lights up under the cursor, with perspective tilt and rainbow trails.",
+    "docsUrl": "https://reactbits.dev/backgrounds/shape-grid",
+    "tags": [],
+    "dependencies": [],
+    "cli": "ShapeGrid"
+  },
+  {
+    "name": "Threads",
+    "category": "Backgrounds",
+    "description": "Flowing threads that fray apart and part around the cursor, from fine silk to contour lines.",
+    "docsUrl": "https://reactbits.dev/backgrounds/threads",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Threads"
+  },
+  {
+    "name": "Waves",
+    "category": "Backgrounds",
+    "description": "Dense flowing lines that sway like silk, bend around the cursor and spring back into place.",
+    "docsUrl": "https://reactbits.dev/backgrounds/waves",
+    "tags": [],
+    "dependencies": [],
+    "cli": "Waves"
+  },
+  {
+    "name": "MagnetLines",
+    "category": "Backgrounds",
+    "description": "A field of magnetic lines that swing toward the cursor, ripple outward and spin with every click.",
+    "docsUrl": "https://reactbits.dev/backgrounds/magnet-lines",
+    "tags": [],
+    "dependencies": [],
+    "cli": "MagnetLines"
+  },
+  {
+    "name": "LiquidEther",
+    "category": "Backgrounds",
+    "description": "A glowing liquid that swirls under the cursor, colored by how fast it flows.",
+    "docsUrl": "https://reactbits.dev/backgrounds/liquid-ether",
+    "tags": [],
+    "dependencies": [],
+    "cli": "LiquidEther"
+  },
+  {
+    "name": "FloatingLines",
+    "category": "Backgrounds",
+    "description": "Ribbons of fine glowing lines that drift in waves, part around the cursor and curl when clicked.",
+    "docsUrl": "https://reactbits.dev/backgrounds/floating-lines",
+    "tags": [],
+    "dependencies": [],
+    "cli": "FloatingLines"
+  },
+  {
+    "name": "LightPillar",
+    "category": "Backgrounds",
+    "description": "A swirling pillar of light that ignites on load, leans toward the cursor and surges on click.",
+    "docsUrl": "https://reactbits.dev/backgrounds/light-pillar",
+    "tags": [],
+    "dependencies": [],
+    "cli": "LightPillar"
+  },
+  {
+    "name": "PixelSnow",
+    "category": "Backgrounds",
+    "description": "Pixel-art snowflakes drifting down in layers of depth, brushed aside by the cursor.",
+    "docsUrl": "https://reactbits.dev/backgrounds/pixel-snow",
+    "tags": [],
+    "dependencies": [],
+    "cli": "PixelSnow"
+  },
+  {
+    "name": "SquishSwitch",
+    "category": "Micro",
+    "description": "Switch whose thumb stretches with speed and squashes against the end when you flick it.",
+    "docsUrl": "https://reactbits.dev/micro/squish-switch",
+    "tags": [
+      "switch",
+      "toggle",
+      "spring",
+      "drag",
+      "gesture",
+      "form"
+    ],
+    "dependencies": [
+      "motion@12.23.12"
+    ],
+    "cli": "SquishSwitch"
+  },
+  {
+    "name": "HoldButton",
+    "category": "Micro",
+    "description": "Hold-to-confirm button whose liquid fill rises while pressed and snaps back if you let go.",
+    "docsUrl": "https://reactbits.dev/micro/hold-button",
+    "tags": [
+      "button",
+      "confirm",
+      "hold",
+      "press",
+      "destructive"
+    ],
+    "dependencies": [],
+    "cli": "HoldButton"
+  },
+  {
+    "name": "PeekRating",
+    "category": "Micro",
+    "description": "Star rating that lifts a wave of stars up to the pointer, then commits with a pop on click.",
+    "docsUrl": "https://reactbits.dev/micro/peek-rating",
+    "tags": [
+      "rating",
+      "stars",
+      "hover",
+      "preview",
+      "feedback",
+      "form"
+    ],
+    "dependencies": [
+      "@hugeicons/react@1.1.10",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "PeekRating"
+  },
+  {
+    "name": "SpringCheck",
+    "category": "Micro",
+    "description": "Checkbox row where one spring fills the box, draws the tick and strikes through the label.",
+    "docsUrl": "https://reactbits.dev/micro/spring-check",
+    "tags": [
+      "checkbox",
+      "toggle",
+      "form",
+      "spring",
+      "press",
+      "strikethrough"
+    ],
+    "dependencies": [
+      "motion@12.23.12",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "SpringCheck"
+  },
+  {
+    "name": "PulseHeart",
+    "category": "Micro",
+    "description": "Like button that contracts to a dot, flips colour and pulses back as the count ticks over.",
+    "docsUrl": "https://reactbits.dev/micro/pulse-heart",
+    "tags": [
+      "like",
+      "heart",
+      "button",
+      "reaction",
+      "counter",
+      "press"
+    ],
+    "dependencies": [
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "PulseHeart"
+  },
+  {
+    "name": "RubberSegment",
+    "category": "Micro",
+    "description": "Segmented control whose rubber thumb stretches across the gap and squashes into place.",
+    "docsUrl": "https://reactbits.dev/micro/rubber-segment",
+    "tags": [
+      "segmented",
+      "tabs",
+      "drag",
+      "spring",
+      "clip-path",
+      "radio"
+    ],
+    "dependencies": [
+      "motion@12.23.12"
+    ],
+    "cli": "RubberSegment"
+  },
+  {
+    "name": "SlideCommit",
+    "category": "Micro",
+    "description": "Slide-to-confirm handle that spins while your action runs and unfurls into a done pill.",
+    "docsUrl": "https://reactbits.dev/micro/slide-commit",
+    "tags": [
+      "slide",
+      "confirm",
+      "async",
+      "gesture",
+      "drag",
+      "button"
+    ],
+    "dependencies": [
+      "motion@12.23.12",
+      "@hugeicons/react@1.1.10",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "SlideCommit"
+  },
+  {
+    "name": "WarmTooltip",
+    "category": "Micro",
+    "description": "Tooltip group where the first label waits, then its siblings open instantly while warm.",
+    "docsUrl": "https://reactbits.dev/micro/warm-tooltip",
+    "tags": [
+      "tooltip",
+      "hover",
+      "toolbar",
+      "delay",
+      "group",
+      "label"
+    ],
+    "dependencies": [
+      "react-dom@19.0.0",
+      "motion@12.23.12"
+    ],
+    "cli": "WarmTooltip"
+  },
+  {
+    "name": "FuseButton",
+    "category": "Micro",
+    "description": "Action button whose done state carries an undo on a burning fuse.",
+    "docsUrl": "https://reactbits.dev/micro/fuse-button",
+    "tags": [
+      "button",
+      "undo",
+      "confirm",
+      "timer",
+      "press",
+      "fuse"
+    ],
+    "dependencies": [
+      "@hugeicons/react@1.1.10",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "FuseButton"
+  },
+  {
+    "name": "ScrubField",
+    "category": "Micro",
+    "description": "Number chip you drag to scrub, with rubber-band limits and click to type.",
+    "docsUrl": "https://reactbits.dev/micro/scrub-field",
+    "tags": [
+      "input",
+      "number",
+      "drag",
+      "scrub",
+      "form",
+      "inspector"
+    ],
+    "dependencies": [
+      "motion@12.23.12"
+    ],
+    "cli": "ScrubField"
+  },
+  {
+    "name": "LatticeLoader",
+    "category": "Micro",
+    "description": "Agent status row with a lattice of cells that brighten in a wave beside a live stopwatch.",
+    "docsUrl": "https://reactbits.dev/micro/lattice-loader",
+    "tags": [
+      "loader",
+      "status",
+      "ai",
+      "agent",
+      "timer",
+      "grid"
+    ],
+    "dependencies": [],
+    "cli": "LatticeLoader"
+  },
+  {
+    "name": "DodgeField",
+    "category": "Micro",
+    "description": "Wrapper that makes any child dodge the pointer until it relents and glides home.",
+    "docsUrl": "https://reactbits.dev/micro/dodge-field",
+    "tags": [
+      "hover",
+      "pointer",
+      "playful",
+      "wrapper",
+      "button",
+      "magnet"
+    ],
+    "dependencies": [
+      "motion@12.23.12"
+    ],
+    "cli": "DodgeField"
+  },
+  {
+    "name": "CodeSlots",
+    "category": "Micro",
+    "description": "One-time code input whose digits spring into their slots, with paste and SMS autofill.",
+    "docsUrl": "https://reactbits.dev/micro/code-slots",
+    "tags": [
+      "input",
+      "otp",
+      "form",
+      "spring",
+      "code"
+    ],
+    "dependencies": [
+      "motion@12.23.12",
+      "@hugeicons/react@1.1.10",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "CodeSlots"
+  },
+  {
+    "name": "WakeSlider",
+    "category": "Micro",
+    "description": "Thumbless range slider of thin bars where drag speed raises a wake behind the handle.",
+    "docsUrl": "https://reactbits.dev/micro/wake-slider",
+    "tags": [
+      "slider",
+      "range",
+      "input",
+      "drag",
+      "bars",
+      "velocity"
+    ],
+    "dependencies": [
+      "motion@12.23.12"
+    ],
+    "cli": "WakeSlider"
+  },
+  {
+    "name": "CometDial",
+    "category": "Micro",
+    "description": "Tick-ring dial you flick by angle, with a comet that streaks behind the lit head.",
+    "docsUrl": "https://reactbits.dev/micro/comet-dial",
+    "tags": [
+      "dial",
+      "knob",
+      "gauge",
+      "drag",
+      "spring",
+      "input"
+    ],
+    "dependencies": [
+      "motion@12.23.12"
+    ],
+    "cli": "CometDial"
+  },
+  {
+    "name": "JellyRadio",
+    "category": "Micro",
+    "description": "Radio group of chips where the chosen one swells and barges its neighbours outward.",
+    "docsUrl": "https://reactbits.dev/micro/jelly-radio",
+    "tags": [
+      "radio",
+      "select",
+      "chips",
+      "spring",
+      "form",
+      "segmented"
+    ],
+    "dependencies": [
+      "motion@12.23.12"
+    ],
+    "cli": "JellyRadio"
+  },
+  {
+    "name": "SwipeRow",
+    "category": "Micro",
+    "description": "List row that swipes open to reveal actions and deletes on a full swipe.",
+    "docsUrl": "https://reactbits.dev/micro/swipe-row",
+    "tags": [
+      "swipe",
+      "list",
+      "gesture",
+      "delete",
+      "drag"
+    ],
+    "dependencies": [
+      "motion@12.23.12",
+      "@hugeicons/react@1.1.10",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "SwipeRow"
+  },
+  {
+    "name": "GlideSelect",
+    "category": "Micro",
+    "description": "Select chip whose menu pops from its corner and whose highlight glides between rows.",
+    "docsUrl": "https://reactbits.dev/micro/glide-select",
+    "tags": [
+      "select",
+      "dropdown",
+      "menu",
+      "popover",
+      "hover",
+      "form",
+      "keyboard"
+    ],
+    "dependencies": [
+      "@hugeicons/react@1.1.10",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "GlideSelect"
+  },
+  {
+    "name": "StatusMark",
+    "category": "Micro",
+    "description": "Agent task status glyph that morphs from an idle ring to a progress arc, then a check.",
+    "docsUrl": "https://reactbits.dev/micro/status-mark",
+    "tags": [
+      "status",
+      "progress",
+      "spinner",
+      "check",
+      "ai",
+      "agent",
+      "task",
+      "svg"
+    ],
+    "dependencies": [
+      "motion@12.23.12"
+    ],
+    "cli": "StatusMark"
+  },
+  {
+    "name": "CallChip",
+    "category": "Micro",
+    "description": "Tool-call chip whose fill wipes across as a live timer ticks, ending green or shaking red.",
+    "docsUrl": "https://reactbits.dev/micro/call-chip",
+    "tags": [
+      "chip",
+      "status",
+      "ai",
+      "agent",
+      "tool-call",
+      "progress",
+      "timer"
+    ],
+    "dependencies": [
+      "@hugeicons/react@1.1.10",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "CallChip"
+  },
+  {
+    "name": "BellToggle",
+    "category": "Micro",
+    "description": "Pill toggle where a press rings the bell, crossfades the label and unfurls the pill.",
+    "docsUrl": "https://reactbits.dev/micro/bell-toggle",
+    "tags": [
+      "toggle",
+      "button",
+      "bell",
+      "notify",
+      "press",
+      "spring"
+    ],
+    "dependencies": [
+      "motion@12.23.12",
+      "@hugeicons/react@1.1.10",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "BellToggle"
+  },
+  {
+    "name": "SlingButton",
+    "category": "Micro",
+    "description": "Send button you pull back like a slingshot and release to fire.",
+    "docsUrl": "https://reactbits.dev/micro/sling-button",
+    "tags": [
+      "button",
+      "send",
+      "slingshot",
+      "drag",
+      "gesture",
+      "spring"
+    ],
+    "dependencies": [
+      "motion@12.23.12",
+      "@hugeicons/react@1.1.10",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "SlingButton"
+  },
+  {
+    "name": "SwipeToast",
+    "category": "Micro",
+    "description": "Toast that swipes down to dismiss and burns a thin fuse for its remaining time.",
+    "docsUrl": "https://reactbits.dev/micro/swipe-toast",
+    "tags": [
+      "toast",
+      "notification",
+      "swipe",
+      "drag",
+      "timer",
+      "undo"
+    ],
+    "dependencies": [
+      "motion@12.23.12",
+      "@hugeicons/react@1.1.10",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "SwipeToast"
+  },
+  {
+    "name": "PromptBar",
+    "category": "Micro",
+    "description": "Chat composer with @ sources, / commands, a model picker, dictation and attachments.",
+    "docsUrl": "https://reactbits.dev/micro/prompt-bar",
+    "tags": [
+      "composer",
+      "prompt",
+      "chat",
+      "ai",
+      "input",
+      "send",
+      "stop",
+      "menu",
+      "mention",
+      "command"
+    ],
+    "dependencies": [
+      "motion@12.23.12",
+      "@hugeicons/react@1.1.10",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "PromptBar"
+  },
+  {
+    "name": "SloshGauge",
+    "category": "Micro",
+    "description": "Tank gauge whose liquid chases the value, tilts as it moves and splashes when it fills.",
+    "docsUrl": "https://reactbits.dev/micro/slosh-gauge",
+    "tags": [
+      "gauge",
+      "meter",
+      "progress",
+      "liquid",
+      "spring",
+      "physics",
+      "slider"
+    ],
+    "dependencies": [],
+    "cli": "SloshGauge"
+  },
+  {
+    "name": "VoicePill",
+    "category": "Micro",
+    "description": "Mic button that swells into a capsule of live equalizer bars and a timer while recording.",
+    "docsUrl": "https://reactbits.dev/micro/voice-pill",
+    "tags": [
+      "mic",
+      "voice",
+      "dictation",
+      "equalizer",
+      "press",
+      "ai"
+    ],
+    "dependencies": [
+      "@hugeicons/react@1.1.10",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "VoicePill"
+  },
+  {
+    "name": "ThoughtLine",
+    "category": "Micro",
+    "description": "Reasoning trace header with a live clock that folds its steps into one line when done.",
+    "docsUrl": "https://reactbits.dev/micro/thought-line",
+    "tags": [
+      "ai",
+      "agent",
+      "status",
+      "reasoning",
+      "timer",
+      "text",
+      "trace"
+    ],
+    "dependencies": [
+      "motion@12.23.12",
+      "@hugeicons/react@1.1.10",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "ThoughtLine"
+  },
+  {
+    "name": "RefineFrame",
+    "category": "Micro",
+    "description": "Media frame that steps an image through generation stages without any layout shift.",
+    "docsUrl": "https://reactbits.dev/micro/refine-frame",
+    "tags": [
+      "ai",
+      "image",
+      "generation",
+      "loading",
+      "progressive",
+      "media",
+      "status"
+    ],
+    "dependencies": [
+      "@hugeicons/react@1.1.10",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "RefineFrame"
+  },
+  {
+    "name": "FolderFloat",
+    "category": "Micro",
+    "description": "Folder whose notes spring out into a floating cloud when it opens on hover or press.",
+    "docsUrl": "https://reactbits.dev/micro/folder-float",
+    "tags": [
+      "folder",
+      "menu",
+      "hover",
+      "select",
+      "float",
+      "spring",
+      "files"
+    ],
+    "dependencies": [
+      "matter-js@0.20.0"
+    ],
+    "cli": "FolderFloat"
+  },
+  {
+    "name": "BranchedMenu",
+    "category": "Micro",
+    "description": "Collapsible menu that branches each section from a trunk and traces a line to your pick.",
+    "docsUrl": "https://reactbits.dev/micro/branched-menu",
+    "tags": [
+      "menu",
+      "navigation",
+      "sidebar",
+      "tree",
+      "collapsible",
+      "line",
+      "active"
+    ],
+    "dependencies": [
+      "@hugeicons/react@1.1.10",
+      "@hugeicons/core-free-icons@4.3.3"
+    ],
+    "cli": "BranchedMenu"
+  },
+  {
+    "name": "FlipCard",
+    "category": "Micro",
+    "description": "Two-faced card that flips in 3D on a click, drag or flick and settles on a spring.",
+    "docsUrl": "https://reactbits.dev/micro/flip-card",
+    "tags": [
+      "card",
+      "flip",
+      "3d",
+      "tilt",
+      "drag",
+      "spring",
+      "hover",
+      "two-sided"
+    ],
+    "dependencies": [
+      "motion@12.23.12"
+    ],
+    "cli": "FlipCard"
+  },
+  {
+    "name": "TearTicket",
+    "category": "Micro",
+    "description": "Ticket whose perforated stub tears off by hand, fibre by fibre, and drops away.",
+    "docsUrl": "https://reactbits.dev/micro/tear-ticket",
+    "tags": [
+      "ticket",
+      "tear",
+      "perforation",
+      "stub",
+      "coupon",
+      "pass",
+      "drag",
+      "parallax",
+      "tilt"
+    ],
+    "dependencies": [
+      "motion@12.23.12"
+    ],
+    "cli": "TearTicket"
+  },
+  {
+    "name": "PaperCrumple",
+    "category": "Micro",
+    "description": "An image that crumples into a textured 3D sheet while you hold and drag it.",
+    "docsUrl": "https://reactbits.dev/micro/paper-crumple",
+    "tags": [
+      "paper",
+      "crumple",
+      "3d",
+      "three",
+      "image",
+      "drag",
+      "hold",
+      "fold",
+      "crease"
+    ],
+    "dependencies": [
+      "three@0.180.0"
+    ],
+    "cli": "PaperCrumple"
+  },
+  {
+    "name": "Shredder",
+    "category": "Micro",
+    "description": "A list with a paper shredder at the bottom that cuts dragged rows into curling strips.",
+    "docsUrl": "https://reactbits.dev/micro/shredder",
+    "tags": [
+      "shredder",
+      "delete",
+      "drag",
+      "list",
+      "strips",
+      "paper",
+      "physics",
+      "remove"
+    ],
+    "dependencies": [
+      "react-dom@19.0.0"
+    ],
+    "cli": "Shredder"
+  },
+  {
+    "name": "FlyingButton",
+    "category": "Micro",
+    "description": "Button that fires its thrusters on hover, lifts off on a WebGL smoke plume and lands back in its own cloud.",
+    "docsUrl": "https://reactbits.dev/micro/flying-button",
+    "tags": [
+      "button",
+      "hover",
+      "webgl",
+      "smoke",
+      "fluid",
+      "physics",
+      "cursor",
+      "flight"
+    ],
+    "dependencies": [],
+    "cli": "FlyingButton"
+  }
+]

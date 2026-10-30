@@ -15,6 +15,8 @@ let partMaxPoints = { mc: 0, tf: 0, sa: 0 };
 let hasAnswered = false;
 let isLoadedFromSupabase = false;
 let wrongAnswersList = [];
+let quizStartTime = null;
+let currentAttemptAnswers = [];
 
 // DOM Hooks
 let dashboardView, quizView, setsGridContainer, totalMCLabel, totalTFLabel, totalSALabel, totalFBLabel;
@@ -461,11 +463,18 @@ function renderDashboard() {
             </div>
           </div>
 
-          <!-- 3. Nút hành động luyện tập -->
+          <!-- 3. Nút hành động: Admin quản lý đề VS Học viên luyện thi -->
           <div class="h-card-actions">
-            ${mcBtn}
-            ${tfBtn}
-            ${saBtn}
+            ${(window.KeduAuth && typeof window.KeduAuth.isAdmin === 'function' && window.KeduAuth.isAdmin()) ? `
+              <a href="quan-ly-de.html?subject=${window.CURRENT_SUBJECT_ID || 'toan'}&topic=${set.id}" class="btn-h-action primary" style="background:var(--dol-red, #D42525); border-color:var(--dol-red, #D42525); color:#ffffff; font-weight:700; text-decoration:none;" title="Chuyển sang trang Quản lý đề và Chỉnh sửa đáp án bộ đề này">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10M6 14h6"/></svg>
+                <span>Quản lý & Sửa đề (${totalCount} câu)</span>
+              </a>
+            ` : `
+              ${mcBtn}
+              ${tfBtn}
+              ${saBtn}
+            `}
           </div>
         </div>
       `;
@@ -608,6 +617,13 @@ function buildSaQuestionObj(item, maxPoints, setPoints) {
 
 /* Start Quiz Session (full: Trọn bộ 10đ, mc: Trắc nghiệm, tf: Đúng sai, sa/fb: Trả lời ngắn) */
 function startQuiz(setId, mode) {
+  // Tài khoản Admin chỉ quản lý ngân hàng câu hỏi & hệ thống, không tham gia làm đề
+  if (window.KeduAuth && typeof window.KeduAuth.isAdmin === 'function' && window.KeduAuth.isAdmin()) {
+    const subj = window.CURRENT_SUBJECT_ID || 'toan';
+    alert("Tài khoản Quản trị viên (Admin) chỉ có chức năng quản lý hệ thống và ngân hàng câu hỏi, không tham gia làm đề.\n\nHệ thống sẽ chuyển bạn sang trang Quản lý đề & Đáp án.");
+    window.location.href = "quan-ly-de.html" + (subj ? `?subject=${subj}&topic=${setId}` : "");
+    return;
+  }
   currentSetId = setId;
   currentMode = (mode === "fb") ? "sa" : mode;
   currentIndex = 0;
@@ -618,6 +634,8 @@ function startQuiz(setId, mode) {
   partMaxPoints = { mc: 0, tf: 0, sa: 0 };
   hasAnswered = false;
   wrongAnswersList = [];
+  quizStartTime = Date.now();
+  currentAttemptAnswers = [];
 
   const bd = getSetPointBreakdown(setId);
   const topicSets = window.TOPIC_SETS || [];
@@ -711,6 +729,8 @@ function retryWrongQuestions() {
   partEarnedPoints = { mc: 0, tf: 0, sa: 0 };
   hasAnswered = false;
   wrongAnswersList = [];
+  quizStartTime = Date.now();
+  currentAttemptAnswers = [];
   window.scrollTo({ top: 0, behavior: "smooth" });
   renderQuizQuestion();
 }
@@ -934,6 +954,32 @@ function renderQuizQuestion() {
     // Record result to Supabase
     recordQuizResultToSupabase(currentScore, total, pct);
 
+    // Lưu bài làm chi tiết vào KeduQuizHistory
+    const durationSec = quizStartTime ? Math.round((Date.now() - quizStartTime) / 1000) : 0;
+    if (window.KeduQuizHistory && typeof window.KeduQuizHistory.saveAttempt === "function") {
+      const subjName = (window.KeduQuestionManager ? (window.KeduQuestionManager.getSubjects().find(s => s.id === window.CURRENT_SUBJECT_ID)?.name) : null) || (window.CURRENT_SUBJECT_NAME || "Môn học 12");
+      window.KeduQuizHistory.saveAttempt({
+        subjectId: window.CURRENT_SUBJECT_ID || "toan",
+        subjectName: subjName,
+        topicId: currentSetId,
+        topicTitle: currentSetObj.title || "Bộ đề ôn tập",
+        mode: currentMode,
+        score: finalTenScore,
+        maxScore: 10.0,
+        correctCount: currentScore,
+        totalCount: total,
+        wrongCount: wrongAnswersList.length,
+        percentage: pct,
+        durationSeconds: durationSec,
+        partBreakdown: {
+          mc: { earned: partEarnedPoints.mc, max: partMaxPoints.mc, count: bd.mcCount },
+          tf: { earned: partEarnedPoints.tf, max: partMaxPoints.tf, count: bd.tfCount },
+          sa: { earned: partEarnedPoints.sa, max: partMaxPoints.sa, count: bd.saCount }
+        },
+        questionsDetail: currentAttemptAnswers
+      });
+    }
+
     const mistakeReviewHtml = buildMistakeReviewHtml();
 
     // Bảng chi tiết phân bổ 10 điểm / bộ
@@ -1010,9 +1056,18 @@ function renderQuizQuestion() {
 
         ${setBreakdownBoardHtml}
 
-        <div id="supabaseSaveNotice" style="font-size:12.5px; color:var(--dol-green); font-weight:600; margin:14px 0;"></div>
+        <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin: 14px 0 10px; font-size:13px; color:#15803d; font-weight:700; background:#f0fdf4; border:1px solid #bbf7d0; padding:10px 16px; border-radius:10px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          <span>Bài thi đã được tự động lưu vào Lịch sử làm bài.</span>
+        </div>
+
+        <div id="supabaseSaveNotice" style="font-size:12.5px; color:var(--dol-green); font-weight:600; margin:4px 0 14px;"></div>
 
         <div class="footer-actions" style="justify-content:center; margin-bottom: 24px;">
+          <button class="btn-secondary-action" onclick="window.KeduQuizHistory ? window.KeduQuizHistory.openModal() : window.openQuizHistoryModal()" style="display:inline-flex; align-items:center; gap:6px; background:#eff6ff; color:#1d4ed8; border-color:#bfdbfe;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>📜 Xem Lịch Sử Làm Bài</span>
+          </button>
           ${wrongAnswersList.length > 0 ? `
             <button class="btn-primary-action" style="background: linear-gradient(135deg, #EA580C 0%, #D42525 100%);" onclick="retryWrongQuestions()">
               🔥 Ôn lại ngay ${wrongAnswersList.length} câu vừa sai
@@ -1221,6 +1276,19 @@ function checkAnswer(selectedIdx, btnEl) {
     });
   }
 
+  currentAttemptAnswers.push({
+    questionNumber: currentIndex + 1,
+    part: "mc",
+    qText: q.q,
+    diagram: q.diagram,
+    userAnswer: `${String.fromCharCode(65 + selectedIdx)}. ${q.options[selectedIdx] || ''}`,
+    correctAnswer: `${String.fromCharCode(65 + q.correct)}. ${q.options[q.correct] || ''}`,
+    isCorrect: isCorrect,
+    earnedPts: earnedPts,
+    maxPts: qMaxPts,
+    explain: q.explain
+  });
+
   const blankEl = document.getElementById("mcBlankSpot");
   if (blankEl) {
     blankEl.innerHTML = q.options[q.correct];
@@ -1286,6 +1354,19 @@ function checkFillBlank(revealOnly) {
       questionObj: q
     });
   }
+
+  currentAttemptAnswers.push({
+    questionNumber: currentIndex + 1,
+    part: "sa",
+    qText: q.q,
+    diagram: q.diagram,
+    userAnswer: revealOnly ? "(Bấm xem đáp án)" : (rawTyped || "(Bỏ trống)"),
+    correctAnswer: q.answers.join(" hoặc "),
+    isCorrect: isMatch,
+    earnedPts: earnedPts,
+    maxPts: qMaxPts,
+    explain: q.explain
+  });
 
   input.classList.add(isMatch ? "correct" : "wrong", isMatch ? "is-correct" : "is-wrong");
 
@@ -1645,6 +1726,19 @@ function handleSingleTf(choice, btnEl) {
     });
   }
 
+  currentAttemptAnswers.push({
+    questionNumber: currentIndex + 1,
+    part: "tf",
+    qText: q.q,
+    diagram: q.diagram,
+    userAnswer: choice ? "ĐÚNG" : "SAI",
+    correctAnswer: q.singleCorrect ? "ĐÚNG" : "SAI",
+    isCorrect: isCorrect,
+    earnedPts: earnedPts,
+    maxPts: qMaxPts,
+    explain: q.explain
+  });
+
   const allBtns = document.querySelectorAll(".option-row");
   allBtns.forEach(b => b.disabled = true);
   if (btnEl) btnEl.classList.add(isCorrect ? "correct" : "wrong", isCorrect ? "is-correct" : "is-wrong");
@@ -1722,6 +1816,27 @@ function submitTfAnswer() {
       questionObj: q
     });
   }
+
+  const allSubItems = q.items.map((it, idx) => ({
+    letter: letters[idx] || (idx + 1),
+    text: typeof it === 'object' ? it.text : it,
+    userVal: userTfChoices[idx],
+    correctVal: typeof it === 'object' ? it.isCorrect : false
+  }));
+
+  currentAttemptAnswers.push({
+    questionNumber: currentIndex + 1,
+    part: "tf",
+    qText: q.q,
+    diagram: q.diagram,
+    userAnswer: allSubItems.map(s => `Ý ${s.letter}) ${s.userVal ? 'Đúng' : 'Sai'}`).join('; '),
+    correctAnswer: allSubItems.map(s => `Ý ${s.letter}) ${s.correctVal ? 'Đúng' : 'Sai'}`).join('; '),
+    isCorrect: isFullCorrect,
+    earnedPts: earnedPts,
+    maxPts: qMaxPts,
+    explain: q.explain,
+    subItems: allSubItems
+  });
 
   const message = `<strong>${isFullCorrect ? "Xuất sắc!" : "Kết quả:"}</strong> Bạn trả lời đúng <strong>${correctCount} / ${q.items.length}</strong> mệnh đề — đạt <strong>+${formatPoints(earnedPts)} / ${formatPoints(qMaxPts)} điểm</strong>.<br>${q.explain}`;
 

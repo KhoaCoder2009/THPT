@@ -22,7 +22,8 @@
   <script src="../js/supabase-config.js"></script>
   <script src="../database/bundled-data.js"></script>
   <script src="../js/question-manager.js"></script>
-  <script src="../js/auth.js"></script>
+  <script src="../js/quiz-history.js"></script>
+<script src="../js/auth.js"></script>
 
   <style>
     /* CUSTOM STYLES CHO TRANG QUẢN LÝ ĐỀ & ĐÁP ÁN */
@@ -67,9 +68,39 @@
     }
     .qm-hero-actions {
       display: flex;
-      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
       flex-wrap: wrap;
       margin-top: 20px;
+    }
+    .qm-actions-group-primary {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .qm-actions-group-danger {
+      margin-left: auto;
+    }
+    .btn-qm-danger-isolated {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      background: rgba(225, 29, 72, 0.15);
+      color: #fecdd3;
+      font-size: 12.5px;
+      font-weight: 700;
+      border: 1px solid rgba(244, 63, 94, 0.35);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-qm-danger-isolated:hover {
+      background: rgba(225, 29, 72, 0.3);
+      color: #ffffff;
+      border-color: rgba(244, 63, 94, 0.6);
+      transform: translateY(-1px);
     }
 
     /* METRICS BAR */
@@ -157,214 +188,320 @@
     }
 
     /* QUESTION CARD */
+    /* SHUB / AZOTA STYLE QUESTION CARD - AS REQUESTED */
     .qm-card-list {
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 16px;
     }
     .qm-qcard {
       background: #ffffff;
       border: 1px solid #e2e8f0;
-      border-radius: 16px;
-      padding: 22px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+      border-left: 3.5px solid #3b82f6;
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
       position: relative;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      transition: all 0.2s ease;
     }
     .qm-qcard.is-modified {
-      border-left: 4.5px solid #ea580c;
-      background: #fffdfa;
+      border-left-color: #ea580c;
     }
-    .qm-qcard-header {
+    .qm-qcard:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    /* HEADER: [ ∨ Câu 1 ] [ ✓ Trắc nghiệm 4 đáp án ] • Không mức độ ⭐ 0,25 điểm */
+    .qm-shub-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .qm-shub-qnum-pill {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 9999px;
+      padding: 4px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .qm-shub-qnum-pill:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+    }
+    .qm-shub-qnum-pill.collapsed .qm-shub-qnum-chevron {
+      transform: rotate(-90deg);
+    }
+    .qm-shub-qnum-chevron {
+      transition: transform 0.2s ease;
+      color: #475569;
+    }
+
+    .qm-shub-type-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      user-select: none;
+    }
+    .qm-shub-type-pill.mc {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #2563eb;
+    }
+    .qm-shub-type-pill.tf {
+      background: #fdf2f8;
+      border: 1px solid #fbcfe8;
+      color: #be185d;
+    }
+    .qm-shub-type-pill.sa {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #047857;
+    }
+
+    .qm-shub-level-text {
+      font-size: 12.5px;
+      color: #94a3b8;
+      font-weight: 500;
+      user-select: none;
+    }
+
+    .qm-shub-score-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12.5px;
+      font-weight: 800;
+      color: #0f172a;
+      user-select: none;
+    }
+
+    .qm-shub-header-actions {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-qm-card-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      border-radius: 8px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #475569;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-qm-card-action:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+      color: #0f2657;
+    }
+
+    /* CARD BODY: PROMPT + DIAGRAM + OPTIONS */
+    .qm-shub-body {
+      transition: all 0.2s ease;
+    }
+    .qm-shub-body.collapsed {
+      display: none;
+    }
+    .qm-shub-prompt {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1e293b;
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+    .qm-shub-diagram {
+      display: flex;
+      justify-content: center;
+      margin: 14px 0 18px 0;
+    }
+
+    /* 2-COLUMN OPTIONS GRID (MATCHING SCREENSHOT) */
+    .qm-shub-options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    @media (max-width: 768px) {
+      .qm-shub-options-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .qm-shub-opt {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 14px;
+      color: #1e293b;
+      line-height: 1.5;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+      position: relative;
+    }
+    .qm-shub-opt:hover {
+      border-color: #86efac;
+      background: #f0fdf4;
+    }
+    .qm-shub-circle {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1.5px solid #cbd5e1;
+      background: #ffffff;
+      color: #64748b;
+      font-weight: 800;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.15s ease;
+    }
+    .qm-shub-opt:hover .qm-shub-circle {
+      border-color: #16a34a;
+      color: #16a34a;
+    }
+    .qm-shub-opt-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* CORRECT OPTION (GREEN BORDER + SOLID GREEN CIRCLE WITH WHITE BOLD LETTER) */
+    .qm-shub-opt.is-correct {
+      border: 2px solid #16a34a;
+      background: #ffffff;
+      box-shadow: 0 2px 8px rgba(22, 163, 74, 0.08);
+    }
+    .qm-shub-opt.is-correct .qm-shub-circle {
+      border-color: #16a34a;
+      background: #16a34a;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(22, 163, 74, 0.3);
+    }
+
+    /* TRUE / FALSE ROWS */
+    .qm-shub-tf-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .qm-shub-tf-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 10px 16px;
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+    }
+    .qm-shub-tf-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+    .qm-shub-circle.tf {
+      text-transform: lowercase;
+      font-style: italic;
+    }
+    .qm-shub-tf-text {
+      font-size: 14px;
+      color: #1e293b;
+      line-height: 1.5;
+    }
+    .qm-shub-tf-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .qm-shub-tf-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1.5px solid #e2e8f0;
+      background: #f8fafc;
+      color: #64748b;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .qm-shub-tf-btn.active-true {
+      border-color: #16a34a;
+      background: #16a34a;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25);
+    }
+    .qm-shub-tf-btn.active-false {
+      border-color: #dc2626;
+      background: #dc2626;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25);
+    }
+
+    /* SHORT ANSWER CARD */
+    .qm-shub-sa-card {
+      border: 1.5px solid #86efac;
+      background: #f0fdf4;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+    }
+    .qm-shub-sa-title {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: #15803d;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .qm-shub-sa-content {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 14px;
       flex-wrap: wrap;
     }
-    .qm-badges-row {
+    .qm-shub-sa-pills {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       flex-wrap: wrap;
     }
-    .qm-id-badge {
-      font-size: 11px;
-      font-family: monospace;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 6px;
-      background: #f1f5f9;
-      color: #475569;
-      border: 1px solid #e2e8f0;
-    }
-    .qm-type-badge {
-      font-size: 11.5px;
-      font-weight: 700;
-      padding: 3px 10px;
-      border-radius: 6px;
-    }
-    .qm-type-badge.mc {
-      background: #eff6ff;
-      color: #1d4ed8;
-      border: 1px solid #bfdbfe;
-    }
-    .qm-type-badge.tf {
-      background: #fdf2f8;
-      color: #be185d;
-      border: 1px solid #fbcfe8;
-    }
-    .qm-type-badge.sa {
-      background: #f0fdf4;
-      color: #15803d;
-      border: 1px solid #bbf7d0;
-    }
-    .qm-mod-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 11px;
-      font-weight: 800;
-      padding: 3px 9px;
-      border-radius: 6px;
-      background: #ffedd5;
-      color: #c2410c;
-      border: 1px solid #fed7aa;
-    }
-
-    .qm-qcard-prompt {
-      font-size: 15.5px;
-      font-weight: 600;
-      color: #0f172a;
-      line-height: 1.6;
-      margin-bottom: 16px;
-    }
-
-    /* OPTIONS & ANSWERS DISPLAY */
-    .qm-options-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-    .qm-opt-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 10px 14px;
-      border-radius: 10px;
-      border: 1.5px solid #e2e8f0;
-      background: #f8fafc;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-    .qm-opt-item.is-correct-opt {
-      border-color: #16a34a;
-      background: #f0fdf4;
-      color: #14532d;
-      font-weight: 600;
-    }
-    .qm-opt-letter {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: #cbd5e1;
-      color: #1e293b;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: 800;
-      flex-shrink: 0;
-    }
-    .qm-opt-item.is-correct-opt .qm-opt-letter {
-      background: #16a34a;
-      color: #ffffff;
-    }
-    .qm-correct-indicator {
-      margin-left: auto;
-      font-size: 11px;
-      font-weight: 800;
-      background: #dcfce7;
-      color: #15803d;
-      padding: 2px 7px;
-      border-radius: 9999px;
-      border: 1px solid #bbf7d0;
-    }
-
-    /* TF LIST */
-    .qm-tf-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 16px;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    .qm-tf-row {
-      border-bottom: 1px solid #e2e8f0;
-    }
-    .qm-tf-row:last-child {
-      border-bottom: none;
-    }
-    .qm-tf-cell-lbl {
-      width: 40px;
-      padding: 10px 12px;
-      font-weight: 800;
-      color: #475569;
-      background: #f8fafc;
-      border-right: 1px solid #e2e8f0;
-    }
-    .qm-tf-cell-text {
-      padding: 10px 14px;
-      font-size: 14px;
-      color: #1e293b;
-    }
-    .qm-tf-cell-val {
-      width: 90px;
-      text-align: center;
-      padding: 10px 14px;
-    }
-    .qm-tf-badge-true {
-      display: inline-block;
-      font-size: 11.5px;
-      font-weight: 800;
-      padding: 3px 10px;
-      border-radius: 6px;
-      background: #dcfce7;
-      color: #15803d;
-      border: 1px solid #bbf7d0;
-    }
-    .qm-tf-badge-false {
-      display: inline-block;
-      font-size: 11.5px;
-      font-weight: 800;
-      padding: 3px 10px;
-      border-radius: 6px;
-      background: #fee2e2;
-      color: #b91c1c;
-      border: 1px solid #fecaca;
-    }
-
-    /* SA ANSWERS */
-    .qm-sa-box {
-      background: #f0fdf4;
-      border: 1.5px solid #86efac;
-      border-radius: 10px;
-      padding: 12px 16px;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .qm-sa-title {
-      font-size: 13px;
-      font-weight: 800;
-      color: #15803d;
-    }
-    .qm-sa-pill {
+    .qm-shub-sa-pill {
       font-size: 13px;
       font-weight: 700;
       background: #ffffff;
@@ -374,25 +511,254 @@
       border: 1px solid #a7f3d0;
       box-shadow: 0 1px 3px rgba(0,0,0,0.03);
     }
-
-    /* EXPLANATION ACCORDION */
-    .qm-explain-box {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 12px 16px;
-      font-size: 13.5px;
-      color: #334155;
-      line-height: 1.6;
-      margin-bottom: 16px;
-    }
-    .qm-explain-header {
-      font-weight: 700;
-      color: #2563eb;
+    .qm-shub-sa-quick-edit {
       display: flex;
       align-items: center;
       gap: 6px;
-      margin-bottom: 6px;
+    }
+    .qm-shub-sa-input {
+      padding: 6px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      outline: none;
+      background: #ffffff;
+      width: 180px;
+    }
+    .qm-shub-sa-input:focus {
+      border-color: #16a34a;
+    }
+    .btn-qm-sa-save {
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: #16a34a;
+      color: #ffffff;
+      border: none;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-qm-sa-save:hover {
+      background: #15803d;
+    }
+
+    /* EXPLANATION ACCORDION */
+    .qm-shub-explain-wrap {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed #e2e8f0;
+    }
+    .btn-qm-explain-toggle {
+      background: transparent;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #2563eb;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .btn-qm-explain-toggle:hover {
+      background: #eff6ff;
+    }
+    .btn-qm-explain-toggle.active .explain-arrow {
+      transform: rotate(180deg);
+    }
+    .explain-arrow {
+      transition: transform 0.2s ease;
+    }
+    .qm-shub-explain-content {
+      margin-top: 8px;
+      padding: 12px 16px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 13.5px;
+      color: #334155;
+      line-height: 1.6;
+    }
+    .qm-mod-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: #ffedd5;
+      color: #c2410c;
+      border: 1px solid #fed7aa;
+    }
+
+    
+    /* TOPIC SETS SELECTION GRID (VIEW 1) */
+    .qm-sets-section {
+      margin-top: 10px;
+    }
+    .qm-sets-header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1.5px solid #e2e8f0;
+      flex-wrap: wrap;
+    }
+    .qm-sets-header-title {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      font-weight: 800;
+      color: #0f2657;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 4px 0;
+    }
+    .qm-sets-header-sub {
+      font-size: 13px;
+      color: #64748b;
+      margin: 0;
+    }
+    .qm-topic-sets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 18px;
+    }
+    .qm-topic-set-card {
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-top: 4px solid var(--dol-red, #D42525);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 4px 14px -3px rgba(15, 38, 87, 0.05);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .qm-topic-set-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px -4px rgba(212, 37, 37, 0.12);
+      border-color: #fecaca;
+    }
+    .qm-set-card-badges {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .qm-set-badge-code {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: #fffbeb;
+      color: #b45309;
+      border: 1px solid #fde68a;
+    }
+    .qm-set-badge-chap {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+    }
+    .qm-set-card-title {
+      font-family: var(--font-heading);
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f2657;
+      line-height: 1.45;
+      margin: 0 0 8px 0;
+    }
+    .qm-set-card-desc {
+      font-size: 12.5px;
+      color: #64748b;
+      line-height: 1.5;
+      margin: 0 0 12px 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .qm-set-card-stats {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding-top: 12px;
+      border-top: 1px dashed #e2e8f0;
+      margin-bottom: 12px;
+    }
+    .qm-set-stat-item {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #475569;
+      background: #f8fafc;
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+    }
+    .qm-set-stat-item.total {
+      background: #ecfdf5;
+      color: #047857;
+      border-color: #a7f3d0;
+      font-weight: 800;
+    }
+    .qm-set-stat-item.mod {
+      background: #ffedd5;
+      color: #c2410c;
+      border-color: #fed7aa;
+    }
+    .btn-qm-select-set {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      background: var(--dol-red, #D42525);
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-qm-select-set:hover {
+      background: var(--dol-red-hover, #b81c1c);
+    }
+    .btn-qm-back-to-sets {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 8px;
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      color: #0f2657;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      margin-bottom: 8px;
+    }
+    .btn-qm-back-to-sets:hover {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: var(--dol-red, #D42525);
     }
 
     /* BUTTONS */
@@ -587,6 +953,451 @@
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    /* TOPIC BANNER & PART SWITCHER - REDESIGNED WHITE & RED THEME */
+    .qm-topic-banner {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      color: var(--dol-navy, #0f2657);
+      border: 1.5px solid #fecaca;
+      border-top: 3.5px solid var(--dol-red, #D42525);
+      box-shadow: 0 4px 14px -3px rgba(212, 37, 37, 0.08), 0 2px 6px rgba(0, 0, 0, 0.03);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .qm-topic-banner-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .qm-topic-banner-info {
+      flex: 1;
+      min-width: 260px;
+    }
+    .qm-topic-banner-badges {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+    .qm-tb-badge-subj {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 3px 9px;
+      border-radius: 6px;
+      background: #fef2f2;
+      color: var(--dol-red, #D42525);
+      border: 1px solid #fecaca;
+    }
+    .qm-tb-badge-code {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 9px;
+      border-radius: 6px;
+      background: #fffbeb;
+      color: #b45309;
+      border: 1px solid #fde68a;
+    }
+    .qm-tb-badge-count {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 6px;
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+    }
+    .qm-topic-banner-title {
+      font-family: var(--font-heading);
+      font-size: 16.5px;
+      font-weight: 800;
+      color: #0f2657;
+      line-height: 1.35;
+      margin: 0 0 4px 0;
+    }
+    .qm-topic-banner-desc {
+      font-size: 12.5px;
+      color: #64748b;
+      line-height: 1.45;
+      margin: 0;
+    }
+    .qm-topic-banner-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .qm-topic-quick-select-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #f8fafc;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+    .qm-topic-quick-select-label {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #64748b;
+      white-space: nowrap;
+    }
+    .qm-topic-quick-select {
+      background: transparent;
+      color: #0f2657;
+      border: none;
+      font-size: 12.5px;
+      font-weight: 700;
+      outline: none;
+      cursor: pointer;
+      max-width: 250px;
+    }
+    .qm-topic-quick-select option {
+      background: #ffffff;
+      color: #0f2657;
+    }
+    .btn-qm-banner-test {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 7px 13px;
+      border-radius: 8px;
+      background: var(--dol-red, #D42525);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+    .btn-qm-banner-test:hover {
+      background: var(--dol-red-hover, #b81c1c);
+      transform: translateY(-1px);
+      color: #ffffff;
+    }
+
+    /* PARTS TABS BAR & DRAWER TOGGLES */
+    .qm-parts-tabs-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding-top: 10px;
+      border-top: 1px solid #f1f5f9;
+      flex-wrap: wrap;
+    }
+    .qm-parts-tabs-list {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      flex: 1;
+    }
+    .qm-parts-tabs-list::-webkit-scrollbar {
+      display: none;
+    }
+    .qm-part-tab {
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #475569;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .qm-part-tab:hover {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: var(--dol-red, #D42525);
+    }
+    .qm-part-tab.active {
+      background: var(--dol-red, #D42525);
+      color: #ffffff;
+      border-color: var(--dol-red, #D42525);
+      font-weight: 800;
+      box-shadow: 0 2px 6px rgba(212, 37, 37, 0.25);
+    }
+    .qm-part-tab-count {
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 6px;
+      background: #e2e8f0;
+      color: #334155;
+    }
+    .qm-part-tab.active .qm-part-tab-count {
+      background: rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+    }
+
+    /* GLOBAL DRAWER TOGGLES */
+    .qm-global-drawer-toggles {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: auto;
+    }
+    .btn-qm-global-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 11px;
+      border-radius: 7px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      color: #475569;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-qm-global-toggle:hover {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: var(--dol-red, #D42525);
+    }
+
+    /* DRAWER & SUMMARY PILL STYLES */
+    .qm-ans-summary-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .qm-ans-summary-pill.mc {
+      background: #f0fdf4;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+    .qm-ans-summary-pill.tf {
+      background: #fdf2f8;
+      color: #be185d;
+      border: 1px solid #fbcfe8;
+    }
+    .qm-ans-summary-pill.sa {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+    }
+    .qm-ans-summary-pill:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+    }
+    .qm-ans-badge-pill {
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.07);
+    }
+    .btn-qm-toggle-drawer {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #0f2657;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-qm-toggle-drawer:hover, .btn-qm-toggle-drawer.active {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: var(--dol-red, #D42525);
+    }
+    .btn-qm-toggle-drawer.active .toggle-arrow {
+      transform: rotate(180deg);
+    }
+    .toggle-arrow {
+      transition: transform 0.2s ease;
+    }
+    .qm-qcard-drawer {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px dashed #e2e8f0;
+      animation: qmDrawerFade 0.18s ease-out;
+    }
+    @keyframes qmDrawerFade {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .qm-drawer-label {
+      font-size: 11.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #64748b;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .qm-drawer-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid #f1f5f9;
+      flex-wrap: wrap;
+    }
+    .qm-drawer-footer-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .btn-qm-edit-act {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: var(--dol-red, #D42525);
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn-qm-edit-act:hover {
+      background: var(--dol-red-hover, #b81c1c);
+      transform: translateY(-1px);
+    }
+    .btn-qm-close-drawer {
+      background: transparent;
+      border: none;
+      font-size: 12px;
+      font-weight: 700;
+      color: #64748b;
+      cursor: pointer;
+      padding: 6px 10px;
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+    .btn-qm-close-drawer:hover {
+      background: #f1f5f9;
+      color: #0f2657;
+    }
+
+    /* SECTION DIVIDERS */
+    .qm-section-divider {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-left: 5px solid #2563eb;
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-top: 24px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .qm-section-divider.part-tf {
+      border-left-color: #be185d;
+    }
+    .qm-section-divider.part-sa {
+      border-left-color: #15803d;
+    }
+    .qm-section-title-wrap {
+      flex: 1;
+    }
+    .qm-section-badge-code {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #2563eb;
+      margin-bottom: 2px;
+    }
+    .qm-section-divider.part-tf .qm-section-badge-code {
+      color: #be185d;
+    }
+    .qm-section-divider.part-sa .qm-section-badge-code {
+      color: #15803d;
+    }
+    .qm-section-title {
+      font-family: var(--font-heading);
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f2657;
+      margin: 0 0 3px 0;
+    }
+    .qm-section-desc {
+      font-size: 13px;
+      color: #64748b;
+      margin: 0;
+      font-style: italic;
+    }
+    .qm-section-count-pill {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 20px;
+      background: #f1f5f9;
+      color: #334155;
+      white-space: nowrap;
+    }
+
+    /* ALL TOPICS NOTICE */
+    .qm-all-topics-notice {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 14px;
+      padding: 18px 22px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .qm-all-notice-icon {
+      color: #2563eb;
+      flex-shrink: 0;
+    }
+    .qm-all-notice-body {
+      flex: 1;
+      min-width: 250px;
+    }
+    .qm-all-notice-title {
+      font-weight: 800;
+      font-size: 15px;
+      color: #1e3a8a;
+      margin-bottom: 2px;
+    }
+    .qm-all-notice-desc {
+      font-size: 13px;
+      color: #3b82f6;
+      line-height: 1.45;
+    }
   </style>
 </head>
 <body class="dol-main-theme">
@@ -609,12 +1420,6 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         <span>Trang chủ</span>
       </a>
-
-      <a href="toan-hoc.html" class="sh-nav-item" title="Đến môn Toán học">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24M14.83 9.17l4.24-4.24M14.83 14.83l4.24 4.24M9.17 14.83l-4.24 4.24"/></svg>
-        <span>Môn Toán 12</span>
-      </a>
-
       <a href="quan-ly-de.html" class="sh-nav-item active admin-only-nav" data-admin-only="true" title="Quản lý ngân hàng đề">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10M6 14h6"/></svg>
         <span>Quản lý đề & Đáp án</span>
@@ -644,20 +1449,24 @@
     </p>
 
     <div class="qm-hero-actions">
-      <button type="button" class="btn-qm-primary" id="btnExportJson">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        <span>Xuất File JSON (Đã đồng bộ)</span>
-      </button>
+      <div class="qm-actions-group-primary">
+        <button type="button" class="btn-qm-primary" id="btnExportJson">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>Xuất File JSON (Đã đồng bộ)</span>
+        </button>
 
-      <button type="button" class="btn-qm-secondary" id="btnExportSql">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-        <span>Tạo Script SQL Update</span>
-      </button>
+        <button type="button" class="btn-qm-secondary" id="btnExportSql">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          <span>Tạo Script SQL Update</span>
+        </button>
+      </div>
 
-      <button type="button" class="btn-qm-danger" id="btnResetAllOverrides">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-        <span>Khôi phục toàn bộ gốc</span>
-      </button>
+      <div class="qm-actions-group-danger">
+        <button type="button" class="btn-qm-danger-isolated" id="btnResetAllOverrides" title="Mở hộp thoại xác nhận khôi phục toàn bộ dữ liệu gốc">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          <span>Khôi phục dữ liệu gốc...</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -752,6 +1561,9 @@
     </div>
   </div>
 
+  <!-- TOPIC BANNER CONTAINER -->
+  <div id="topicBannerContainer"></div>
+
   <!-- QUESTION LIST CONTAINER -->
   <div class="qm-card-list" id="questionsContainer">
     <!-- Rendered dynamically -->
@@ -837,6 +1649,49 @@
     </div>
   </div>
 </div>
+
+<!-- DANGER CONFIRM MODAL (TWO-STEP HARDENED RESTORE) -->
+<div class="qm-modal-overlay" id="dangerConfirmModalOverlay">
+  <div class="qm-modal-card" style="max-width: 540px;">
+    <div class="qm-modal-header" style="border-bottom: 1px solid #fee2e2;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div style="width:36px; height:36px; border-radius:10px; background:#ffe4e6; color:#e11d48; display:flex; align-items:center; justify-content:center; font-size:18px;">
+          ⚠️
+        </div>
+        <div>
+          <h2 class="qm-modal-title" style="color:#9f1239; font-size:18px;">Xác Nhận Khôi Phục Dữ Liệu Gốc</h2>
+          <div style="font-size:12px; color:#64748b; margin-top:2px;">Hành động nguy hiểm • Yêu cầu xác thực bảo vệ</div>
+        </div>
+      </div>
+      <button type="button" class="qm-modal-close" id="btnDangerModalClose" title="Đóng">✕</button>
+    </div>
+
+    <div style="font-size:14px; color:#334155; line-height:1.6; margin-bottom:18px;">
+      <p style="margin:0 0 12px 0;">
+        Bạn đang yêu cầu khôi phục ngân hàng câu hỏi về trạng thái mặc định ban đầu.
+      </p>
+      <div style="background:#fff1f2; border:1px solid #fecdd3; border-radius:10px; padding:12px 14px; margin-bottom:14px; color:#9f1239; font-size:13px;">
+        <strong>Hậu quả:</strong> Toàn bộ <strong><span id="dangerAffectedCount">0</span> câu hỏi</strong> đã được chỉnh sửa đáp án hoặc nội dung trong LocalStorage sẽ bị xóa bỏ và không thể tự phục hồi.
+      </div>
+      <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:10px 14px; margin-bottom:18px; color:#166534; font-size:12.5px; display:flex; align-items:center; gap:8px;">
+        <span>🛡️</span>
+        <span>Hệ thống sẽ <strong>tự động tải về file sao lưu JSON</strong> về máy tính của bạn trước khi thực hiện để đảm bảo an toàn tuyệt đối.</span>
+      </div>
+      <label style="display:block; font-weight:700; color:#0f172a; margin-bottom:8px; font-size:13px;" for="dangerConfirmInput">
+        Để tiếp tục, vui lòng gõ chính xác từ khóa <code style="background:#e2e8f0; padding:2px 6px; border-radius:4px; color:#b91c1c; font-family:monospace; font-size:13px;">KHÔI PHỤC</code>:
+      </label>
+      <input type="text" id="dangerConfirmInput" class="qm-input" placeholder="Gõ KHÔI PHỤC để mở khóa..." autocomplete="off" style="border:2px solid #cbd5e1; font-weight:700; letter-spacing:0.04em;">
+    </div>
+
+    <div style="display:flex; justify-content:flex-end; gap:10px; padding-top:14px; border-top:1px solid #e2e8f0;">
+      <button type="button" class="btn-qm-secondary" id="btnDangerCancel">Hủy Bỏ (An Toàn)</button>
+      <button type="button" class="btn-qm-danger" id="btnDangerConfirmExecute" disabled style="opacity:0.4; cursor:not-allowed; background:#e11d48; color:#ffffff; border-color:#e11d48; padding:9px 16px; font-size:13px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        <span>Xác Nhận Xóa & Khôi Phục</span>
+      </button>
+    </div>
+  </div>
+</div>
 </div> <!-- /qmMainContent -->
 
 <!-- TOAST -->
@@ -846,7 +1701,7 @@
 <footer class="site-footer">
   <div class="site-footer-inner">
     <div class="footer-meta">
-      Hệ thống ôn luyện thi Tốt nghiệp THPT • Phát triển & Biên soạn: <strong>TRẦN ĐĂNG KHOA</strong>
+      Hệ thống ôn luyện thi Tốt nghiệp THPT • Developer by <strong>TDKA</strong>
     </div>
   </div>
 </footer>
@@ -875,6 +1730,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const metricModQ = document.getElementById("metricModQ");
 
   const questionsContainer = document.getElementById("questionsContainer");
+  const topicBannerContainer = document.getElementById("topicBannerContainer");
 
   const editModalOverlay = document.getElementById("editModalOverlay");
   const editQuestionForm = document.getElementById("editQuestionForm");
@@ -912,6 +1768,27 @@ document.addEventListener("DOMContentLoaded", async () => {
     }, 3000);
   }
 
+  let activePartFilter = "all";
+
+  // Đồng bộ trạng thái vào URL
+  function syncUrl() {
+    const params = new URLSearchParams();
+    if (filterSubject.value && filterSubject.value !== 'all') {
+      params.set('subject', filterSubject.value);
+    }
+    if (filterTopic.value && filterTopic.value !== 'all') {
+      params.set('topic', filterTopic.value);
+    }
+    if (activePartFilter && activePartFilter !== 'all') {
+      params.set('part', activePartFilter);
+    }
+    if (filterSearch.value && filterSearch.value.trim()) {
+      params.set('q', filterSearch.value.trim());
+    }
+    const newQuery = params.toString() ? '?' + params.toString() : window.location.pathname;
+    window.history.replaceState(null, '', newQuery);
+  }
+
   // Khởi tạo danh sách môn học
   function populateSubjects() {
     const subjects = manager.getSubjects();
@@ -923,8 +1800,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       filterSubject.appendChild(opt);
     });
 
-    // Mặc định chọn môn Toán nếu có
-    if (subjects.some(s => s.id === "toan")) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const subjParam = urlParams.get("subject") || urlParams.get("subj");
+    if (subjParam && subjects.some(s => s.id === subjParam)) {
+      filterSubject.value = subjParam;
+    } else if (subjects.some(s => s.id === "toan")) {
       filterSubject.value = "toan";
     }
   }
@@ -933,21 +1813,254 @@ document.addEventListener("DOMContentLoaded", async () => {
   function populateTopics() {
     const subjId = filterSubject.value;
     const topics = manager.getTopics(subjId);
-    filterTopic.innerHTML = '<option value="all">-- Tất cả bộ đề --</option>';
-    topics.forEach(t => {
-      const opt = document.createElement("option");
-      opt.value = t.id;
-      opt.textContent = `${t.index_code || ''} - ${t.title}`;
-      filterTopic.appendChild(opt);
-    });
+    filterTopic.innerHTML = '';
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const topicParam = urlParams.get("topic") || urlParams.get("topic_id");
+
+    if (topics.length > 0) {
+      topics.forEach(t => {
+        const opt = document.createElement("option");
+        opt.value = t.id;
+        opt.textContent = `${t.index_code ? t.index_code + ' - ' : ''}${t.title}`;
+        filterTopic.appendChild(opt);
+      });
+
+      // Thêm tùy chọn xem tất cả gộp lại ở cuối danh sách
+      const optAll = document.createElement("option");
+      optAll.value = "all";
+      optAll.textContent = "-- Xem tất cả bộ đề gộp lại --";
+      filterTopic.appendChild(optAll);
+
+      // Nếu trên URL có truyền tham số bộ đề thì vào thẳng bộ đề đó, nếu không thì hiển thị danh sách các bộ đề để chọn
+      if (topicParam && topics.some(t => String(t.id) === String(topicParam))) {
+        filterTopic.value = topicParam;
+      } else {
+        filterTopic.value = "all";
+      }
+    } else {
+      filterTopic.innerHTML = '<option value="all">-- Chưa có bộ đề cho môn này --</option>';
+      filterTopic.value = "all";
+    }
+  }
+
+  // Chuyển tab lọc phần (Phần I, II, III hoặc Tất cả)
+  window.switchPartFilter = function(part) {
+    activePartFilter = part;
+    filterType.value = part;
+    syncUrl();
+    renderQuestionList();
+  };
+
+  // Nút chọn nhanh bộ đề đầu tiên
+  
+  // Chọn bộ đề để vào giao diện chỉnh sửa câu hỏi & đáp án
+  window.selectTopicSet = function(topicId) {
+    filterTopic.value = String(topicId);
+    activePartFilter = "all";
+    filterType.value = "all";
+    syncUrl();
+    renderQuestionList();
+    window.scrollTo({ top: 380, behavior: 'smooth' });
+  };
+
+  // Quay lại danh sách các bộ đề ôn tập
+  window.backToTopicsList = function() {
+    filterTopic.value = "all";
+    activePartFilter = "all";
+    filterType.value = "all";
+    syncUrl();
+    renderQuestionList();
+    window.scrollTo({ top: 300, behavior: 'smooth' });
+  };
+
+  window.selectFirstTopic = function() {
+    const topics = manager.getTopics(filterSubject.value);
+    if (topics.length > 0) {
+      filterTopic.value = topics[0].id;
+      activePartFilter = "all";
+      filterType.value = "all";
+      syncUrl();
+      renderQuestionList();
+    }
+  };
+
+  // Render HTML cho từng thẻ câu hỏi
+  function renderSingleQuestionCard(q, globalIdx, intraNum, partBadge) {
+    const isMod = q.isOverridden;
+    const displayNum = intraNum !== undefined ? intraNum : (globalIdx + 1);
+
+    // Type badge matching screenshot: [ ✓ Trắc nghiệm 4 đáp án ] / [ ✓ Đúng / Sai (4 ý) ] / [ ✓ Trả lời ngắn ]
+    let typeBadgeHtml = '';
+    let scoreBadgeHtml = '';
+
+    if (q.type === 'mc') {
+      typeBadgeHtml = `
+        <span class="qm-shub-type-pill mc">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/></svg>
+          <span>Trắc nghiệm 4 đáp án</span>
+        </span>
+      `;
+      scoreBadgeHtml = `<span class="qm-shub-score-badge">⭐ 0,25 điểm</span>`;
+    } else if (q.type === 'tf') {
+      typeBadgeHtml = `
+        <span class="qm-shub-type-pill tf">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/></svg>
+          <span>Đúng / Sai (4 ý)</span>
+        </span>
+      `;
+      scoreBadgeHtml = `<span class="qm-shub-score-badge">⭐ 1,00 điểm</span>`;
+    } else if (q.type === 'sa') {
+      typeBadgeHtml = `
+        <span class="qm-shub-type-pill sa">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/></svg>
+          <span>Trả lời ngắn</span>
+        </span>
+      `;
+      scoreBadgeHtml = `<span class="qm-shub-score-badge">⭐ 0,50 điểm</span>`;
+    }
+
+    let answersBodyHtml = "";
+
+    // 1. TRẮC NGHIỆM 4 ĐÁP ÁN (MC - 2-COLUMN GRID)
+    if (q.type === 'mc') {
+      const letters = ['A', 'B', 'C', 'D'];
+      const opts = q.options || [];
+      answersBodyHtml = `<div class="qm-shub-options-grid" id="optGrid_${q.id}">`;
+      opts.forEach((optText, optIdx) => {
+        const isCorrect = (optIdx === q.correct_index);
+        answersBodyHtml += `
+          <div class="qm-shub-opt ${isCorrect ? 'is-correct' : ''}" 
+               id="opt_${q.id}_${optIdx}" 
+               onclick="window.quickSetMcCorrectAnswer('${q.id}', ${optIdx})" 
+               title="${isCorrect ? '✓ Đáp án đúng hiện tại' : 'Bấm vào để chọn phương án ' + letters[optIdx] + ' làm đáp án đúng'}">
+            <div class="qm-shub-circle">${letters[optIdx] || optIdx + 1}</div>
+            <div class="qm-shub-opt-text">${optText}</div>
+          </div>
+        `;
+      });
+      answersBodyHtml += `</div>`;
+    }
+    // 2. ĐÚNG / SAI (TF - 4 ROWS WITH DIRECT BUTTON TOGGLES)
+    else if (q.type === 'tf') {
+      const subItems = q.options || [];
+      const subLabels = ['a', 'b', 'c', 'd'];
+      answersBodyHtml = `<div class="qm-shub-tf-grid" id="tfGrid_${q.id}">`;
+      subItems.forEach((sub, subIdx) => {
+        const isTrue = !!sub.isCorrect;
+        answersBodyHtml += `
+          <div class="qm-shub-tf-row" id="tfRow_${q.id}_${subIdx}">
+            <div class="qm-shub-tf-left">
+              <div class="qm-shub-circle tf">${subLabels[subIdx] || subIdx + 1}</div>
+              <div class="qm-shub-tf-text">${sub.text || sub}</div>
+            </div>
+            <div class="qm-shub-tf-actions">
+              <button type="button" class="qm-shub-tf-btn ${isTrue ? 'active-true' : ''}" 
+                      id="tfBtn_${q.id}_${subIdx}_true" 
+                      onclick="window.quickSetTfAnswer('${q.id}', ${subIdx}, true)">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Đúng</span>
+              </button>
+              <button type="button" class="qm-shub-tf-btn ${!isTrue ? 'active-false' : ''}" 
+                      id="tfBtn_${q.id}_${subIdx}_false" 
+                      onclick="window.quickSetTfAnswer('${q.id}', ${subIdx}, false)">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                <span>Sai</span>
+              </button>
+            </div>
+          </div>
+        `;
+      });
+      answersBodyHtml += `</div>`;
+    }
+    // 3. TRẢ LỜI NGẮN (SA)
+    else if (q.type === 'sa') {
+      const answers = q.accepted_answers || [];
+      answersBodyHtml = `
+        <div class="qm-shub-sa-card">
+          <div class="qm-shub-sa-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span>Đáp án đúng được chấp nhận:</span>
+          </div>
+          <div class="qm-shub-sa-content">
+            <div class="qm-shub-sa-pills" id="saPills_${q.id}">
+              ${answers.map(ans => `<span class="qm-shub-sa-pill">${ans}</span>`).join('')}
+            </div>
+            <div class="qm-shub-sa-quick-edit">
+              <input type="text" class="qm-shub-sa-input" id="saInput_${q.id}" value="${answers.join(', ')}" placeholder="Nhập đáp án (ví dụ: 18, 18 triệu)..." onkeydown="if(event.key==='Enter') window.quickSaveSaAnswers('${q.id}')" />
+              <button type="button" class="btn-qm-sa-save" onclick="window.quickSaveSaAnswers('${q.id}')">Lưu đáp án</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    const diagramHtml = q.diagram ? `<div class="qm-shub-diagram">${q.diagram}</div>` : '';
+
+    const explainHtml = q.explanation ? `
+      <div class="qm-shub-explain-wrap">
+        <button type="button" class="btn-qm-explain-toggle" id="expToggle_${q.id}" onclick="window.toggleCardExplanation('${q.id}')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <span class="explain-text">Xem hướng dẫn giải chi tiết</span>
+          <svg class="explain-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="qm-shub-explain-content" id="explain_${q.id}" style="display: none;">
+          <div>${q.explanation}</div>
+        </div>
+      </div>
+    ` : '';
+
+    return `
+      <div class="qm-qcard ${isMod ? 'is-modified' : ''}" id="qcard-${q.id}">
+        <!-- HEADER EXACTLY AS SCREENSHOT: [ ∨ Câu 1 ] [ ✓ Trắc nghiệm 4 đáp án ] • Không mức độ ⭐ 0,25 điểm -->
+        <div class="qm-shub-header">
+          <button type="button" class="qm-shub-qnum-pill" id="qnumPill_${q.id}" onclick="window.toggleQuestionCollapse('${q.id}')" title="Bấm để mở/thu gọn câu này">
+            <svg class="qm-shub-qnum-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            <span>Câu ${displayNum}</span>
+          </button>
+
+          ${typeBadgeHtml}
+          <span class="qm-shub-level-text">• Không mức độ</span>
+          ${scoreBadgeHtml}
+
+          <div class="qm-shub-header-actions">
+            <span class="qm-mod-tag" id="modTag_${q.id}" style="${isMod ? '' : 'display:none;'}">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              <span>ĐÃ SỬA</span>
+            </span>
+
+            <button type="button" class="btn-qm-card-action" onclick="window.openEditQuestionModal('${q.id}')" title="Sửa chi tiết đề bài, các phương án và lời giải">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              <span>Sửa câu hỏi</span>
+            </button>
+
+            <button type="button" class="btn-qm-card-action" id="resetBtn_${q.id}" onclick="window.resetSingleQuestion('${q.id}')" style="${isMod ? '' : 'display:none;'}" title="Khôi phục câu này về đáp án gốc">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+              <span>Khôi phục</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- COLLAPSIBLE BODY -->
+        <div class="qm-shub-body" id="body_${q.id}">
+          <div class="qm-shub-prompt">${q.question_text}</div>
+          ${diagramHtml}
+          ${answersBodyHtml}
+          ${explainHtml}
+        </div>
+      </div>
+    `;
   }
 
   // Render danh sách câu hỏi
   function renderQuestionList() {
+    const isSingleTopic = (filterTopic.value !== 'all');
+    const effectiveType = (activePartFilter !== 'all' ? activePartFilter : (filterType.value !== 'all' ? filterType.value : 'all'));
+
     const filters = {
       subjectId: filterSubject.value,
       topicId: filterTopic.value,
-      type: filterType.value,
+      type: effectiveType,
       status: filterStatus.value,
       searchQuery: filterSearch.value
     };
@@ -955,132 +2068,270 @@ document.addEventListener("DOMContentLoaded", async () => {
     const questions = manager.getQuestions(filters);
     const overrides = manager.getOverrides();
 
-    // Update metrics
+    // Lấy thông tin topic hiện tại nếu chọn bộ đề cụ thể
+    const allTopicsOfSubj = manager.getTopics(filterSubject.value);
+    const currentTopic = isSingleTopic 
+      ? (allTopicsOfSubj.find(t => String(t.id) === String(filterTopic.value)) || manager.getTopics().find(t => String(t.id) === String(filterTopic.value)))
+      : null;
+
+    // Lấy toàn bộ câu hỏi của bộ đề này (không bị lọc bởi type hay search) để đếm thống kê cho tab
+    const fullTopicQuestions = isSingleTopic
+      ? manager.getQuestions({ subjectId: filterSubject.value, topicId: filterTopic.value })
+      : questions;
+
+    const topicMcCount = fullTopicQuestions.filter(q => q.type === 'mc').length;
+    const topicTfCount = fullTopicQuestions.filter(q => q.type === 'tf').length;
+    const topicSaCount = fullTopicQuestions.filter(q => q.type === 'sa').length;
+    const topicTotalCount = fullTopicQuestions.length;
+
+    // Cập nhật Metrics Cards
     metricTotalQ.textContent = questions.length;
     metricMcQ.textContent = questions.filter(q => q.type === 'mc').length;
     metricTfQ.textContent = questions.filter(q => q.type === 'tf').length;
     metricSaQ.textContent = questions.filter(q => q.type === 'sa').length;
     metricModQ.textContent = Object.keys(overrides).length;
 
+    // Render Banner thông tin bộ đề
+    if (topicBannerContainer) {
+      if (isSingleTopic && currentTopic) {
+        const subjObj = manager.getSubjects().find(s => s.id === currentTopic.subject_id);
+        const subjName = subjObj ? subjObj.name : filterSubject.value;
+
+        topicBannerContainer.innerHTML = `
+          <div class="qm-topic-banner">
+            <div class="qm-topic-banner-top">
+              <div class="qm-topic-banner-info">
+                <button type="button" class="btn-qm-back-to-sets" onclick="window.backToTopicsList()" title="Quay lại danh sách các bộ đề">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+                  <span>← Danh sách bộ đề</span>
+                </button>
+                <div class="qm-topic-banner-badges">
+                  <span class="qm-tb-badge-subj">${subjName}</span>
+                  ${currentTopic.chapter ? `<span class="qm-tb-badge-code" style="background:#e0e7ff; color:#3730a3; border-color:#c7d2fe;">${currentTopic.chapter}</span>` : ''}
+                  ${currentTopic.index_code ? `<span class="qm-tb-badge-code">Bộ đề ${currentTopic.index_code}</span>` : ''}
+                  <span class="qm-tb-badge-count">Quy mô ${topicTotalCount} câu</span>
+                </div>
+                <h2 class="qm-topic-banner-title">${currentTopic.title}</h2>
+                <p class="qm-topic-banner-desc">${currentTopic.description || 'Toàn bộ câu hỏi, đáp án chính thức và hướng dẫn giải chi tiết của bộ đề.'}</p>
+              </div>
+
+              <div class="qm-topic-banner-actions">
+                <div class="qm-topic-quick-select-wrap">
+                  <span class="qm-topic-quick-select-label">Bộ đề:</span>
+                  <select class="qm-topic-quick-select" id="quickTopicSelect">
+                    ${allTopicsOfSubj.map(t => `
+                      <option value="${t.id}" ${String(t.id) === String(filterTopic.value) ? 'selected' : ''}>${t.index_code ? t.index_code + ' - ' : ''}${t.title}</option>
+                    `).join('')}
+                    <option value="all">-- Xem tất cả bộ đề gộp lại --</option>
+                  </select>
+                </div>
+
+                
+              </div>
+            </div>
+
+            <!-- Tab lọc nhanh theo từng phần đề thi & Mở/Thu gọn tất cả -->
+            <div class="qm-parts-tabs-bar">
+              <div class="qm-parts-tabs-list">
+                <button type="button" class="qm-part-tab ${effectiveType === 'all' ? 'active' : ''}" onclick="window.switchPartFilter('all')">
+                  <span>Tất cả</span>
+                  <span class="qm-part-tab-count">${topicTotalCount}</span>
+                </button>
+                <button type="button" class="qm-part-tab ${effectiveType === 'mc' ? 'active' : ''}" onclick="window.switchPartFilter('mc')">
+                  <span>Phần I: Trắc nghiệm</span>
+                  <span class="qm-part-tab-count">${topicMcCount}</span>
+                </button>
+                <button type="button" class="qm-part-tab ${effectiveType === 'tf' ? 'active' : ''}" onclick="window.switchPartFilter('tf')">
+                  <span>Phần II: Đúng/Sai</span>
+                  <span class="qm-part-tab-count">${topicTfCount}</span>
+                </button>
+                <button type="button" class="qm-part-tab ${effectiveType === 'sa' ? 'active' : ''}" onclick="window.switchPartFilter('sa')">
+                  <span>Phần III: Trả lời ngắn</span>
+                  <span class="qm-part-tab-count">${topicSaCount}</span>
+                </button>
+              </div>
+
+              <div class="qm-global-drawer-toggles">
+                <button type="button" class="btn-qm-global-toggle" onclick="window.expandAllQuestions()" title="Mở rộng đáp án tất cả các câu">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg>
+                  <span>Mở tất cả</span>
+                </button>
+                <button type="button" class="btn-qm-global-toggle" onclick="window.collapseAllQuestions()" title="Thu gọn đáp án tất cả các câu">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>
+                  <span>Thu gọn</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+
+        const quickSelect = document.getElementById("quickTopicSelect");
+        if (quickSelect) {
+          quickSelect.addEventListener("change", (e) => {
+            filterTopic.value = e.target.value;
+            syncUrl();
+            renderQuestionList();
+          });
+        }
+      } else {
+        topicBannerContainer.innerHTML = '';
+      }
+    }
+
+    // NẾU CHƯA CHỌN BỘ ĐỀ CỤ THỂ (ĐANG Ở CHẾ ĐỘ DANH SÁCH BỘ ĐỀ):
+    // Hiển thị danh sách các bộ đề để người dùng chọn bộ đề cần chỉnh sửa!
+    if (!isSingleTopic) {
+      const subjObj = manager.getSubjects().find(s => s.id === filterSubject.value);
+      const subjName = subjObj ? subjObj.name : 'Môn học';
+
+      if (allTopicsOfSubj.length === 0) {
+        questionsContainer.innerHTML = `
+          <div style="background:#ffffff; border:1.5px dashed #cbd5e1; border-radius:16px; padding:48px 24px; text-align:center; color:#64748b; margin-top:14px;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:12px; color:#94a3b8;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <div style="font-weight:700; font-size:16px; color:#334155; margin-bottom:6px;">Chưa có bộ đề nào cho môn ${subjName}</div>
+            <p style="font-size:13.5px; margin:0;">Môn học này đang được ban biên tập cập nhật ngân hàng đề thi chuẩn cấu trúc mới.</p>
+          </div>
+        `;
+        return;
+      }
+
+      let setsGridHtml = `
+        <div class="qm-sets-section">
+          <div class="qm-sets-header-bar">
+            <div>
+              <h2 class="qm-sets-header-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10M6 14h6"/></svg>
+                <span>Danh sách các bộ đề môn ${subjName}</span>
+              </h2>
+              <p class="qm-sets-header-sub">Nhấp vào một bộ đề bên dưới để vào giao diện quản lý câu hỏi & chỉnh sửa đáp án chuẩn.</p>
+            </div>
+            <span class="qm-section-count-pill">${allTopicsOfSubj.length} bộ đề ôn tập</span>
+          </div>
+
+          <div class="qm-topic-sets-grid">
+      `;
+
+      allTopicsOfSubj.forEach(t => {
+        const tQs = manager.getQuestions({ subjectId: filterSubject.value, topicId: t.id });
+        const mcCount = tQs.filter(q => q.type === 'mc').length;
+        const tfCount = tQs.filter(q => q.type === 'tf').length;
+        const saCount = tQs.filter(q => q.type === 'sa').length;
+        const modCount = tQs.filter(q => q.isOverridden).length;
+
+        setsGridHtml += `
+          <div class="qm-topic-set-card" onclick="window.selectTopicSet('${t.id}')">
+            <div>
+              <div class="qm-set-card-badges">
+                ${t.index_code ? `<span class="qm-set-badge-code">BỘ ĐỀ ${t.index_code}</span>` : ''}
+                ${t.chapter ? `<span class="qm-set-badge-chap">${t.chapter}</span>` : ''}
+                ${t.is_full ? `<span class="qm-set-badge-code" style="background:#fee2e2; color:#b91c1c; border-color:#fecaca;">ĐỀ CHUẨN THI</span>` : ''}
+              </div>
+              <h3 class="qm-set-card-title">${t.title}</h3>
+              <p class="qm-set-card-desc">${t.description || 'Toàn bộ câu hỏi, đáp án chính thức và hướng dẫn giải chi tiết chuẩn cấu trúc Bộ GD&ĐT.'}</p>
+            </div>
+
+            <div>
+              <div class="qm-set-card-stats">
+                <span class="qm-set-stat-item total">${tQs.length} câu hỏi</span>
+                <span class="qm-set-stat-item">TN: ${mcCount}</span>
+                <span class="qm-set-stat-item">Đ/S: ${tfCount}</span>
+                <span class="qm-set-stat-item">TLN: ${saCount}</span>
+                ${modCount > 0 ? `<span class="qm-set-stat-item mod">Đã sửa: ${modCount}</span>` : ''}
+              </div>
+
+              <button type="button" class="btn-qm-select-set" onclick="event.stopPropagation(); window.selectTopicSet('${t.id}')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                <span>Vào xem & Chỉnh sửa đáp án →</span>
+              </button>
+            </div>
+          </div>
+        `;
+      });
+
+      setsGridHtml += `
+          </div>
+        </div>
+      `;
+
+      questionsContainer.innerHTML = setsGridHtml;
+      return;
+    }
+
     if (questions.length === 0) {
       questionsContainer.innerHTML = `
         <div style="background:#ffffff; border:1.5px dashed #cbd5e1; border-radius:16px; padding:48px 24px; text-align:center; color:#64748b;">
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:12px; color:#94a3b8;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <div style="font-weight:700; font-size:16px; color:#334155; margin-bottom:6px;">Không tìm thấy câu hỏi phù hợp</div>
-          <p style="font-size:13.5px; margin:0;">Hãy thử điều chỉnh bộ lọc môn học, chủ đề hoặc từ khóa tìm kiếm.</p>
+          <div style="font-weight:700; font-size:16px; color:#334155; margin-bottom:6px;">Không tìm thấy câu hỏi phù hợp trong bộ đề này</div>
+          <p style="font-size:13.5px; margin:0;">Hãy thử điều chỉnh dạng câu hỏi hoặc từ khóa tìm kiếm.</p>
         </div>
       `;
       return;
     }
 
     let html = "";
-    questions.forEach((q, idx) => {
-      const isMod = q.isOverridden;
-      const typeLabel = q.type === 'mc' ? 'Trắc nghiệm 4 lựa chọn' : (q.type === 'tf' ? 'Đúng / Sai (4 ý)' : 'Trả lời ngắn');
-      const subjObj = manager.getSubjects().find(s => s.id === q.subject_id);
-      const subjName = subjObj ? subjObj.name : q.subject_id;
 
-      let answerHtml = "";
+    // NẾU ĐÃ CHỌN BỘ ĐỀ: Hiển thị các câu hỏi theo chuẩn cấu trúc từng phần (như ảnh Shub/Azota!)
+    if (isSingleTopic) {
+      const mcList = questions.filter(q => q.type === 'mc');
+      const tfList = questions.filter(q => q.type === 'tf');
+      const saList = questions.filter(q => q.type === 'sa');
 
-      // DẠNG TRẮC NGHIỆM MC
-      if (q.type === 'mc') {
-        const letters = ['A', 'B', 'C', 'D'];
-        const opts = q.options || [];
-        answerHtml = '<div class="qm-options-grid">';
-        opts.forEach((optText, optIdx) => {
-          const isCorrect = (optIdx === q.correct_index);
-          answerHtml += `
-            <div class="qm-opt-item ${isCorrect ? 'is-correct-opt' : ''}">
-              <div class="qm-opt-letter">${letters[optIdx] || optIdx + 1}</div>
-              <div style="flex:1;">${optText}</div>
-              ${isCorrect ? '<span class="qm-correct-indicator">✓ ĐÁP ÁN ĐÚNG</span>' : ''}
+      // PHẦN I: TRẮC NGHIỆM MC
+      if (mcList.length > 0) {
+        html += `
+          <div class="qm-section-divider">
+            <div class="qm-section-title-wrap">
+              <div class="qm-section-badge-code">PHẦN I • TRẮC NGHIỆM NHIỀU PHƯƠNG ÁN LỰA CHỌN</div>
+              <h3 class="qm-section-title">PHẦN I. CÂU HỎI TRẮC NGHIỆM 4 LỰA CHỌN (12 CÂU)</h3>
+              <p class="qm-section-desc">Thí sinh trả lời từ câu 1 đến câu 12. Mỗi câu hỏi chỉ chọn một phương án đúng duy nhất.</p>
             </div>
-          `;
-        });
-        answerHtml += '</div>';
-      }
-      // DẠNG ĐÚNG SAI TF
-      else if (q.type === 'tf') {
-        const subItems = q.options || [];
-        answerHtml = '<table class="qm-tf-table">';
-        const subLabels = ['a', 'b', 'c', 'd'];
-        subItems.forEach((sub, subIdx) => {
-          const isTrue = !!sub.isCorrect;
-          answerHtml += `
-            <tr class="qm-tf-row">
-              <td class="qm-tf-cell-lbl">${subLabels[subIdx] || subIdx + 1})</td>
-              <td class="qm-tf-cell-text">${sub.text || sub}</td>
-              <td class="qm-tf-cell-val">
-                <span class="${isTrue ? 'qm-tf-badge-true' : 'qm-tf-badge-false'}">
-                  ${isTrue ? 'ĐÚNG' : 'SAI'}
-                </span>
-              </td>
-            </tr>
-          `;
-        });
-        answerHtml += '</table>';
-      }
-      // DẠNG TRẢ LỜI NGẮN SA
-      else if (q.type === 'sa') {
-        const answers = q.accepted_answers || [];
-        answerHtml = `
-          <div class="qm-sa-box">
-            <span class="qm-sa-title">✓ Các đáp án chấp nhận:</span>
-            ${answers.map(ans => `<span class="qm-sa-pill">${ans}</span>`).join('')}
+            <span class="qm-section-count-pill">${mcList.length} câu hỏi</span>
           </div>
         `;
+        mcList.forEach((q, idx) => {
+          html += renderSingleQuestionCard(q, idx, idx + 1, `Phần I • Câu ${idx + 1}`);
+        });
       }
 
-      // Hình vẽ / Sơ đồ nếu có
-      const diagramHtml = q.diagram ? `<div style="margin-bottom:16px;">${q.diagram}</div>` : '';
-
-      // Khung lời giải chi tiết
-      const explainHtml = q.explanation ? `
-        <div class="qm-explain-box">
-          <div class="qm-explain-header">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-            <span>Hướng dẫn giải chi tiết</span>
-          </div>
-          <div>${q.explanation}</div>
-        </div>
-      ` : '';
-
-      html += `
-        <div class="qm-qcard ${isMod ? 'is-modified' : ''}" id="qcard-${q.id}">
-          <div class="qm-qcard-header">
-            <div class="qm-badges-row">
-              <span class="qm-id-badge">#${q.id}</span>
-              <span class="qm-id-badge" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd;">${subjName}</span>
-              <span class="qm-id-badge" style="background:#fef3c7; color:#92400e; border-color:#fde68a;">Đề ${q.topic_id}</span>
-              <span class="qm-type-badge ${q.type}">${typeLabel}</span>
-              ${isMod ? '<span class="qm-mod-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> ĐÃ CHỈNH SỬA ĐÁP ÁN</span>' : ''}
+      // PHẦN II: ĐÚNG / SAI TF
+      if (tfList.length > 0) {
+        html += `
+          <div class="qm-section-divider part-tf">
+            <div class="qm-section-title-wrap">
+              <div class="qm-section-badge-code">PHẦN II • CÂU HỎI TRẮC NGHIỆM ĐÚNG / SAI</div>
+              <h3 class="qm-section-title">PHẦN II. CÂU HỎI TRẮC NGHIỆM ĐÚNG / SAI (4 CÂU)</h3>
+              <p class="qm-section-desc">Thí sinh trả lời từ câu 1 đến câu 4. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn Đúng hoặc Sai.</p>
             </div>
+            <span class="qm-section-count-pill">${tfList.length} câu hỏi</span>
+          </div>
+        `;
+        tfList.forEach((q, idx) => {
+          html += renderSingleQuestionCard(q, idx, idx + 1, `Phần II • Câu ${idx + 1}`);
+        });
+      }
 
-            <div style="display:flex; gap:8px;">
-              ${isMod ? `
-                <button type="button" class="btn-qm-secondary" onclick="window.resetSingleQuestion('${q.id}')" title="Khôi phục câu này về đáp án gốc">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-                  <span>Khôi phục gốc</span>
-                </button>
-              ` : ''}
-
-              <button type="button" class="btn-qm-primary" onclick="window.openEditQuestionModal('${q.id}')">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                <span>Chỉnh sửa đáp án</span>
-              </button>
+      // PHẦN III: TRẢ LỜI NGẮN SA
+      if (saList.length > 0) {
+        html += `
+          <div class="qm-section-divider part-sa">
+            <div class="qm-section-title-wrap">
+              <div class="qm-section-badge-code">PHẦN III • CÂU HỎI TRẢ LỜI NGẮN</div>
+              <h3 class="qm-section-title">PHẦN III. CÂU HỎI TRẢ LỜI NGẮN (6 CÂU)</h3>
+              <p class="qm-section-desc">Thí sinh trả lời từ câu 1 đến câu 6. Thí sinh điền kết quả vào ô tương ứng.</p>
             </div>
+            <span class="qm-section-count-pill">${saList.length} câu hỏi</span>
           </div>
-
-          <div class="qm-qcard-prompt">
-            <strong>Câu ${idx + 1}.</strong> ${q.question_text}
-          </div>
-
-          ${diagramHtml}
-          ${answerHtml}
-          ${explainHtml}
-        </div>
-      `;
-    });
+        `;
+        saList.forEach((q, idx) => {
+          html += renderSingleQuestionCard(q, idx, idx + 1, `Phần III • Câu ${idx + 1}`);
+        });
+      }
+    } else {
+      // Khi xem tất cả bộ đề gộp lại
+      questions.forEach((q, idx) => {
+        html += renderSingleQuestionCard(q, idx, idx + 1, null);
+      });
+    }
 
     questionsContainer.innerHTML = html;
 
@@ -1097,6 +2348,148 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
     }
   }
+
+  
+  
+  // 1. Quick Set MC Correct Answer directly from clicking an option card
+  window.quickSetMcCorrectAnswer = async function(qId, newCorrectIdx) {
+    const letters = ['A', 'B', 'C', 'D'];
+    const grid = document.getElementById('optGrid_' + qId);
+    if (grid) {
+      grid.querySelectorAll('.qm-shub-opt').forEach((el, idx) => {
+        if (idx === newCorrectIdx) {
+          el.classList.add('is-correct');
+          el.title = '✓ Đáp án đúng hiện tại';
+        } else {
+          el.classList.remove('is-correct');
+          el.title = 'Bấm vào để chọn phương án ' + letters[idx] + ' làm đáp án đúng';
+        }
+      });
+    }
+    const modTag = document.getElementById('modTag_' + qId);
+    if (modTag) modTag.style.display = '';
+    const resetBtn = document.getElementById('resetBtn_' + qId);
+    if (resetBtn) resetBtn.style.display = '';
+    const card = document.getElementById('qcard-' + qId);
+    if (card) card.classList.add('is-modified');
+
+    const res = await manager.updateQuestion(qId, { correct_index: newCorrectIdx });
+    if (res.success) {
+      showToast(`Đã chọn phương án ${letters[newCorrectIdx]} làm đáp án đúng!`);
+    } else {
+      alert('Lỗi cập nhật: ' + res.message);
+    }
+  };
+
+  // 2. Quick Set True/False Answer directly from buttons
+  window.quickSetTfAnswer = async function(qId, subIdx, isTrue) {
+    const subLabels = ['a', 'b', 'c', 'd'];
+    const q = manager.getQuestionById(qId);
+    if (!q) return;
+
+    const newOpts = JSON.parse(JSON.stringify(q.options || []));
+    if (newOpts[subIdx]) {
+      newOpts[subIdx].isCorrect = isTrue;
+    }
+
+    const btnTrue = document.getElementById(`tfBtn_${qId}_${subIdx}_true`);
+    const btnFalse = document.getElementById(`tfBtn_${qId}_${subIdx}_false`);
+    if (btnTrue && btnFalse) {
+      if (isTrue) {
+        btnTrue.className = 'qm-shub-tf-btn active-true';
+        btnFalse.className = 'qm-shub-tf-btn';
+      } else {
+        btnTrue.className = 'qm-shub-tf-btn';
+        btnFalse.className = 'qm-shub-tf-btn active-false';
+      }
+    }
+    const modTag = document.getElementById('modTag_' + qId);
+    if (modTag) modTag.style.display = '';
+    const resetBtn = document.getElementById('resetBtn_' + qId);
+    if (resetBtn) resetBtn.style.display = '';
+    const card = document.getElementById('qcard-' + qId);
+    if (card) card.classList.add('is-modified');
+
+    const res = await manager.updateQuestion(qId, { options: newOpts });
+    if (res.success) {
+      showToast(`Đã đổi ý ${subLabels[subIdx]}) thành ${isTrue ? 'ĐÚNG' : 'SAI'}!`);
+    }
+  };
+
+  // 3. Quick Save Short Answer (SA)
+  window.quickSaveSaAnswers = async function(qId) {
+    const input = document.getElementById('saInput_' + qId);
+    if (!input) return;
+    const val = input.value.trim();
+    const arr = val.split(',').map(s => s.trim()).filter(Boolean);
+    if (arr.length === 0) {
+      alert('Vui lòng nhập ít nhất một đáp án đúng!');
+      return;
+    }
+    const res = await manager.updateQuestion(qId, { accepted_answers: arr });
+    if (res.success) {
+      showToast('Đã lưu đáp số được chấp nhận!');
+      const pillsContainer = document.getElementById('saPills_' + qId);
+      if (pillsContainer) {
+        pillsContainer.innerHTML = arr.map(ans => `<span class="qm-shub-sa-pill">${ans}</span>`).join('');
+      }
+      const modTag = document.getElementById('modTag_' + qId);
+      if (modTag) modTag.style.display = '';
+      const resetBtn = document.getElementById('resetBtn_' + qId);
+      if (resetBtn) resetBtn.style.display = '';
+      const card = document.getElementById('qcard-' + qId);
+      if (card) card.classList.add('is-modified');
+    }
+  };
+
+  // 4. Toggle Card Collapse
+  window.toggleQuestionCollapse = function(qId) {
+    const body = document.getElementById('body_' + qId);
+    const pill = document.getElementById('qnumPill_' + qId);
+    if (!body) return;
+    const isCollapsed = body.classList.toggle('collapsed');
+    if (pill) {
+      pill.classList.toggle('collapsed', isCollapsed);
+    }
+  };
+
+  // 5. Global Expand / Collapse All Questions
+  window.expandAllQuestions = function() {
+    document.querySelectorAll('.qm-shub-body').forEach(b => b.classList.remove('collapsed'));
+    document.querySelectorAll('.qm-shub-qnum-pill').forEach(p => p.classList.remove('collapsed'));
+  };
+
+  window.collapseAllQuestions = function() {
+    document.querySelectorAll('.qm-shub-body').forEach(b => b.classList.add('collapsed'));
+    document.querySelectorAll('.qm-shub-qnum-pill').forEach(p => p.classList.add('collapsed'));
+  };
+
+  // 6. Toggle Explanation Accordion
+  window.toggleCardExplanation = function(qId) {
+    const exp = document.getElementById('explain_' + qId);
+    const btn = document.getElementById('expToggle_' + qId);
+    if (!exp) return;
+    const isHidden = (exp.style.display === 'none');
+    exp.style.display = isHidden ? 'block' : 'none';
+    if (btn) {
+      btn.classList.toggle('active', isHidden);
+      const text = btn.querySelector('.explain-text');
+      if (text) text.textContent = isHidden ? 'Ẩn hướng dẫn giải chi tiết' : 'Xem hướng dẫn giải chi tiết';
+    }
+    if (isHidden && window.renderMathInElement) {
+      try {
+        renderMathInElement(exp, {
+          delimiters: [
+            { left: "$$", right: "$$", display: true },
+            { left: "$", right: "$", display: false },
+            { left: "\\(", right: "\\)", display: false },
+            { left: "\\[", right: "\\]", display: true }
+          ],
+          throwOnError: false
+        });
+      } catch (e) {}
+    }
+  };
 
   // Mở Modal Chỉnh Sửa Đáp Án
   window.openEditQuestionModal = function(id) {
@@ -1309,6 +2702,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       showToast(`Đã lưu cập nhật đáp án cho câu #${id}!`);
       closeEditModal();
       renderQuestionList();
+      
     } else {
       alert("Lỗi khi lưu: " + res.message);
     }
@@ -1324,20 +2718,90 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   };
 
-  // Khôi phục toàn bộ
+  // DANGER MODAL ELEMENTS (Two-step protection against accidental reset)
+  const dangerConfirmModalOverlay = document.getElementById("dangerConfirmModalOverlay");
+  const dangerAffectedCount = document.getElementById("dangerAffectedCount");
+  const dangerConfirmInput = document.getElementById("dangerConfirmInput");
+  const btnDangerModalClose = document.getElementById("btnDangerModalClose");
+  const btnDangerCancel = document.getElementById("btnDangerCancel");
+  const btnDangerConfirmExecute = document.getElementById("btnDangerConfirmExecute");
+
+  function closeDangerModal() {
+    if (dangerConfirmModalOverlay) {
+      dangerConfirmModalOverlay.classList.remove("active");
+    }
+    if (dangerConfirmInput) {
+      dangerConfirmInput.value = "";
+    }
+    if (btnDangerConfirmExecute) {
+      btnDangerConfirmExecute.disabled = true;
+      btnDangerConfirmExecute.style.opacity = "0.4";
+      btnDangerConfirmExecute.style.cursor = "not-allowed";
+    }
+  }
+
+  if (btnDangerModalClose) btnDangerModalClose.addEventListener("click", closeDangerModal);
+  if (btnDangerCancel) btnDangerCancel.addEventListener("click", closeDangerModal);
+
+  if (dangerConfirmInput) {
+    dangerConfirmInput.addEventListener("input", () => {
+      const isMatch = dangerConfirmInput.value.trim().toUpperCase() === "KHÔI PHỤC";
+      if (btnDangerConfirmExecute) {
+        btnDangerConfirmExecute.disabled = !isMatch;
+        btnDangerConfirmExecute.style.opacity = isMatch ? "1" : "0.4";
+        btnDangerConfirmExecute.style.cursor = isMatch ? "pointer" : "not-allowed";
+      }
+    });
+  }
+
+  // Khôi phục toàn bộ (Mở modal 2 bước an toàn)
   btnResetAllOverrides.addEventListener("click", () => {
     const overrides = manager.getOverrides();
     const count = Object.keys(overrides).length;
     if (count === 0) {
-      alert("Hiện chưa có câu hỏi nào bị chỉnh sửa.");
+      showToast("Ngân hàng câu hỏi hiện đang ở mặc định gốc (chưa có câu nào bị chỉnh sửa).");
       return;
     }
-    if (confirm(`Bạn có chắc muốn khôi phục toàn bộ ${count} câu hỏi đã chỉnh sửa về mặc định gốc?`)) {
-      manager.resetAll();
-      showToast("Đã khôi phục toàn bộ ngân hàng câu hỏi!");
-      renderQuestionList();
+    if (dangerAffectedCount) dangerAffectedCount.textContent = count;
+    closeDangerModal();
+    if (dangerConfirmModalOverlay) {
+      dangerConfirmModalOverlay.classList.add("active");
+      setTimeout(() => {
+        if (dangerConfirmInput) dangerConfirmInput.focus();
+      }, 100);
     }
   });
+
+  // Thực thi khi đã nhập đúng từ khóa bảo vệ
+  if (btnDangerConfirmExecute) {
+    btnDangerConfirmExecute.addEventListener("click", () => {
+      if (!dangerConfirmInput || dangerConfirmInput.value.trim().toUpperCase() !== "KHÔI PHỤC") return;
+
+      // 1. Tự động tải file sao lưu JSON khẩn cấp trước khi xóa sạch LocalStorage
+      try {
+        const backupData = manager.exportMergedDatabase();
+        const jsonStr = JSON.stringify(backupData, null, 2);
+        const blob = new Blob([jsonStr], { type: "application/json;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        const dateStr = new Date().toISOString().slice(0, 10);
+        a.href = url;
+        a.download = `kedu-backup-truoc-reset-${dateStr}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        console.warn("Không thể tự động tải bản sao lưu:", err);
+      }
+
+      // 2. Tiến hành reset
+      manager.resetAll();
+      closeDangerModal();
+      showToast("Đã tải bản sao lưu và khôi phục ngân hàng câu hỏi về mặc định gốc!");
+      renderQuestionList();
+    });
+  }
 
   // XUẤT FILE JSON
   btnExportJson.addEventListener("click", () => {
@@ -1387,27 +2851,46 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Lắng nghe sự kiện filter
   filterSubject.addEventListener("change", () => {
     populateTopics();
+    activePartFilter = "all";
+    filterType.value = "all";
+    syncUrl();
     renderQuestionList();
   });
-  filterTopic.addEventListener("change", renderQuestionList);
-  filterType.addEventListener("change", renderQuestionList);
-  filterStatus.addEventListener("change", renderQuestionList);
+  filterTopic.addEventListener("change", () => {
+    activePartFilter = "all";
+    filterType.value = "all";
+    syncUrl();
+    renderQuestionList();
+  });
+  filterType.addEventListener("change", () => {
+    activePartFilter = filterType.value;
+    syncUrl();
+    renderQuestionList();
+  });
+  filterStatus.addEventListener("change", () => {
+    syncUrl();
+    renderQuestionList();
+  });
 
   let searchDebounce = null;
   filterSearch.addEventListener("input", () => {
     clearTimeout(searchDebounce);
-    searchDebounce = setTimeout(renderQuestionList, 250);
+    searchDebounce = setTimeout(() => {
+      syncUrl();
+      renderQuestionList();
+    }, 250);
   });
 
-  // Kiểm tra nếu có query param ?q= hoặc ?search= trên URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const searchParam = urlParams.get("search") || urlParams.get("q");
+  // Đọc query param khi tải trang
+  const initialUrlParams = new URLSearchParams(window.location.search);
+  const searchParam = initialUrlParams.get("search") || initialUrlParams.get("q");
   if (searchParam) {
     filterSearch.value = searchParam;
   }
-  const subjParam = urlParams.get("subject") || urlParams.get("subj");
-  if (subjParam) {
-    filterSubject.value = subjParam;
+  const partParam = initialUrlParams.get("part");
+  if (partParam && ['all', 'mc', 'tf', 'sa'].includes(partParam)) {
+    activePartFilter = partParam;
+    filterType.value = partParam;
   }
 
   // Kiểm soát phân quyền: Chỉ Quản trị viên mới được xem và quản lý đề / đáp án

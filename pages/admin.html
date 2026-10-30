@@ -720,7 +720,6 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         <span>Trang chủ</span>
       </a>
-
       <a href="quan-ly-de.html" class="sh-nav-item admin-only-nav" data-admin-only="true" title="Quản lý ngân hàng đề & Đáp án (Dành cho Quản trị viên)">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10M6 14h6"/></svg>
         <span>Quản lý đề & Đáp án</span>
@@ -760,12 +759,13 @@
 <footer class="site-footer">
   <div class="site-footer-inner">
     <div class="footer-meta">
-      Cổng ôn luyện thi Tốt nghiệp THPT 2026 • Biên soạn & phát triển: <strong>TRẦN ĐĂNG KHOA</strong>
+      Cổng ôn luyện thi Tốt nghiệp THPT 2026 • Developer by <strong>TDKA</strong>
     </div>
   </div>
 </footer>
 
 <!-- AUTH SYSTEM -->
+<script src="../js/quiz-history.js"></script>
 <script src="../js/auth.js"></script>
 
 <script>
@@ -859,12 +859,21 @@
     });
 
     let totalKeys = keyCodes.length;
-    let usedKeys = 0;
+    let fullyUsedKeys = 0;
+    let readyKeys = 0;
+    let totalSlots = 0;
+    let usedSlots = 0;
     keyCodes.forEach(c => {
-      if (keys[c].isUsed) usedKeys++;
+      const k = keys[c];
+      const maxAct = k.maxActivations || 1;
+      const uCount = k.usedCount !== undefined ? k.usedCount : (k.isUsed ? 1 : 0);
+      totalSlots += maxAct;
+      usedSlots += uCount;
+      if (uCount === 0) readyKeys++;
+      else if (uCount >= maxAct) fullyUsedKeys++;
     });
-    let unusedKeys = totalKeys - usedKeys;
-    let usageRate = totalKeys > 0 ? Math.round((usedKeys / totalKeys) * 100) : 0;
+    let availableKeys = totalKeys - fullyUsedKeys;
+    let usageRate = totalSlots > 0 ? Math.round((usedSlots / totalSlots) * 100) : 0;
 
     const subjectsOptionsHTML = (window.KeduAuth.SUBJECTS || [])
       .map(s => `<option value="${s.id}">${s.icon || ''} ${s.name}</option>`)
@@ -883,7 +892,7 @@
               Trung Tâm Quản Trị Hệ Thống
             </h1>
             <p class="admin-hero-desc">
-              Phát hành mã Key bản quyền, quản lý phân quyền học viên, giám sát ngân hàng 245 câu hỏi chuẩn Bộ GD&ĐT và sao lưu dữ liệu toàn diện cho kỳ thi Tốt nghiệp THPT 2026.
+              Phát hành mã Key bản quyền, quản lý phân quyền học viên, giám sát ngân hàng câu hỏi chuẩn cấu trúc Bộ GD&ĐT và sao lưu dữ liệu toàn diện cho kỳ thi Tốt nghiệp THPT 2026.
             </p>
           </div>
 
@@ -919,10 +928,10 @@
         <div class="admin-kpi-card">
           <div class="admin-kpi-info">
             <div class="admin-kpi-label">Kho Mã Key Bản Quyền</div>
-            <div class="admin-kpi-num">${totalKeys}</div>
+            <div class="admin-kpi-num">${totalKeys} <span style="font-size:14px; color:#64748b; font-weight:600;">(${usedSlots}/${totalSlots} lượt)</span></div>
             <div class="admin-kpi-meta">
-              <span style="color:#16a34a; font-weight:700;">${unusedKeys} Sẵn sàng</span> • 
-              <span style="color:#64748b;">${usedKeys} Đã dùng</span>
+              <span style="color:#16a34a; font-weight:700;">${availableKeys} Còn lượt</span> • 
+              <span style="color:#64748b;">${fullyUsedKeys} Hết lượt</span>
             </div>
           </div>
           <div class="admin-kpi-icon amber">
@@ -935,7 +944,7 @@
             <div class="admin-kpi-label">Môn học phủ sóng</div>
             <div class="admin-kpi-num">${subjects.length} Môn</div>
             <div class="admin-kpi-meta">
-              <span style="color:#16a34a; font-weight:700;">Toán (125 câu) • Tin (120 câu)</span>
+              <span style="color:#16a34a; font-weight:700;">Toán (1 đề - 22 câu) • 5 môn đang cập nhật</span>
             </div>
           </div>
           <div class="admin-kpi-icon emerald">
@@ -1041,12 +1050,22 @@
               <select id="selDashKeySubject" class="adm-select">
                 ${subjectsOptionsHTML}
               </select>
-              <select id="selDashKeyCount" class="adm-select" style="width: 110px;">
+              <select id="selDashKeyCount" class="adm-select" style="width: 110px;" title="Số lượng mã key cần tạo">
                 <option value="1">1 Key</option>
                 <option value="3">3 Key</option>
                 <option value="5" selected>5 Key</option>
                 <option value="10">10 Key</option>
                 <option value="20">20 Key</option>
+              </select>
+              <select id="selDashKeyQuota" class="adm-select" style="min-width: 160px;" title="Số lượng tài khoản có thể kích hoạt cho mỗi key">
+                <option value="1" selected>👤 1 tài khoản / key</option>
+                <option value="2">👥 2 tài khoản / key</option>
+                <option value="3">👥 3 tài khoản / key</option>
+                <option value="5">👥 5 tài khoản / key</option>
+                <option value="10">🏫 10 tài khoản / key</option>
+                <option value="30">🏫 30 tài khoản (Lớp)</option>
+                <option value="50">🏫 50 tài khoản (Khối)</option>
+                <option value="100">🎓 100 tài khoản</option>
               </select>
               <button type="button" class="btn-admin-primary" id="btnDashGenKeys" style="background: linear-gradient(135deg, #d97706, #b45309); padding: 8px 18px; font-size: 13px; font-weight: 700; border-radius: 8px;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
@@ -1073,8 +1092,9 @@
           <div class="admin-toolbar-wrap">
             <div class="admin-filter-bar">
               <button type="button" class="adm-filter-btn active" data-keystatus="all">Tất cả (${totalKeys})</button>
-              <button type="button" class="adm-filter-btn" data-keystatus="unused"><span style="color:#10b981; font-weight:bold; margin-right:4px;">●</span>Chưa dùng (${unusedKeys})</button>
-              <button type="button" class="adm-filter-btn" data-keystatus="used"><span style="color:#94a3b8; font-weight:bold; margin-right:4px;">●</span>Đã dùng (${usedKeys})</button>
+              <button type="button" class="adm-filter-btn" data-keystatus="available"><span style="color:#10b981; font-weight:bold; margin-right:4px;">●</span>Còn lượt (${availableKeys})</button>
+              <button type="button" class="adm-filter-btn" data-keystatus="unused"><span style="color:#0ea5e9; font-weight:bold; margin-right:4px;">●</span>Chưa dùng (${readyKeys})</button>
+              <button type="button" class="adm-filter-btn" data-keystatus="used"><span style="color:#94a3b8; font-weight:bold; margin-right:4px;">●</span>Hết lượt (${fullyUsedKeys})</button>
 
               <select id="selDashFilterSubject" class="adm-select" style="padding: 5px 10px; font-size: 12px; height: 32px; border-radius: 9999px;">
                 <option value="all">Tất cả môn học</option>
@@ -1096,7 +1116,8 @@
                     <th>Mã Key kích hoạt</th>
                     <th>Môn học</th>
                     <th>Trạng thái</th>
-                    <th>Người kích hoạt</th>
+                    <th>Hạn mức tài khoản</th>
+                    <th>Tài khoản đã kích hoạt</th>
                     <th>Ngày tạo</th>
                     <th style="text-align: right;">Thao tác</th>
                   </tr>
@@ -1235,7 +1256,8 @@
     document.getElementById("btnDashGenKeys")?.addEventListener("click", () => {
       const selSub = document.getElementById("selDashKeySubject")?.value || "toan";
       const selCnt = parseInt(document.getElementById("selDashKeyCount")?.value || "5", 10);
-      window.KeduAuth.adminCreateLicenseKeys(selSub, selCnt);
+      const selQuota = parseInt(document.getElementById("selDashKeyQuota")?.value || "1", 10);
+      window.KeduAuth.adminCreateLicenseKeys(selSub, selCnt, selQuota);
       renderAdminDashboard(adminUser);
       // Switch back to keys tab
       switchDashTab("keys");
@@ -1456,19 +1478,28 @@
 
     const filtered = keyCodes.filter(c => {
       const k = keys[c];
+      const maxAct = k.maxActivations || 1;
+      const uCount = k.usedCount !== undefined ? k.usedCount : (k.isUsed ? 1 : 0);
+
       const matchStatus = keyStatusFilter === "all" || 
-        (keyStatusFilter === "used" ? k.isUsed : !k.isUsed);
+        (keyStatusFilter === "available" ? uCount < maxAct :
+         keyStatusFilter === "unused" ? uCount === 0 :
+         keyStatusFilter === "used" ? uCount >= maxAct : true);
+
       const matchSubject = keySubjectFilter === "all" || k.subjectId === keySubjectFilter;
+      
+      const usersList = Array.isArray(k.usedBy) ? k.usedBy : (k.usedBy ? [k.usedBy] : []);
       const matchSearch = !keyKeyword || 
         c.toLowerCase().includes(keyKeyword) || 
-        (k.usedBy && k.usedBy.toLowerCase().includes(keyKeyword));
+        usersList.some(u => u.toLowerCase().includes(keyKeyword));
+
       return matchStatus && matchSubject && matchSearch;
     });
 
     if (filtered.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="6" style="text-align: center; padding: 40px 20px; color: #94a3b8;">
+          <td colspan="7" style="text-align: center; padding: 40px 20px; color: #94a3b8;">
             <div style="margin-bottom: 12px; display:flex; justify-content:center;">
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.8"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m21 3-9.5 9.5"/><path d="m15.5 7.5 3 3"/><path d="M14 3h7v7"/></svg>
             </div>
@@ -1485,6 +1516,36 @@
       const subj = window.KeduAuth.getSubjectById ? window.KeduAuth.getSubjectById(k.subjectId) : null;
       const subjName = subj ? subj.name : (k.subjectId === "all" ? "Combo Tất cả môn" : k.subjectId);
       const dateStr = k.createdAt ? new Date(k.createdAt).toLocaleDateString("vi-VN") : "Hệ thống";
+
+      const maxAct = k.maxActivations || 1;
+      const uCount = k.usedCount !== undefined ? k.usedCount : (k.isUsed ? 1 : 0);
+      const pct = Math.min(100, Math.round((uCount / maxAct) * 100));
+      const barColor = uCount >= maxAct ? "#64748b" : (uCount > 0 ? "#2563eb" : "#10b981");
+
+      let statusBadge = "";
+      if (uCount === 0) {
+        statusBadge = `<span class="adm-status-pill ready">● Chưa dùng</span>`;
+      } else if (uCount < maxAct) {
+        statusBadge = `<span class="adm-status-pill" style="background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe;">● Đang dùng (${uCount}/${maxAct})</span>`;
+      } else {
+        statusBadge = `<span class="adm-status-pill used" style="background:#f1f5f9; color:#64748b; border:1px solid #cbd5e1;">● Hết lượt (${uCount}/${maxAct})</span>`;
+      }
+
+      const usersList = Array.isArray(k.usedBy) ? k.usedBy : (k.usedBy ? [k.usedBy] : []);
+      let accountsHTML = "";
+      if (usersList.length > 0) {
+        accountsHTML = `
+          <div style="display:flex; flex-wrap:wrap; gap:4px; max-width:220px;">
+            ${usersList.map(u => `
+              <span style="display:inline-flex; align-items:center; background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; padding:1px 6px; font-size:11.5px; font-weight:600; color:#1e293b;">
+                @${escapeHTML(u)}
+              </span>
+            `).join("")}
+          </div>
+        `;
+      } else {
+        accountsHTML = `<span style="color:#94a3b8; font-size:12px;">—</span>`;
+      }
 
       return `
         <tr>
@@ -1503,12 +1564,21 @@
             </span>
           </td>
           <td>
-            <span class="adm-status-pill ${k.isUsed ? 'used' : 'ready'}">
-              ${k.isUsed ? '● Đã dùng' : '● Sẵn sàng'}
-            </span>
+            ${statusBadge}
           </td>
           <td>
-            ${k.isUsed ? `<span style="font-weight:700; color:#0f172a;">@${escapeHTML(k.usedBy || '')}</span>` : '<span style="color:#94a3b8;">—</span>'}
+            <div style="min-width: 110px;">
+              <div style="display:flex; justify-content:space-between; font-size:11.5px; font-weight:700; margin-bottom:3px;">
+                <span style="color:${barColor};">${uCount}/${maxAct} TK</span>
+                <span style="color:#94a3b8; font-weight:500;">${pct}%</span>
+              </div>
+              <div style="width:100%; height:5px; background:#e2e8f0; border-radius:999px; overflow:hidden;">
+                <div style="width:${pct}%; height:100%; background:${barColor}; border-radius:999px;"></div>
+              </div>
+            </div>
+          </td>
+          <td>
+            ${accountsHTML}
           </td>
           <td style="color:#64748b; font-size:12px;">${dateStr}</td>
           <td>

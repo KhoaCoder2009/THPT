@@ -37,13 +37,13 @@
   }
 
   const SUBJECTS = [
-    { id: "toan", name: "Toán học 12", prefix: "TOAN", icon: "", page: "toan-hoc.html", questions: "125 câu (6 đề)" },
-    { id: "vatli", name: "Vật lí 12", prefix: "VATLI", icon: "", page: "vat-li.html", questions: "Chưa cập nhật đề" },
-    { id: "hoa", name: "Hóa học 12", prefix: "HOA", icon: "", page: "hoa-hoc.html", questions: "Chưa cập nhật đề" },
-    { id: "sinh", name: "Sinh học 12", prefix: "SINH", icon: "", page: "sinh-hoc.html", questions: "Chưa cập nhật đề" },
-    { id: "tinhoc", name: "Tin học 12", prefix: "TINHOC", icon: "", page: "tin-hoc.html", questions: "120 câu (4 chuyên đề)" },
-    { id: "lichsu", name: "Lịch sử 12", prefix: "LICHSU", icon: "", page: "lich-su.html", questions: "Chưa cập nhật đề" },
-    { id: "all", name: "Tất cả các môn (Combo VIP)", prefix: "ALL", icon: "", page: "../index.html", questions: "Toàn quyền truy cập" }
+    { id: "toan", name: "Toán học 12", prefix: "TOAN", icon: "", page: "toan-hoc.html" },
+    { id: "vatli", name: "Vật lí 12", prefix: "VATLI", icon: "", page: "vat-li.html" },
+    { id: "hoa", name: "Hóa học 12", prefix: "HOA", icon: "", page: "hoa-hoc.html" },
+    { id: "sinh", name: "Sinh học 12", prefix: "SINH", icon: "", page: "sinh-hoc.html" },
+    { id: "tinhoc", name: "Tin học 12", prefix: "TINHOC", icon: "", page: "tin-hoc.html" },
+    { id: "lichsu", name: "Lịch sử 12", prefix: "LICHSU", icon: "", page: "lich-su.html" },
+    { id: "all", name: "Tất cả các môn (Combo VIP)", prefix: "ALL", icon: "", page: "../index.html" }
   ];
 
   let switchAdminTabFn = null;
@@ -90,10 +90,56 @@
   /**
    * Quản lý kho dữ liệu Mã Key trong LocalStorage
    */
+    /**
+   * Chuẩn hóa cấu trúc Key (Tương thích 100% dữ liệu cũ và hỗ trợ hạn mức đa tài khoản)
+   */
+  function normalizeKey(k) {
+    if (!k || typeof k !== "object") return null;
+    const maxActivations = Math.max(1, parseInt(k.maxActivations || k.maxUses || 1, 10));
+
+    let usedByList = [];
+    if (Array.isArray(k.usedBy)) {
+      usedByList = k.usedBy.filter(Boolean);
+    } else if (typeof k.usedBy === "string" && k.usedBy.trim()) {
+      usedByList = [k.usedBy.trim()];
+    }
+
+    let activations = Array.isArray(k.activations) ? k.activations : [];
+    if (activations.length === 0 && usedByList.length > 0) {
+      activations = usedByList.map(u => ({
+        username: u,
+        activatedAt: k.usedAt || k.createdAt || new Date().toISOString()
+      }));
+    }
+
+    const usedCount = Math.max(usedByList.length, activations.length);
+    const isUsed = usedCount >= maxActivations;
+
+    return {
+      code: k.code,
+      subjectId: k.subjectId,
+      maxActivations: maxActivations,
+      usedCount: usedCount,
+      usedBy: usedByList,
+      activations: activations,
+      isUsed: isUsed,
+      usedAt: k.usedAt || (activations.length > 0 ? activations[activations.length - 1].activatedAt : null),
+      createdAt: k.createdAt || new Date().toISOString()
+    };
+  }
+
   function getAllLicenseKeys() {
     try {
       const data = localStorage.getItem(STORAGE_KEYS_KEY);
-      return data ? JSON.parse(data) : {};
+      if (!data) return {};
+      const parsed = JSON.parse(data);
+      const normalized = {};
+      for (const code in parsed) {
+        if (Object.prototype.hasOwnProperty.call(parsed, code)) {
+          normalized[code] = normalizeKey(parsed[code]);
+        }
+      }
+      return normalized;
     } catch (e) {
       console.error("Lỗi đọc cơ sở dữ liệu key:", e);
       return {};
@@ -108,9 +154,6 @@
     }
   }
 
-  /**
-   * Sinh chuỗi mã Key ngẫu nhiên duy nhất
-   */
   function generateKeyCode(prefix = "KEDU") {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     let p1 = "";
@@ -161,13 +204,13 @@
     // Seed mã key mặc định cho từng môn
     const keys = getAllLicenseKeys();
     const defaultKeys = [
-      { code: "TOAN-2026-VIP1", subjectId: "toan" },
-      { code: "VATLI-2026-VIP2", subjectId: "vatli" },
-      { code: "HOA-2026-VIP3", subjectId: "hoa" },
-      { code: "SINH-2026-VIP4", subjectId: "sinh" },
-      { code: "TINHOC-2026-VIP5", subjectId: "tinhoc" },
-      { code: "LICHSU-2026-VIP7", subjectId: "lichsu" },
-      { code: "ALL-2026-VIP9", subjectId: "all" }
+      { code: "TOAN-2026-VIP1", subjectId: "toan", maxActivations: 5 },
+      { code: "VATLI-2026-VIP2", subjectId: "vatli", maxActivations: 5 },
+      { code: "HOA-2026-VIP3", subjectId: "hoa", maxActivations: 5 },
+      { code: "SINH-2026-VIP4", subjectId: "sinh", maxActivations: 5 },
+      { code: "TINHOC-2026-VIP5", subjectId: "tinhoc", maxActivations: 5 },
+      { code: "LICHSU-2026-VIP7", subjectId: "lichsu", maxActivations: 5 },
+      { code: "ALL-2026-VIP9", subjectId: "all", maxActivations: 10 }
     ];
 
     let updatedKeys = false;
@@ -176,8 +219,11 @@
         keys[dk.code] = {
           code: dk.code,
           subjectId: dk.subjectId,
+          maxActivations: dk.maxActivations || 1,
+          usedCount: 0,
+          usedBy: [],
+          activations: [],
           isUsed: false,
-          usedBy: null,
           usedAt: null,
           createdAt: new Date().toISOString()
         };
@@ -463,16 +509,32 @@
     }
 
     const keys = getAllLicenseKeys();
-    const keyData = keys[code];
+    const rawKey = keys[code];
 
-    if (!keyData) {
+    if (!rawKey) {
       return { success: false, message: "Mã key không hợp lệ hoặc không tồn tại trong hệ thống!" };
     }
 
-    if (keyData.isUsed) {
+    const keyData = normalizeKey(rawKey);
+
+    // Kiểm tra xem chính tài khoản này đã kích hoạt key này chưa
+    const alreadyActivatedThisKey = keyData.usedBy.some(
+      u => u.toLowerCase() === currentUser.username.toLowerCase()
+    );
+    if (alreadyActivatedThisKey) {
       return { 
         success: false, 
-        message: `Mã key này đã được kích hoạt bởi tài khoản @${keyData.usedBy} vào ${new Date(keyData.usedAt).toLocaleString("vi-VN")}. Mỗi mã key chỉ sử dụng được cho 1 tài khoản duy nhất!` 
+        message: `Tài khoản @${currentUser.username} đã kích hoạt mã key này trước đó rồi!` 
+      };
+    }
+
+    // Kiểm tra hạn mức tối đa tài khoản
+    if (keyData.usedCount >= keyData.maxActivations) {
+      const usersPreview = keyData.usedBy.slice(0, 3).map(u => `@${u}`).join(", ");
+      const moreCount = keyData.usedBy.length > 3 ? ` và ${keyData.usedBy.length - 3} tài khoản khác` : "";
+      return { 
+        success: false, 
+        message: `Mã key này đã đạt giới hạn tối đa (${keyData.maxActivations}/${keyData.maxActivations} tài khoản: ${usersPreview}${moreCount}). Không thể kích hoạt thêm!` 
       };
     }
 
@@ -488,13 +550,22 @@
 
     // Kiểm tra xem tài khoản đã mở khóa môn này chưa
     if (userObj.unlockedSubjects.includes(keyData.subjectId) || (keyData.subjectId !== "all" && userObj.unlockedSubjects.includes("all"))) {
-      return { success: false, message: `Tài khoản @${currentUser.username} đã được mở khóa môn ${subj.name} từ trước rồi!` };
+      const subjName = subj ? subj.name : (keyData.subjectId === "all" ? "Tất cả các môn" : keyData.subjectId);
+      return { success: false, message: `Tài khoản @${currentUser.username} đã được mở khóa môn ${subjName} từ trước rồi!` };
     }
 
-    // Gán mã key cho tài khoản và đánh dấu đã sử dụng
-    keyData.isUsed = true;
-    keyData.usedBy = currentUser.username;
-    keyData.usedAt = new Date().toISOString();
+    // Thêm người dùng vào danh sách kích hoạt của key
+    const nowIso = new Date().toISOString();
+    keyData.usedBy.push(currentUser.username);
+    keyData.activations.push({
+      username: currentUser.username,
+      activatedAt: nowIso
+    });
+    keyData.usedCount = keyData.usedBy.length;
+    keyData.isUsed = keyData.usedCount >= keyData.maxActivations;
+    keyData.usedAt = nowIso;
+
+    keys[code] = keyData;
     saveAllLicenseKeys(keys);
 
     userObj.unlockedSubjects.push(keyData.subjectId);
@@ -509,16 +580,19 @@
       setTimeout(() => lockOverlay.remove(), 250);
     }
 
+    const subjName = subj ? subj.name : (keyData.subjectId === "all" ? "Tất cả các môn" : keyData.subjectId);
+    const remainingSlots = keyData.maxActivations - keyData.usedCount;
+    const remainingNotice = keyData.maxActivations > 1 
+      ? ` (Key còn ${remainingSlots}/${keyData.maxActivations} lượt cho tài khoản khác)` 
+      : "";
+
     return { 
       success: true, 
-      message: `Kích hoạt thành công! Đã mở khóa môn ${subj.name} cho tài khoản @${currentUser.username}.`,
+      message: `Kích hoạt thành công! Đã mở khóa môn ${subjName} cho tài khoản @${currentUser.username}.${remainingNotice}`,
       subject: subj 
     };
   }
 
-  /**
-   * KIỂM TRA QUYỀN TRUY CẬP MÔN HỌC TRÊN TRANG CON
-   */
   function checkSubjectAccessOnPage() {
     if (!window.location.pathname.includes("/pages/")) return;
 
@@ -597,17 +671,19 @@
    * QUẢN TRỊ VIÊN: TẠO & QUẢN LÝ MÃ KEY (ADMIN KEY MANAGER)
    * ========================================================
    */
-  function adminCreateLicenseKeys(subjectId, count = 1) {
+  function adminCreateLicenseKeys(subjectId, count = 1, maxActivations = 1) {
     if (!isAdmin()) {
       showToast("Chỉ Quản trị viên mới có quyền tạo mã Key!", "error");
       return [];
     }
 
+    const quota = Math.max(1, parseInt(maxActivations, 10) || 1);
+    const numKeys = Math.max(1, parseInt(count, 10) || 1);
     const subj = getSubjectById(subjectId);
     const keys = getAllLicenseKeys();
     const createdList = [];
 
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < numKeys; i++) {
       let code = "";
       do {
         code = generateKeyCode(subj.prefix);
@@ -616,8 +692,11 @@
       keys[code] = {
         code: code,
         subjectId: subj.id,
+        maxActivations: quota,
+        usedCount: 0,
+        usedBy: [],
+        activations: [],
         isUsed: false,
-        usedBy: null,
         usedAt: null,
         createdAt: new Date().toISOString()
       };
@@ -625,7 +704,8 @@
     }
 
     saveAllLicenseKeys(keys);
-    showToast(`Đã tạo thành công ${count} mã key cho môn ${subj.name}!`, "success");
+    const quotaLabel = quota === 1 ? "1 tài khoản/key" : `${quota} tài khoản/key`;
+    showToast(`Đã tạo thành công ${numKeys} mã key (${quotaLabel}) cho môn ${subj.name}!`, "success");
     renderAdminKeysTable();
     return createdList;
   }
@@ -751,25 +831,29 @@
 
   function adminCopyUnusedKeys(subjectId = null) {
     const keys = getAllLicenseKeys();
-    const unusedList = Object.keys(keys)
+    const availableList = Object.keys(keys)
       .filter(code => {
         const k = keys[code];
-        if (k.isUsed) return false;
+        if (k.usedCount >= k.maxActivations) return false;
         if (subjectId && subjectId !== "all" && k.subjectId !== subjectId) return false;
         return true;
       });
 
-    if (unusedList.length === 0) {
-      showToast("Không có mã key nào chưa sử dụng để sao chép!", "info");
+    if (availableList.length === 0) {
+      showToast("Không có mã key nào còn lượt kích hoạt để sao chép!", "info");
       return;
     }
 
-    const textToCopy = unusedList.join("\n");
-    navigator.clipboard.writeText(textToCopy).then(() => {
-      showToast(`Đã sao chép ${unusedList.length} mã Key chưa dùng vào bộ nhớ tạm!`, "success");
-    }).catch(() => {
-      prompt("Danh sách mã Key:", textToCopy);
-    });
+    const textToCopy = availableList.join("\n");
+    if (typeof navigator !== "undefined" && navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        showToast(`Đã sao chép ${availableList.length} mã Key còn lượt kích hoạt!`, "success");
+      }).catch(() => {
+        prompt("Danh sách mã Key còn lượt:", textToCopy);
+      });
+    } else {
+      prompt("Danh sách mã Key còn lượt:", textToCopy);
+    }
   }
 
   function adminExportKeys(format = "txt") {
@@ -787,11 +871,15 @@
     if (format === "csv") {
       mimeType = "text/csv;charset=utf-8;";
       fileName = `kedu_license_keys_${new Date().toISOString().slice(0, 10)}.csv`;
-      content = "Mã Key,Môn học,Trạng thái,Người kích hoạt,Ngày kích hoạt\n" +
+      content = "Mã Key,Môn học,Hạn mức TK,Đã dùng,Còn lại,Trạng thái,Tài khoản đã kích hoạt,Ngày tạo\n" +
         keyCodes.map(code => {
           const k = keys[code];
           const subj = getSubjectById(k.subjectId);
-          return `"${k.code}","${subj ? subj.name : k.subjectId}","${k.isUsed ? 'Đã kích hoạt' : 'Chưa sử dụng'}","${k.usedBy || ''}","${k.usedAt || ''}"`;
+          const subjName = subj ? subj.name : (k.subjectId === "all" ? "Tất cả môn" : k.subjectId);
+          const status = k.usedCount >= k.maxActivations ? "Hết lượt" : (k.usedCount > 0 ? "Đang dùng" : "Chưa dùng");
+          const remaining = Math.max(0, k.maxActivations - k.usedCount);
+          const usersList = (k.usedBy || []).join("; ");
+          return `"${k.code}","${subjName}",${k.maxActivations},${k.usedCount},${remaining},"${status}","${usersList}","${k.createdAt || ''}"`;
         }).join("\n");
     } else {
       content = "=== DANH SÁCH MÃ KEY BẢN QUYỀN KEDU ===\n" +
@@ -799,8 +887,12 @@
         keyCodes.map(code => {
           const k = keys[code];
           const subj = getSubjectById(k.subjectId);
-          const status = k.isUsed ? `[ĐÃ DÙNG bởi @${k.usedBy}]` : "[CHƯA DÙNG]";
-          return `${k.code} | Môn: ${subj ? subj.name : k.subjectId} | ${status}`;
+          const subjName = subj ? subj.name : (k.subjectId === "all" ? "Tất cả môn" : k.subjectId);
+          const status = k.usedCount >= k.maxActivations 
+            ? `[HẾT LƯỢT ${k.usedCount}/${k.maxActivations}]` 
+            : (k.usedCount > 0 ? `[ĐANG DÙNG ${k.usedCount}/${k.maxActivations}]` : `[CHƯA DÙNG - Hạn mức ${k.maxActivations} TK]`);
+          const usersList = (k.usedBy && k.usedBy.length > 0) ? ` | Đã kích hoạt: ${k.usedBy.map(u => '@' + u).join(', ')}` : "";
+          return `${k.code} | Môn: ${subjName} | ${status}${usersList}`;
         }).join("\n");
     }
 
@@ -1242,7 +1334,7 @@
                   <div class="admin-metric-label">Môn học phủ sóng</div>
                   <div class="admin-metric-num"><span id="statTotalSubjects">6</span> Môn</div>
                   <div class="admin-metric-meta">
-                    <span style="color:#16a34a; font-weight:700;">Toán (6 đề - 125 câu) • Tin (4 CĐ - 120 câu)</span>
+                    <span style="color:#16a34a; font-weight:700;" id="statSubjectsMeta">Toán (1 đề - 22 câu) • 5 môn đang cập nhật</span>
                   </div>
                 </div>
                 <div class="admin-metric-icon green">
@@ -1339,12 +1431,22 @@
                   <select id="selAdminKeySubject" class="admin-select">
                     ${subjectsOptionsHTML}
                   </select>
-                  <select id="selAdminKeyCount" class="admin-select" style="width: 105px;">
+                  <select id="selAdminKeyCount" class="admin-select" style="width: 105px;" title="Số lượng mã key cần tạo">
                     <option value="1">1 Key</option>
                     <option value="3">3 Key</option>
-                    <option value="5">5 Key</option>
+                    <option value="5" selected>5 Key</option>
                     <option value="10">10 Key</option>
                     <option value="20">20 Key</option>
+                  </select>
+                  <select id="selAdminKeyQuota" class="admin-select" style="min-width: 150px;" title="Số lượng tài khoản có thể kích hoạt cho mỗi key">
+                    <option value="1" selected>👤 1 tài khoản / key</option>
+                    <option value="2">👥 2 tài khoản / key</option>
+                    <option value="3">👥 3 tài khoản / key</option>
+                    <option value="5">👥 5 tài khoản / key</option>
+                    <option value="10">🏫 10 tài khoản / key</option>
+                    <option value="30">🏫 30 tài khoản (Lớp)</option>
+                    <option value="50">🏫 50 tài khoản (Khối)</option>
+                    <option value="100">🎓 100 tài khoản</option>
                   </select>
                   <button type="button" class="btn-admin-primary" id="btnAdminGenKeys" style="background: linear-gradient(135deg, #d97706, #b45309);">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
@@ -1387,9 +1489,10 @@
                     <thead>
                       <tr>
                         <th>Mã Key Bản quyền</th>
-                        <th>Môn học áp dụng</th>
+                        <th>Môn học</th>
                         <th>Trạng thái</th>
-                        <th>Người kích hoạt</th>
+                        <th>Hạn mức tài khoản</th>
+                        <th>Tài khoản đã kích hoạt</th>
                         <th style="text-align: right;">Thao tác</th>
                       </tr>
                     </thead>
@@ -1403,7 +1506,7 @@
             <div id="paneAdminSubjects" style="display: none;">
               <div style="margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
                 <div>
-                  <h3 style="font-size: 15px; font-weight: 800; color: #0f2657; margin: 0 0 3px 0;">Tổng quan 8 Môn thi tốt nghiệp THPT</h3>
+                  <h3 style="font-size: 15px; font-weight: 800; color: #0f2657; margin: 0 0 3px 0;">Tổng quan 6 Môn thi tốt nghiệp THPT</h3>
                   <p style="font-size: 12px; color: #64748b; margin: 0;">Kiểm tra tiến độ soạn câu hỏi và tạo nhanh mã Key kích hoạt cho từng môn</p>
                 </div>
               </div>
@@ -1854,11 +1957,11 @@
     btnAdminGenKeys?.addEventListener("click", () => {
       const selSubj = document.getElementById("selAdminKeySubject")?.value || "toan";
       const selCount = parseInt(document.getElementById("selAdminKeyCount")?.value || "1", 10);
-      adminCreateLicenseKeys(selSubj, selCount);
+      const selQuota = parseInt(document.getElementById("selAdminKeyQuota")?.value || "1", 10);
+      adminCreateLicenseKeys(selSubj, selCount, selQuota);
       renderAdminSummaryMetrics();
       renderAdminKeysTable(adminSearchKeyInput?.value || "", currentKeyStatusFilter, document.getElementById("selAdminKeyFilterSubject")?.value || "all");
     });
-
     // Copy Unused Keys
     document.getElementById("btnAdminCopyUnusedKeys")?.addEventListener("click", () => {
       const selSubj = document.getElementById("selAdminKeyFilterSubject")?.value || "all";
@@ -1993,8 +2096,26 @@
       closeAdminConfirmDialog();
     });
 
+    // Close in-app sub-dialogs when clicking backdrop
+    document.querySelectorAll(".admin-dialog-overlay").forEach(overlay => {
+      overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) {
+          overlay.classList.remove("active");
+          if (overlay.id === "adminDialogConfirm") {
+            activeConfirmCallback = null;
+          }
+        }
+      });
+    });
+
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
+        const activeSubDialog = document.querySelector(".admin-dialog-overlay.active");
+        if (activeSubDialog) {
+          activeSubDialog.classList.remove("active");
+          activeConfirmCallback = null;
+          return;
+        }
         closeAllAuthModals();
         if (adminModal && adminModal.classList.contains("active")) closeAdminPanel();
         if (activateKeyModal && activateKeyModal.classList.contains("active")) closeActivateKeyModal();
@@ -2253,12 +2374,17 @@
     });
 
     let totalKeys = keyCodes.length;
-    let usedKeys = 0;
+    let fullyUsedKeys = 0;
+    let totalSlots = 0;
+    let usedSlots = 0;
     keyCodes.forEach(c => {
-      if (keys[c].isUsed) usedKeys++;
+      const k = keys[c];
+      totalSlots += k.maxActivations;
+      usedSlots += k.usedCount;
+      if (k.usedCount >= k.maxActivations) fullyUsedKeys++;
     });
-    let unusedKeys = totalKeys - usedKeys;
-    let usagePercent = totalKeys > 0 ? Math.round((usedKeys / totalKeys) * 100) : 0;
+    let unusedKeys = totalKeys - fullyUsedKeys;
+    let usagePercent = totalSlots > 0 ? Math.round((usedSlots / totalSlots) * 100) : 0;
 
     const elTotalUsers = document.getElementById("statTotalUsers");
     const elAdminUsers = document.getElementById("statAdminUsers");
@@ -2280,8 +2406,35 @@
     if (elKeyUsageRate) elKeyUsageRate.textContent = `${usagePercent}%`;
     if (elBadgeKeysCount) elBadgeKeysCount.textContent = totalKeys;
 
+    const activeSubjects = SUBJECTS.filter(s => s.id !== "all");
     const elTotalSubjects = document.getElementById("statTotalSubjects");
-    if (elTotalSubjects) elTotalSubjects.textContent = "8";
+    if (elTotalSubjects) elTotalSubjects.textContent = activeSubjects.length;
+
+    const elSubjectsMeta = document.getElementById("statSubjectsMeta");
+    if (elSubjectsMeta) {
+      let populated = [];
+      activeSubjects.forEach(s => {
+        let qCount = 0;
+        let tCount = 0;
+        if (window.KeduQuestionManager && typeof window.KeduQuestionManager.getQuestions === "function") {
+          qCount = window.KeduQuestionManager.getQuestions({ subjectId: s.id }).length;
+          tCount = window.KeduQuestionManager.getTopics(s.id).length;
+        } else if (window.KEDU_DATABASE_DATA) {
+          qCount = (window.KEDU_DATABASE_DATA.questions || []).filter(q => q.subject_id === s.id).length;
+          tCount = (window.KEDU_DATABASE_DATA.topics || []).filter(t => t.subject_id === s.id).length;
+        }
+        if (qCount > 0) {
+          populated.push(`${s.name.replace(" 12", "")} (${tCount} đề - ${qCount} câu)`);
+        }
+      });
+      if (populated.length > 0) {
+        const remaining = activeSubjects.length - populated.length;
+        const remainingStr = remaining > 0 ? ` • ${remaining} môn đang cập nhật` : "";
+        elSubjectsMeta.textContent = populated.join(" • ") + remainingStr;
+      } else {
+        elSubjectsMeta.textContent = "Chưa có đề nào trong hệ thống";
+      }
+    }
   }
 
   function openAdminCreateUserDialog() {
@@ -2428,7 +2581,7 @@
           </td>
           <td>
             <div style="display:flex; flex-wrap:wrap; gap:4px;">
-              ${isAdminRole ? '<span style="font-size:11px; color:#b45309; font-weight:700;">Toàn quyền (Tất cả 8 môn THPT)</span>' : unlockedChips}
+              ${isAdminRole ? '<span style="font-size:11px; color:#b45309; font-weight:700;">Toàn quyền (Tất cả 6 môn THPT)</span>' : unlockedChips}
             </div>
           </td>
           <td style="text-align: right;">
@@ -2511,14 +2664,15 @@
     if (kw) {
       keyCodes = keyCodes.filter(c => {
         const k = keys[c];
-        return c.toLowerCase().includes(kw) || (k.usedBy && k.usedBy.toLowerCase().includes(kw)) || k.subjectId.toLowerCase().includes(kw);
+        const matchUsers = (k.usedBy || []).some(u => u.toLowerCase().includes(kw));
+        return c.toLowerCase().includes(kw) || matchUsers || k.subjectId.toLowerCase().includes(kw);
       });
     }
 
     if (statusFilter === "unused") {
-      keyCodes = keyCodes.filter(c => !keys[c].isUsed);
+      keyCodes = keyCodes.filter(c => keys[c].usedCount === 0);
     } else if (statusFilter === "used") {
-      keyCodes = keyCodes.filter(c => keys[c].isUsed);
+      keyCodes = keyCodes.filter(c => keys[c].usedCount >= keys[c].maxActivations);
     }
 
     if (subjectFilter && subjectFilter !== "all") {
@@ -2526,14 +2680,40 @@
     }
 
     if (keyCodes.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 32px; color: #94a3b8; font-weight: 500;">Chưa có mã key nào hoặc không tìm thấy kết quả phù hợp</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 32px; color: #94a3b8; font-weight: 500;">Chưa có mã key nào hoặc không tìm thấy kết quả phù hợp</td></tr>`;
       return;
     }
 
     tbody.innerHTML = keyCodes.map(c => {
       const k = keys[c];
       const subj = getSubjectById(k.subjectId);
-      const isUsed = k.isUsed;
+      const subjName = subj ? subj.name : (k.subjectId === "all" ? "Tất cả môn" : k.subjectId);
+      const pct = Math.min(100, Math.round((k.usedCount / k.maxActivations) * 100));
+      const barColor = k.usedCount >= k.maxActivations ? "#64748b" : (k.usedCount > 0 ? "#2563eb" : "#10b981");
+
+      let statusBadge = "";
+      if (k.usedCount === 0) {
+        statusBadge = `<span class="key-status-pill key-status-unused">● Chưa dùng</span>`;
+      } else if (k.usedCount < k.maxActivations) {
+        statusBadge = `<span class="key-status-pill" style="background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe;">● Đang dùng (${k.usedCount}/${k.maxActivations})</span>`;
+      } else {
+        statusBadge = `<span class="key-status-pill key-status-used">● Hết lượt (${k.usedCount}/${k.maxActivations})</span>`;
+      }
+
+      let accountsHTML = "";
+      if (k.usedBy && k.usedBy.length > 0) {
+        accountsHTML = `
+          <div style="display:flex; flex-wrap:wrap; gap:4px; max-width:200px;">
+            ${k.usedBy.map(u => `
+              <span style="display:inline-flex; align-items:center; background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; padding:1px 6px; font-size:11px; font-weight:600; color:#1e293b;">
+                @${escapeHTML(u)}
+              </span>
+            `).join("")}
+          </div>
+        `;
+      } else {
+        accountsHTML = `<span style="color: #94a3b8; font-size: 12px;">—</span>`;
+      }
 
       return `
         <tr>
@@ -2546,20 +2726,24 @@
             </div>
           </td>
           <td>
-            <span style="font-weight: 700; color: #0f2657;">${escapeHTML(subj ? subj.name : k.subjectId)}</span>
+            <span style="font-weight: 700; color: #0f2657;">${escapeHTML(subjName)}</span>
           </td>
           <td>
-            <span class="key-status-pill ${isUsed ? 'key-status-used' : 'key-status-unused'}">
-              ${isUsed ? '● Đã kích hoạt' : '● Chưa sử dụng'}
-            </span>
+            ${statusBadge}
           </td>
           <td>
-            ${isUsed ? `
-              <div style="font-size: 12px;">
-                <strong style="color: #2563eb;">@${escapeHTML(k.usedBy)}</strong>
-                <div style="color: #64748b; font-size: 11px;">${new Date(k.usedAt).toLocaleDateString("vi-VN")}</div>
+            <div style="min-width: 100px;">
+              <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:700; margin-bottom:2px;">
+                <span style="color:${barColor};">${k.usedCount}/${k.maxActivations} TK</span>
+                <span style="color:#94a3b8; font-weight:500;">${pct}%</span>
               </div>
-            ` : '<span style="color: #94a3b8; font-size: 12px;">—</span>'}
+              <div style="width:100%; height:5px; background:#e2e8f0; border-radius:999px; overflow:hidden;">
+                <div style="width:${pct}%; height:100%; background:${barColor}; border-radius:999px;"></div>
+              </div>
+            </div>
+          </td>
+          <td>
+            ${accountsHTML}
           </td>
           <td style="text-align: right;">
             <div class="admin-action-btn-group">
@@ -2613,7 +2797,17 @@
     if (!container) return;
 
     container.innerHTML = SUBJECTS.filter(s => s.id !== "all").map(s => {
-      const isPopulated = s.id === "toan" || s.id === "tinhoc";
+      let qCount = 0;
+      let tCount = 0;
+      if (window.KeduQuestionManager && typeof window.KeduQuestionManager.getQuestions === "function") {
+        qCount = window.KeduQuestionManager.getQuestions({ subjectId: s.id }).length;
+        tCount = window.KeduQuestionManager.getTopics(s.id).length;
+      } else if (window.KEDU_DATABASE_DATA) {
+        qCount = (window.KEDU_DATABASE_DATA.questions || []).filter(q => q.subject_id === s.id).length;
+        tCount = (window.KEDU_DATABASE_DATA.topics || []).filter(t => t.subject_id === s.id).length;
+      }
+      const isPopulated = qCount > 0;
+      const metaText = isPopulated ? `${tCount} đề • ${qCount} câu hỏi thật` : 'Chưa cập nhật đề';
       return `
         <div class="admin-subject-card">
           <div class="admin-subject-card-head">
@@ -2622,10 +2816,10 @@
                 <span class="adm-subj-icon-wrap">${getSubjectIconSvg(s.id)}</span>
                 <span>${s.name}</span>
               </h4>
-              <div class="admin-subject-card-meta">${s.questions}</div>
+              <div class="admin-subject-card-meta">${metaText}</div>
             </div>
             <span class="key-status-pill ${isPopulated ? 'key-status-unused' : 'key-status-used'}">
-              ${isPopulated ? '● Hoạt động' : '● Đang soạn đề'}
+              ${isPopulated ? '● Đã có đề' : '● Đang soạn đề'}
             </span>
           </div>
           <div class="admin-subject-card-foot">
@@ -2778,12 +2972,20 @@
                   </a>
                 </li>
               ` : ''}
-              <li>
-                <button type="button" class="user-dropdown-item-btn" id="btnUserOpenActivateKey" title="Kích hoạt mã môn học">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-1.5 1.5L14 9l-1.5-1.5L11 9l-1.5-1.5L8 9l-4.5 4.5a3 3 0 1 0 4.24 4.24L12 13.5l1.5 1.5 1.5-1.5 1.5 1.5 3.5-3.5a3 3 0 0 0-4.24-4.24z"/></svg>
-                  <span>Kích hoạt môn học</span>
-                </button>
-              </li>
+              ${!userIsAdmin ? `
+                <li>
+                  <button type="button" class="user-dropdown-item-btn" id="btnUserOpenQuizHistory" title="Xem lịch sử các lần làm bài thi của bạn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span>Lịch sử làm bài</span>
+                  </button>
+                </li>
+                <li>
+                  <button type="button" class="user-dropdown-item-btn" id="btnUserOpenActivateKey" title="Kích hoạt mã môn học">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-1.5 1.5L14 9l-1.5-1.5L11 9l-1.5-1.5L8 9l-4.5 4.5a3 3 0 1 0 4.24 4.24L12 13.5l1.5 1.5 1.5-1.5 1.5 1.5 3.5-3.5a3 3 0 0 0-4.24-4.24z"/></svg>
+                    <span>Kích hoạt môn học</span>
+                  </button>
+                </li>
+              ` : ''}
               <li>
                 <button type="button" class="user-dropdown-item-btn" id="btnUserChangePassword">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -2838,6 +3040,16 @@
         openAdminPanel("keys");
       });
 
+      document.getElementById("btnUserOpenQuizHistory")?.addEventListener("click", () => {
+        dropdownPanel.classList.remove("show");
+        profileBtn.classList.remove("active");
+        if (window.KeduQuizHistory) {
+          window.KeduQuizHistory.openModal();
+        } else if (window.openQuizHistoryModal) {
+          window.openQuizHistoryModal();
+        }
+      });
+
       document.getElementById("btnUserOpenActivateKey")?.addEventListener("click", () => {
         dropdownPanel.classList.remove("show");
         profileBtn.classList.remove("active");
@@ -2874,6 +3086,7 @@
 
   // Xuất API toàn cục
   window.KeduAuth = {
+    normalizeKey,
     getCurrentUser,
     isAdmin,
     hasSubjectAccess,
