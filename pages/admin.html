@@ -819,22 +819,54 @@
         <h2 style="font-family: var(--font-heading); font-size: 22px; font-weight: 800; color: #0f2657; margin-bottom: 8px;">
           Khu Vực Quản Trị Hệ Thống (Admin Only)
         </h2>
-        <p style="font-size: 14px; color: #64748b; line-height: 1.6; margin-bottom: 24px;">
+        <p style="font-size: 14px; color: #64748b; line-height: 1.6; margin-bottom: 22px;">
           ${currentUser 
             ? `Tài khoản <strong>@${currentUser.username}</strong> của bạn không có đặc quyền Quản trị viên (Admin). Vui lòng đăng nhập với tài khoản có quyền quản trị để truy cập trung tâm điều hành.` 
-            : 'Trang này yêu cầu quyền Quản trị viên (Admin). Vui lòng đăng nhập tài khoản quản trị để phát hành mã key bản quyền, quản lý phân quyền và kiểm soát ngân hàng đề thi.'}
+            : 'Trang này yêu cầu quyền Quản trị viên (Admin). Vui lòng đăng nhập nhanh bằng tài khoản quản trị mẫu bên dưới để tạo mã Key bản quyền và cấu hình hệ thống:'}
         </p>
-        <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; align-items: center;">
-          <button type="button" class="btn-admin-primary" id="btnGateLoginAdmin" style="padding: 10px 22px; font-size: 14px; font-weight: 700; border-radius: 10px;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-            <span>Đăng nhập tài khoản Admin</span>
+
+        <!-- NÚT ĐĂNG NHẬP NHANH 1-CLICK DÀNH CHO ADMIN -->
+        <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 18px;">
+          <button type="button" class="btn-admin-primary" id="btnGateQuickLoginAdmin" style="padding: 10px 20px; font-size: 13.5px; font-weight: 700; border-radius: 10px; background: linear-gradient(135deg, #d97706, #b45309); box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>
+            <span>👑 Đăng nhập ngay: Quản trị viên (@admin)</span>
           </button>
-          <a href="../index.html" class="btn-admin-secondary" style="text-decoration: none; padding: 10px 18px; font-size: 14px; font-weight: 600; border-radius: 10px;">
+          <button type="button" class="btn-admin-primary" id="btnGateQuickLoginTdka" style="padding: 10px 20px; font-size: 13.5px; font-weight: 700; border-radius: 10px; background: linear-gradient(135deg, #1e40af, #1e3a8a); box-shadow: 0 4px 12px rgba(30, 64, 175, 0.25);">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span>⭐ Đăng nhập: Trần Đăng Khoa (@tdka)</span>
+          </button>
+        </div>
+
+        <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; align-items: center;">
+          <button type="button" class="btn-admin-secondary" id="btnGateLoginAdmin" style="padding: 8px 16px; font-size: 13px; border-radius: 8px;">
+            Đăng nhập tài khoản khác
+          </button>
+          <a href="../index.html" class="btn-admin-secondary" style="text-decoration: none; padding: 8px 16px; font-size: 13px; border-radius: 8px;">
             ← Về Trang chủ
           </a>
         </div>
       </div>
     `;
+
+    document.getElementById("btnGateQuickLoginAdmin")?.addEventListener("click", async () => {
+      const res = await window.KeduAuth.login({ username: "admin", password: "admin123" });
+      if (res && res.success) {
+        window.KeduAuth.showToast("Đã đăng nhập thành công với quyền Quản trị viên (@admin)!", "success");
+        checkAdminAndRender();
+      } else {
+        alert(res?.message || "Đăng nhập thất bại");
+      }
+    });
+
+    document.getElementById("btnGateQuickLoginTdka")?.addEventListener("click", async () => {
+      const res = await window.KeduAuth.login({ username: "tdka", password: "Khoavip123@" });
+      if (res && res.success) {
+        window.KeduAuth.showToast("Đã đăng nhập thành công với quyền Quản trị viên cấp cao (@tdka)!", "success");
+        checkAdminAndRender();
+      } else {
+        alert(res?.message || "Đăng nhập thất bại");
+      }
+    });
 
     document.getElementById("btnGateLoginAdmin")?.addEventListener("click", () => {
       window.KeduAuth.openModal("login");
@@ -928,8 +960,8 @@
         <div class="admin-kpi-card">
           <div class="admin-kpi-info">
             <div class="admin-kpi-label">Kho Mã Key Bản Quyền</div>
-            <div class="admin-kpi-num">${totalKeys} <span style="font-size:14px; color:#64748b; font-weight:600;">(${usedSlots}/${totalSlots} lượt)</span></div>
-            <div class="admin-kpi-meta">
+            <div class="admin-kpi-num" id="dashKpiKeysNum">${totalKeys} <span style="font-size:14px; color:#64748b; font-weight:600;">(${usedSlots}/${totalSlots} lượt)</span></div>
+            <div class="admin-kpi-meta" id="dashKpiKeysMeta">
               <span style="color:#16a34a; font-weight:700;">${availableKeys} Còn lượt</span> • 
               <span style="color:#64748b;">${fullyUsedKeys} Hết lượt</span>
             </div>
@@ -978,7 +1010,7 @@
           <button type="button" class="admin-tab-item" data-tab="keys" id="dashTabKeys">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m21 3-9.5 9.5"/><path d="m15.5 7.5 3 3"/><path d="M14 3h7v7"/></svg>
             <span>Tạo & Quản Lý Key</span>
-            <span class="admin-tab-pill">${totalKeys}</span>
+            <span class="admin-tab-pill" id="dashBadgeKeysCount">${totalKeys}</span>
           </button>
 
           <button type="button" class="admin-tab-item" data-tab="subjects" id="dashTabSubjects">
@@ -1257,11 +1289,50 @@
       const selSub = document.getElementById("selDashKeySubject")?.value || "toan";
       const selCnt = parseInt(document.getElementById("selDashKeyCount")?.value || "5", 10);
       const selQuota = parseInt(document.getElementById("selDashKeyQuota")?.value || "1", 10);
-      window.KeduAuth.adminCreateLicenseKeys(selSub, selCnt, selQuota);
-      renderAdminDashboard(adminUser);
-      // Switch back to keys tab
-      switchDashTab("keys");
+      const created = window.KeduAuth.adminCreateLicenseKeys(selSub, selCnt, selQuota);
+      if (created && created.length > 0) {
+        updateDashboardKPI();
+        renderDashKeysTable();
+      }
     });
+
+    // Helper cập nhật KPI realtime không cần load lại cả dashboard
+    function updateDashboardKPI() {
+      const keys = window.KeduAuth.getAllLicenseKeys ? window.KeduAuth.getAllLicenseKeys() : {};
+      const keyCodes = Object.keys(keys);
+      let totalKeys = keyCodes.length;
+      let fullyUsedKeys = 0;
+      let readyKeys = 0;
+      let totalSlots = 0;
+      let usedSlots = 0;
+      keyCodes.forEach(c => {
+        const k = keys[c];
+        const maxAct = k.maxActivations || 1;
+        const uCount = k.usedCount !== undefined ? k.usedCount : (k.isUsed ? 1 : 0);
+        totalSlots += maxAct;
+        usedSlots += uCount;
+        if (uCount === 0) readyKeys++;
+        else if (uCount >= maxAct) fullyUsedKeys++;
+      });
+      let availableKeys = totalKeys - fullyUsedKeys;
+      let usageRate = totalSlots > 0 ? Math.round((usedSlots / totalSlots) * 100) : 0;
+
+      const elKpiNum = document.getElementById("dashKpiKeysNum");
+      const elKpiMeta = document.getElementById("dashKpiKeysMeta");
+      const elTabBadge = document.getElementById("dashBadgeKeysCount");
+      if (elKpiNum) elKpiNum.innerHTML = `${totalKeys} <span style="font-size:14px; color:#64748b; font-weight:600;">(${usedSlots}/${totalSlots} lượt)</span>`;
+      if (elKpiMeta) elKpiMeta.innerHTML = `<span style="color:#16a34a; font-weight:700;">${availableKeys} Còn lượt</span> • <span style="color:#64748b;">${fullyUsedKeys} Hết lượt</span>`;
+      if (elTabBadge) elTabBadge.textContent = totalKeys;
+
+      const btnAll = container.querySelector(".adm-filter-btn[data-keystatus='all']");
+      const btnAvail = container.querySelector(".adm-filter-btn[data-keystatus='available']");
+      const btnUnused = container.querySelector(".adm-filter-btn[data-keystatus='unused']");
+      const btnUsed = container.querySelector(".adm-filter-btn[data-keystatus='used']");
+      if (btnAll) btnAll.textContent = `Tất cả (${totalKeys})`;
+      if (btnAvail) btnAvail.innerHTML = `<span style="color:#10b981; font-weight:bold; margin-right:4px;">●</span>Còn lượt (${availableKeys})`;
+      if (btnUnused) btnUnused.innerHTML = `<span style="color:#0ea5e9; font-weight:bold; margin-right:4px;">●</span>Chưa dùng (${readyKeys})`;
+      if (btnUsed) btnUsed.innerHTML = `<span style="color:#94a3b8; font-weight:bold; margin-right:4px;">●</span>Hết lượt (${fullyUsedKeys})`;
+    }
 
     // Key Quick Actions
     document.getElementById("btnDashCopyUnusedKeys")?.addEventListener("click", () => {

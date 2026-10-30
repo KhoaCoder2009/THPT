@@ -2324,7 +2324,8 @@
    */
   function openAdminPanel(targetTab = "users") {
     if (!isAdmin()) {
-      showToast("Chỉ Quản trị viên mới có quyền mở Bảng quản trị!", "error");
+      showToast("Vui lòng đăng nhập tài khoản Quản trị viên (@admin hoặc @tdka) để mở Bảng quản trị!", "info");
+      openLoginModal();
       return;
     }
 
