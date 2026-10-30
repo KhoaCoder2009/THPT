@@ -787,6 +787,18 @@
       return;
     }
 
+    const pill = document.getElementById("adminCloudStatusPill");
+    if (pill) {
+      const client = window.getSupabaseClient ? window.getSupabaseClient() : null;
+      if (client) {
+        pill.innerHTML = `
+          <span class="admin-cloud-dot" style="background:#22c55e;"></span>
+          <span style="color:#15803d; font-weight:700;">Supabase Cloud: Đã kết nối</span>
+        `;
+        pill.title = "Dự án Supabase (vhgpngrguazxymxcddvu) đã được kết nối.";
+      }
+    }
+
     const user = window.KeduAuth.getCurrentUser();
     const isAdmin = window.KeduAuth.isAdmin();
 

@@ -9,7 +9,7 @@
    ======================================================== */
 
 const SUPABASE_URL = "https://vhgpngrguazxymxcddvu.supabase.co";
-const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZoZ3BuZ3JndWF6eHlteGNkZHZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxMDE2NDAsImV4cCI6MjEwODY3NzY0MH0.9oAOnyAfcH1wVvS1vzzz8ocRxjkjnDN6V84GERwMtII";
 
 // Khởi tạo Supabase Client
 function getSupabaseClient() {
