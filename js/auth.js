@@ -13,20 +13,40 @@
   const STORAGE_SESSION_KEY = "kedu_auth_session";
   const STORAGE_KEYS_KEY = "kedu_license_keys";
 
+
   // Đường dẫn tương đối dựa trên vị trí trang (root vs pages/)
   const isSubPage = window.location.pathname.includes("/pages/");
   const ASSETS_PATH = isSubPage ? "../assets/images/logo_kedu_horizontal.png" : "assets/images/logo_kedu_horizontal.png";
   const AUTH_BADGE_LOGO_PATH = isSubPage ? "../assets/images/logo_kedu_square.png" : "assets/images/logo_kedu_square.png";
 
+  // Biểu tượng SVG chuyên biệt theo UI/UX Pro Max (thay thế emoji thô sơ)
+  const SUBJECT_ICONS = {
+    toan: `<svg class="subj-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10"/><path d="M7 12h4"/><path d="M7 16h10"/></svg>`,
+    vatli: `<svg class="subj-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+    hoa: `<svg class="subj-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6"/><path d="M10 9l-6 11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2L14 9"/><path d="M10 9V3"/><path d="M14 9V3"/></svg>`,
+    sinh: `<svg class="subj-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12c2.5-4 6.5-6 10-6s7.5 2 10 6c-2.5 4-6.5 6-10 6s-7.5-2-10-6z"/><circle cx="12" cy="12" r="3"/></svg>`,
+    tinhoc: `<svg class="subj-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>`,
+    lichsu: `<svg class="subj-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="22" x2="20" y2="22"/><line x1="4" y1="2" x2="20" y2="2"/><path d="M6 18v-8"/><path d="M10 18V6"/><path d="M14 18V6"/><path d="M18 18v-8"/></svg>`,
+    all: `<svg class="subj-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>`
+  };
+
+  function getSubjectIconSvg(subjectId) {
+    if (!subjectId) return SUBJECT_ICONS.all;
+    const cleanId = subjectId.toLowerCase().replace(/[^a-z]/g, "");
+    return SUBJECT_ICONS[cleanId] || SUBJECT_ICONS[subjectId] || SUBJECT_ICONS.all;
+  }
+
   const SUBJECTS = [
-    { id: "toan", name: "Toán học", prefix: "TOAN" },
-    { id: "vatli", name: "Vật lí", prefix: "VATLI" },
-    { id: "hoa", name: "Hóa học", prefix: "HOA" },
-    { id: "sinh", name: "Sinh học", prefix: "SINH" },
-    { id: "tinhoc", name: "Tin học", prefix: "TINHOC" },
-    { id: "lichsu", name: "Lịch sử", prefix: "LICHSU" },
-    { id: "all", name: "Tất cả các môn (Combo VIP)", prefix: "ALL" }
+    { id: "toan", name: "Toán học 12", prefix: "TOAN", icon: "", page: "toan-hoc.html", questions: "125 câu (6 đề)" },
+    { id: "vatli", name: "Vật lí 12", prefix: "VATLI", icon: "", page: "vat-li.html", questions: "Chưa cập nhật đề" },
+    { id: "hoa", name: "Hóa học 12", prefix: "HOA", icon: "", page: "hoa-hoc.html", questions: "Chưa cập nhật đề" },
+    { id: "sinh", name: "Sinh học 12", prefix: "SINH", icon: "", page: "sinh-hoc.html", questions: "Chưa cập nhật đề" },
+    { id: "tinhoc", name: "Tin học 12", prefix: "TINHOC", icon: "", page: "tin-hoc.html", questions: "120 câu (4 chuyên đề)" },
+    { id: "lichsu", name: "Lịch sử 12", prefix: "LICHSU", icon: "", page: "lich-su.html", questions: "Chưa cập nhật đề" },
+    { id: "all", name: "Tất cả các môn (Combo VIP)", prefix: "ALL", icon: "", page: "../index.html", questions: "Toàn quyền truy cập" }
   ];
+
+  let switchAdminTabFn = null;
 
   function getSubjectById(id) {
     if (!id) return null;
@@ -201,6 +221,10 @@
     const sessionData = {
       username: user.username,
       fullName: user.fullName || user.username,
+      email: user.email || null,
+      avatar: user.avatar || user.picture || null,
+      authProvider: user.authProvider || "local",
+      googleId: user.googleId || null,
       role: user.role || (user.username.toLowerCase() === "admin" || user.username.toLowerCase() === "tdka" ? "admin" : "student"),
       unlockedSubjects: user.unlockedSubjects || [],
       createdAt: user.createdAt,
@@ -225,11 +249,20 @@
   }
 
   function dispatchAuthEvent(action, user) {
-    window.dispatchEvent(
-      new CustomEvent("kedu:auth-change", {
-        detail: { action, user }
-      })
-    );
+    if (typeof window !== "undefined" && typeof window.dispatchEvent === "function" && typeof CustomEvent !== "undefined") {
+      try {
+        window.dispatchEvent(
+          new CustomEvent("kedu:auth-change", {
+            detail: { action, user }
+          })
+        );
+        window.dispatchEvent(
+          new CustomEvent("kedu-auth-change", {
+            detail: { action, user }
+          })
+        );
+      } catch (_) {}
+    }
   }
 
   /**
@@ -510,7 +543,9 @@
     const gateHTML = `
       <div class="subject-lock-overlay" id="subjectLockOverlay">
         <div class="subject-lock-box">
-          <div class="subject-lock-icon-wrap">🔒</div>
+          <div class="subject-lock-icon-wrap">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
           <h2 class="subject-lock-title">Môn ${escapeHTML(subj.name)} Đang Bị Khóa</h2>
           <p class="subject-lock-desc">
             ${user ? `Tài khoản <strong>@${escapeHTML(user.username)}</strong> chưa kích hoạt môn học này. Hãy nhập mã key bản quyền để mở khóa truy cập toàn bộ câu hỏi ôn luyện.` : `Vui lòng đăng nhập tài khoản và kích hoạt mã key để truy cập ngân hàng câu hỏi môn <strong>${escapeHTML(subj.name)}</strong>.`}
@@ -691,22 +726,183 @@
 
     showToast(`Đã xóa tài khoản @${targetUsername}!`, "info");
     renderAdminUsersTable();
+    renderAdminSummaryMetrics();
     return true;
   }
 
+  function adminSetUserSubjects(targetUsername, subjectIdsArray) {
+    if (!isAdmin()) {
+      showToast("Chỉ Quản trị viên mới có quyền phân quyền môn học!", "error");
+      return false;
+    }
+    const users = getAllUsers();
+    const normalizedKey = targetUsername.toLowerCase();
+    if (!users[normalizedKey]) {
+      showToast("Không tìm thấy tài khoản người dùng!", "error");
+      return false;
+    }
+    users[normalizedKey].unlockedSubjects = Array.isArray(subjectIdsArray) ? subjectIdsArray : [];
+    saveAllUsers(users);
+    showToast(`Đã cập nhật danh sách môn học cho @${targetUsername}!`, "success");
+    renderAdminUsersTable();
+    renderAdminSummaryMetrics();
+    return true;
+  }
+
+  function adminCopyUnusedKeys(subjectId = null) {
+    const keys = getAllLicenseKeys();
+    const unusedList = Object.keys(keys)
+      .filter(code => {
+        const k = keys[code];
+        if (k.isUsed) return false;
+        if (subjectId && subjectId !== "all" && k.subjectId !== subjectId) return false;
+        return true;
+      });
+
+    if (unusedList.length === 0) {
+      showToast("Không có mã key nào chưa sử dụng để sao chép!", "info");
+      return;
+    }
+
+    const textToCopy = unusedList.join("\n");
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      showToast(`Đã sao chép ${unusedList.length} mã Key chưa dùng vào bộ nhớ tạm!`, "success");
+    }).catch(() => {
+      prompt("Danh sách mã Key:", textToCopy);
+    });
+  }
+
+  function adminExportKeys(format = "txt") {
+    const keys = getAllLicenseKeys();
+    const keyCodes = Object.keys(keys);
+    if (keyCodes.length === 0) {
+      showToast("Chưa có mã key nào trong hệ thống!", "info");
+      return;
+    }
+
+    let content = "";
+    let mimeType = "text/plain";
+    let fileName = `kedu_license_keys_${new Date().toISOString().slice(0, 10)}.txt`;
+
+    if (format === "csv") {
+      mimeType = "text/csv;charset=utf-8;";
+      fileName = `kedu_license_keys_${new Date().toISOString().slice(0, 10)}.csv`;
+      content = "Mã Key,Môn học,Trạng thái,Người kích hoạt,Ngày kích hoạt\n" +
+        keyCodes.map(code => {
+          const k = keys[code];
+          const subj = getSubjectById(k.subjectId);
+          return `"${k.code}","${subj ? subj.name : k.subjectId}","${k.isUsed ? 'Đã kích hoạt' : 'Chưa sử dụng'}","${k.usedBy || ''}","${k.usedAt || ''}"`;
+        }).join("\n");
+    } else {
+      content = "=== DANH SÁCH MÃ KEY BẢN QUYỀN KEDU ===\n" +
+        "Thời gian xuất: " + new Date().toLocaleString("vi-VN") + "\n\n" +
+        keyCodes.map(code => {
+          const k = keys[code];
+          const subj = getSubjectById(k.subjectId);
+          const status = k.isUsed ? `[ĐÃ DÙNG bởi @${k.usedBy}]` : "[CHƯA DÙNG]";
+          return `${k.code} | Môn: ${subj ? subj.name : k.subjectId} | ${status}`;
+        }).join("\n");
+    }
+
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast(`Đã xuất file ${fileName} thành công!`, "success");
+  }
+
+  function adminExportDataBackup() {
+    const backupData = {
+      version: "2.5",
+      system: "KEdu Education THPT",
+      exportedAt: new Date().toISOString(),
+      users: getAllUsers(),
+      keys: getAllLicenseKeys()
+    };
+    const jsonStr = JSON.stringify(backupData, null, 2);
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `kedu_system_backup_${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast("Đã tải xuống file sao lưu hệ thống JSON!", "success");
+  }
+
+  function adminImportDataBackup(jsonStr) {
+    try {
+      const data = JSON.parse(jsonStr);
+      if (!data.users || typeof data.users !== "object") {
+        showToast("File sao lưu không hợp lệ (thiếu danh sách người dùng)!", "error");
+        return false;
+      }
+      saveAllUsers(data.users);
+      if (data.keys && typeof data.keys === "object") {
+        saveAllLicenseKeys(data.keys);
+      }
+      showToast("Khôi phục dữ liệu từ bản sao lưu thành công!", "success");
+      renderAdminSummaryMetrics();
+      renderAdminUsersTable();
+      renderAdminKeysTable();
+      return true;
+    } catch (err) {
+      showToast("Lỗi giải mã file sao lưu JSON: " + err.message, "error");
+      return false;
+    }
+  }
+
+  let activeConfirmCallback = null;
+
+  function showAdminConfirmDialog({ title, message, confirmText = "Xác nhận", danger = true, onConfirm }) {
+    const overlay = document.getElementById("adminDialogConfirm");
+    if (!overlay) {
+      if (confirm(message)) {
+        if (typeof onConfirm === "function") onConfirm();
+      }
+      return;
+    }
+    const titleEl = document.getElementById("adminConfirmTitle");
+    const msgEl = document.getElementById("adminConfirmMsg");
+    const btnConfirm = document.getElementById("adminConfirmSubmitBtn");
+
+    if (titleEl) titleEl.textContent = title || "Xác nhận thao tác";
+    if (msgEl) msgEl.innerHTML = message;
+    if (btnConfirm) {
+      btnConfirm.textContent = confirmText;
+      btnConfirm.className = danger ? "btn-admin-primary" : "btn-admin-secondary";
+    }
+
+    activeConfirmCallback = onConfirm;
+    overlay.classList.add("active");
+  }
+
+  function closeAdminConfirmDialog() {
+    const overlay = document.getElementById("adminDialogConfirm");
+    if (overlay) overlay.classList.remove("active");
+    activeConfirmCallback = null;
+  }
+
   /**
-   * INJECT CẤU TRÚC TẤT CẢ MODAL
+   * INJECT CẤU TRÚC TẤT CẢ MODAL (ĐĂNG NHẬP, ĐĂNG KÝ, ĐỔI MẬT KHẨU, KÍCH HOẠT KEY, ADMIN)
    */
   function injectAuthModal() {
-    if (document.getElementById("authModal")) return;
+    if (document.getElementById("loginModal")) return;
 
     const subjectsOptionsHTML = SUBJECTS.map(s => `<option value="${s.id}">${s.name} (${s.prefix})</option>`).join("");
 
     const modalHTML = `
-      <!-- AUTH MODAL -->
-      <div class="auth-modal-overlay" id="authModal" aria-hidden="true">
-        <div class="auth-modal-card" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
-          <button class="auth-modal-close" id="authModalCloseBtn" type="button" title="Đóng cửa sổ" aria-label="Đóng cửa sổ">
+      <!-- 1. MODAL ĐĂNG NHẬP RIÊNG BIỆT -->
+      <div class="auth-modal-overlay" id="loginModal" aria-hidden="true">
+        <div class="auth-modal-card" role="dialog" aria-modal="true" aria-labelledby="loginModalTitle">
+          <button class="auth-modal-close" id="loginModalCloseBtn" type="button" title="Đóng cửa sổ" aria-label="Đóng cửa sổ">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
 
@@ -714,24 +910,13 @@
             <div class="auth-modal-brand-badge">
               <img src="${AUTH_BADGE_LOGO_PATH}" alt="KEdu Logo" class="auth-modal-logo">
             </div>
-            <h3 class="auth-modal-title" id="authModalTitle">Chào mừng bạn đến với KEdu</h3>
-          </div>
-
-          <div class="auth-tabs-row" id="authTabsRow" role="tablist">
-            <button class="auth-tab-btn active" id="tabBtnLogin" type="button" role="tab" aria-selected="true">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-              <span>Đăng nhập</span>
-            </button>
-            <button class="auth-tab-btn" id="tabBtnRegister" type="button" role="tab" aria-selected="false">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-              <span>Đăng ký</span>
-            </button>
+            <h3 class="auth-modal-title" id="loginModalTitle">Đăng Nhập Tài Khoản</h3>
+            <p class="auth-modal-subtitle">Truy cập ngân hàng ôn luyện và làm bài thi THPT 2026</p>
           </div>
 
           <div class="auth-modal-body">
-            <div class="auth-alert" id="authAlertBox" role="alert" aria-live="polite"></div>
+            <div class="auth-alert" id="loginAlertBox" role="alert" aria-live="polite"></div>
 
-            <!-- FORM ĐĂNG NHẬP -->
             <form id="formLogin" class="auth-form-pane active" novalidate>
               <div class="auth-field-group">
                 <label class="auth-label" for="loginUsername">
@@ -768,18 +953,38 @@
               </div>
 
               <button type="submit" class="btn-auth-submit" id="btnLoginSubmit">
-                <span>Đăng nhập tài khoản</span>
+                <span>Đăng nhập ngay</span>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
               </button>
 
               <div class="auth-form-footer">
                 <span>Chưa có tài khoản?</span>
-                <button type="button" class="auth-link" id="linkToRegister">Đăng ký tài khoản ngay</button>
+                <button type="button" class="auth-link" id="linkToRegister">Đăng ký tài khoản ngay →</button>
               </div>
             </form>
+          </div>
+        </div>
+      </div>
 
-            <!-- FORM ĐĂNG KÝ -->
-            <form id="formRegister" class="auth-form-pane" novalidate>
+      <!-- 2. MODAL ĐĂNG KÝ RIÊNG BIỆT -->
+      <div class="auth-modal-overlay" id="registerModal" aria-hidden="true">
+        <div class="auth-modal-card" role="dialog" aria-modal="true" aria-labelledby="registerModalTitle">
+          <button class="auth-modal-close" id="registerModalCloseBtn" type="button" title="Đóng cửa sổ" aria-label="Đóng cửa sổ">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+
+          <div class="auth-modal-top">
+            <div class="auth-modal-brand-badge">
+              <img src="${AUTH_BADGE_LOGO_PATH}" alt="KEdu Logo" class="auth-modal-logo">
+            </div>
+            <h3 class="auth-modal-title" id="registerModalTitle">Tạo Tài Khoản Học Viên</h3>
+            <p class="auth-modal-subtitle">Khởi tạo tài khoản ôn luyện và làm bài thi THPT 2026 miễn phí</p>
+          </div>
+
+          <div class="auth-modal-body">
+            <div class="auth-alert" id="registerAlertBox" role="alert" aria-live="polite"></div>
+
+            <form id="formRegister" class="auth-form-pane active" novalidate>
               <div class="auth-field-group">
                 <label class="auth-label" for="regUsername">
                   <span>Tên tài khoản <span class="auth-req">*</span></span>
@@ -788,7 +993,7 @@
                   <span class="auth-input-icon">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                   </span>
-                  <input type="text" id="regUsername" class="auth-input" placeholder="Nhập tên tài khoản" autocomplete="username" spellcheck="false" required>
+                  <input type="text" id="regUsername" class="auth-input" placeholder="Nhập tên tài khoản (viết liền không dấu)" autocomplete="username" spellcheck="false" required>
                 </div>
               </div>
 
@@ -828,7 +1033,7 @@
                   <span class="auth-input-icon">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
                   </span>
-                  <input type="password" id="regConfirmPassword" class="auth-input" placeholder="Nhập lại mật khẩu" autocomplete="new-password" required>
+                  <input type="password" id="regConfirmPassword" class="auth-input" placeholder="Nhập lại chính xác mật khẩu" autocomplete="new-password" required>
                   <button type="button" class="auth-toggle-pwd" data-target="regConfirmPassword" title="Ẩn/Hiện mật khẩu" aria-label="Ẩn/Hiện mật khẩu">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                   </button>
@@ -843,12 +1048,32 @@
 
               <div class="auth-form-footer">
                 <span>Đã có tài khoản?</span>
-                <button type="button" class="auth-link" id="linkToLogin">Đăng nhập</button>
+                <button type="button" class="auth-link" id="linkToLogin">← Đã có tài khoản? Đăng nhập ngay</button>
               </div>
             </form>
+          </div>
+        </div>
+      </div>
 
-            <!-- FORM ĐỔI MẬT KHẨU -->
-            <form id="formChangePassword" class="auth-form-pane" novalidate>
+      <!-- 3. MODAL ĐỔI MẬT KHẨU RIÊNG BIỆT -->
+      <div class="auth-modal-overlay" id="changePasswordModal" aria-hidden="true">
+        <div class="auth-modal-card" role="dialog" aria-modal="true" aria-labelledby="changePasswordModalTitle">
+          <button class="auth-modal-close" id="changePasswordModalCloseBtn" type="button" title="Đóng cửa sổ" aria-label="Đóng cửa sổ">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+
+          <div class="auth-modal-top">
+            <div class="auth-modal-brand-badge" style="background: #eff6ff; border-color: #bfdbfe;">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <h3 class="auth-modal-title" id="changePasswordModalTitle">Đổi Mật Khẩu Tài Khoản</h3>
+            <p class="auth-modal-subtitle">Bảo mật tài khoản bằng cách cập nhật mật khẩu mới</p>
+          </div>
+
+          <div class="auth-modal-body">
+            <div class="auth-alert" id="changePasswordAlertBox" role="alert" aria-live="polite"></div>
+
+            <form id="formChangePassword" class="auth-form-pane active" novalidate>
               <div class="auth-field-group">
                 <label class="auth-label" for="changeOldPassword">
                   <span>Mật khẩu hiện tại <span class="auth-req">*</span></span>
@@ -858,6 +1083,9 @@
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                   </span>
                   <input type="password" id="changeOldPassword" class="auth-input" placeholder="Nhập mật khẩu hiện tại" autocomplete="current-password" required>
+                  <button type="button" class="auth-toggle-pwd" data-target="changeOldPassword" title="Ẩn/Hiện mật khẩu" aria-label="Ẩn/Hiện mật khẩu">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
                 </div>
               </div>
 
@@ -870,6 +1098,9 @@
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                   </span>
                   <input type="password" id="changeNewPassword" class="auth-input" placeholder="Mật khẩu mới (ít nhất 6 ký tự)" autocomplete="new-password" required>
+                  <button type="button" class="auth-toggle-pwd" data-target="changeNewPassword" title="Ẩn/Hiện mật khẩu" aria-label="Ẩn/Hiện mật khẩu">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
                 </div>
               </div>
 
@@ -882,6 +1113,9 @@
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
                   </span>
                   <input type="password" id="changeConfirmNewPassword" class="auth-input" placeholder="Nhập lại mật khẩu mới" autocomplete="new-password" required>
+                  <button type="button" class="auth-toggle-pwd" data-target="changeConfirmNewPassword" title="Ẩn/Hiện mật khẩu" aria-label="Ẩn/Hiện mật khẩu">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
                 </div>
               </div>
 
@@ -890,7 +1124,7 @@
               </button>
 
               <div class="auth-form-footer">
-                <button type="button" class="auth-link" id="linkCancelChangePwd">Quay lại</button>
+                <button type="button" class="auth-link" id="linkCancelChangePwd">Quay lại / Đóng cửa sổ</button>
               </div>
             </form>
           </div>
@@ -936,116 +1170,383 @@
         </div>
       </div>
 
-      <!-- ADMIN PANEL MODAL (NGƯỜI DÙNG & MÃ KEY) -->
+      <!-- MODERN ADMIN COMMAND CENTER (BẢNG QUẢN TRỊ CAO CẤP) -->
       <div class="auth-modal-overlay" id="adminModal" aria-hidden="true">
-        <div class="auth-modal-card admin-modal-card" role="dialog" aria-modal="true">
-          <button class="auth-modal-close" id="adminModalCloseBtn" type="button" title="Đóng cửa sổ" aria-label="Đóng cửa sổ">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
+        <div class="auth-modal-card admin-modal-card" role="dialog" aria-modal="true" aria-labelledby="adminHeaderTitle">
+          <!-- HEADER -->
+          <div class="admin-modal-header">
+            <div class="admin-header-brand">
+              <div class="admin-header-crown">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/>
+                </svg>
+              </div>
+              <div class="admin-header-titles">
+                <h2 id="adminHeaderTitle">
+                  <span>Bảng Quản Trị Hệ Thống</span>
+                  <span class="admin-header-badge">Admin Center</span>
+                </h2>
+                <p class="admin-header-desc">Quản lý người dùng, bản quyền ôn luyện & ngân hàng đề thi THPT 2026</p>
+              </div>
+            </div>
 
-          <div class="auth-modal-top" style="text-align: left; padding: 22px 24px; border-bottom: 1px solid #e2e8f0;">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <div style="width: 44px; height: 44px; border-radius: 12px; background: #fffbeb; border: 1.5px solid #fde68a; display: flex; align-items: center; justify-content: center; color: #d97706; flex-shrink: 0; box-shadow: 0 2px 8px rgba(217, 119, 6, 0.15);">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>
-              </div>
-              <div>
-                <h3 class="auth-modal-title" style="font-size: 19px; margin-bottom: 2px;">Bảng Quản Trị Hệ Thống (Admin Panel)</h3>
-                <p class="auth-modal-subtitle">Phân quyền học viên & Quản lý phát hành Mã Key bản quyền theo môn</p>
-              </div>
+            <div class="admin-header-actions">
+              <a href="${isSubPage ? 'quan-ly-de.html' : 'pages/quan-ly-de.html'}" class="btn-admin-header-link" title="Xem & chỉnh sửa đáp án câu hỏi">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <span>Quản lý Đề & Đáp án</span>
+              </a>
+              <a href="${isSubPage ? 'admin.html' : 'pages/admin.html'}" class="btn-admin-header-link" title="Mở giao diện quản trị toàn màn hình">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                <span>Toàn màn hình</span>
+              </a>
+              <button class="btn-admin-close" id="adminModalCloseBtn" type="button" title="Đóng bảng quản trị" aria-label="Đóng">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
             </div>
           </div>
 
-          <div class="auth-modal-body" style="padding: 18px 24px 24px;">
-            <!-- Tabs -->
-            <div class="admin-tab-nav">
-              <button type="button" class="admin-tab-link active" id="tabAdminUsers">
+          <!-- BODY -->
+          <div class="admin-modal-body">
+            <!-- 4-METRIC STATS GRID -->
+            <div class="admin-metrics-grid">
+              <div class="admin-metric-card">
+                <div class="admin-metric-info">
+                  <div class="admin-metric-label">Tổng người dùng</div>
+                  <div class="admin-metric-num" id="statTotalUsers">0</div>
+                  <div class="admin-metric-meta">
+                    <span style="color:#d97706; font-weight:700;"><span id="statAdminUsers">0</span> Admin</span> • 
+                    <span style="color:#2563eb; font-weight:700;"><span id="statStudentUsers">0</span> Học viên</span>
+                  </div>
+                </div>
+                <div class="admin-metric-icon blue">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+              </div>
+
+              <div class="admin-metric-card">
+                <div class="admin-metric-info">
+                  <div class="admin-metric-label">Mã Bản quyền (Key)</div>
+                  <div class="admin-metric-num" id="statTotalKeys">0</div>
+                  <div class="admin-metric-meta">
+                    <span style="color:#16a34a; font-weight:700;"><span id="statUnusedKeys">0</span> Sẵn sàng</span> • 
+                    <span style="color:#64748b;"><span id="statUsedKeys">0</span> Đã dùng</span>
+                  </div>
+                </div>
+                <div class="admin-metric-icon amber">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-1.5 1.5L14 9l-1.5-1.5L11 9l-1.5-1.5L8 9l-4.5 4.5a3 3 0 1 0 4.24 4.24L12 13.5l1.5 1.5 1.5-1.5 1.5 1.5 3.5-3.5a3 3 0 0 0-4.24-4.24z"/></svg>
+                </div>
+              </div>
+
+              <div class="admin-metric-card">
+                <div class="admin-metric-info">
+                  <div class="admin-metric-label">Môn học phủ sóng</div>
+                  <div class="admin-metric-num"><span id="statTotalSubjects">6</span> Môn</div>
+                  <div class="admin-metric-meta">
+                    <span style="color:#16a34a; font-weight:700;">Toán (6 đề - 125 câu) • Tin (4 CĐ - 120 câu)</span>
+                  </div>
+                </div>
+                <div class="admin-metric-icon green">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                </div>
+              </div>
+
+              <div class="admin-metric-card">
+                <div class="admin-metric-info">
+                  <div class="admin-metric-label">Tỷ lệ kích hoạt Key</div>
+                  <div class="admin-metric-num" id="statKeyUsageRate">0%</div>
+                  <div class="admin-metric-meta">
+                    <span style="color:#2563eb; font-weight:700;">Hệ thống bảo mật SHA-256</span>
+                  </div>
+                </div>
+                <div class="admin-metric-icon purple">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- TABS NAV -->
+            <div class="admin-tabs-bar">
+              <button type="button" class="admin-tab-btn active" id="tabAdminUsers">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 <span>Quản lý Người dùng</span>
+                <span class="admin-tab-badge" id="adminBadgeUsersCount">0</span>
               </button>
-              <button type="button" class="admin-tab-link" id="tabAdminKeys">
+              <button type="button" class="admin-tab-btn" id="tabAdminKeys">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-1.5 1.5L14 9l-1.5-1.5L11 9l-1.5-1.5L8 9l-4.5 4.5a3 3 0 1 0 4.24 4.24L12 13.5l1.5 1.5 1.5-1.5 1.5 1.5 3.5-3.5a3 3 0 0 0-4.24-4.24z"/></svg>
-                <span>Quản lý Mã Key</span>
+                <span>Quản lý Mã Bản quyền</span>
+                <span class="admin-tab-badge" id="adminBadgeKeysCount">0</span>
+              </button>
+              <button type="button" class="admin-tab-btn" id="tabAdminSubjects">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                <span>Kho đề & Môn học</span>
+                <span class="admin-tab-badge">6</span>
+              </button>
+              <button type="button" class="admin-tab-btn" id="tabAdminBackup">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Sao lưu & Dữ liệu</span>
               </button>
             </div>
 
             <!-- PANE 1: USERS -->
             <div id="paneAdminUsers">
-              <div class="admin-stats-row">
-                <div class="admin-stat-box">
-                  <span class="admin-stat-num" id="statTotalUsers">0</span>
-                  <span class="admin-stat-label">Tổng người dùng</span>
+              <div class="admin-toolbar-row">
+                <div class="admin-filter-group">
+                  <button type="button" class="admin-filter-pill active" id="filterUserRoleAll" data-role="all">Tất cả</button>
+                  <button type="button" class="admin-filter-pill" id="filterUserRoleAdmin" data-role="admin">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>
+                    <span>Quản trị viên</span>
+                  </button>
+                  <button type="button" class="admin-filter-pill" id="filterUserRoleStudent" data-role="student">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                    <span>Học viên</span>
+                  </button>
                 </div>
-                <div class="admin-stat-box">
-                  <span class="admin-stat-num" id="statAdminUsers" style="color: #b45309;">0</span>
-                  <span class="admin-stat-label">Quản trị viên</span>
-                </div>
-                <div class="admin-stat-box">
-                  <span class="admin-stat-num" id="statStudentUsers" style="color: #2563eb;">0</span>
-                  <span class="admin-stat-label">Học viên</span>
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                  <div class="admin-search-wrap">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" class="admin-search-input" id="adminSearchInput" placeholder="Tìm tài khoản theo tên...">
+                  </div>
+                  <button type="button" class="btn-admin-primary" id="btnAdminCreateUser">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    <span>Thêm tài khoản</span>
+                  </button>
                 </div>
               </div>
 
-              <div class="admin-toolbar">
-                <input type="text" class="admin-search-input" id="adminSearchInput" placeholder="🔍 Tìm kiếm theo tên tài khoản...">
-                <button type="button" class="btn-admin-add" id="btnAdminCreateUser">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                  <span>Tạo tài khoản mới</span>
-                </button>
-              </div>
-
-              <div class="admin-table-wrap">
-                <table class="admin-table">
-                  <thead>
-                    <tr>
-                      <th>Tên tài khoản</th>
-                      <th>Vai trò</th>
-                      <th>Môn đã mở khóa</th>
-                      <th style="text-align: right;">Thao tác</th>
-                    </tr>
-                  </thead>
-                  <tbody id="adminUsersTableBody"></tbody>
-                </table>
+              <div class="admin-table-container">
+                <div class="admin-table-scroll">
+                  <table class="admin-data-table">
+                    <thead>
+                      <tr>
+                        <th>Người dùng</th>
+                        <th>Vai trò</th>
+                        <th>Môn học mở khóa</th>
+                        <th style="text-align: right;">Thao tác</th>
+                      </tr>
+                    </thead>
+                    <tbody id="adminUsersTableBody"></tbody>
+                  </table>
+                </div>
               </div>
             </div>
 
             <!-- PANE 2: KEYS -->
             <div id="paneAdminKeys" style="display: none;">
-              <!-- Key Gen Form -->
-              <div class="admin-key-gen-bar">
-                <div style="font-weight: 700; font-size: 13px; color: #1e293b;">Tạo mã Key mới:</div>
-                <select id="selAdminKeySubject" class="admin-select">
-                  ${subjectsOptionsHTML}
-                </select>
-                <select id="selAdminKeyCount" class="admin-select" style="width: 100px;">
-                  <option value="1">1 Key</option>
-                  <option value="3">3 Key</option>
-                  <option value="5">5 Key</option>
-                  <option value="10">10 Key</option>
-                </select>
-                <button type="button" class="btn-admin-add" id="btnAdminGenKeys" style="background: #d97706;">
-                  <span>+ Tạo mã Key</span>
-                </button>
+              <!-- Key Gen Card -->
+              <div class="admin-key-gen-card">
+                <div class="admin-key-gen-controls">
+                  <span style="font-weight: 700; font-size: 13px; color: #0f2657;">Tạo mã Key mới:</span>
+                  <select id="selAdminKeySubject" class="admin-select">
+                    ${subjectsOptionsHTML}
+                  </select>
+                  <select id="selAdminKeyCount" class="admin-select" style="width: 105px;">
+                    <option value="1">1 Key</option>
+                    <option value="3">3 Key</option>
+                    <option value="5">5 Key</option>
+                    <option value="10">10 Key</option>
+                    <option value="20">20 Key</option>
+                  </select>
+                  <button type="button" class="btn-admin-primary" id="btnAdminGenKeys" style="background: linear-gradient(135deg, #d97706, #b45309);">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
+                    <span>Tạo Key</span>
+                  </button>
+                </div>
+
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                  <button type="button" class="btn-admin-secondary" id="btnAdminCopyUnusedKeys" title="Sao chép toàn bộ danh sách key chưa sử dụng">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <span>Copy key chưa dùng</span>
+                  </button>
+                  <button type="button" class="btn-admin-secondary" id="btnAdminExportKeysTxt" title="Xuất file danh sách Key">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>Xuất TXT</span>
+                  </button>
+                </div>
               </div>
 
-              <div class="admin-toolbar">
-                <input type="text" class="admin-search-input" id="adminSearchKeyInput" placeholder="🔍 Tìm kiếm theo mã key hoặc tài khoản...">
+              <!-- Filter Row -->
+              <div class="admin-toolbar-row">
+                <div class="admin-filter-group">
+                  <button type="button" class="admin-filter-pill active" id="filterKeyStatusAll" data-status="all">Tất cả Key</button>
+                  <button type="button" class="admin-filter-pill" id="filterKeyStatusUnused" data-status="unused"><span style="color:#10b981; font-weight:bold; margin-right:4px;">●</span>Chưa sử dụng</button>
+                  <button type="button" class="admin-filter-pill" id="filterKeyStatusUsed" data-status="used"><span style="color:#94a3b8; font-weight:bold; margin-right:4px;">●</span>Đã kích hoạt</button>
+                  <select id="selAdminKeyFilterSubject" class="admin-select" style="font-size: 12px; padding: 4px 8px;">
+                    <option value="all">-- Lọc theo tất cả môn --</option>
+                    ${SUBJECTS.map(s => `<option value="${s.id}">${s.name}</option>`).join("")}
+                  </select>
+                </div>
+                <div class="admin-search-wrap">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <input type="text" class="admin-search-input" id="adminSearchKeyInput" placeholder="Tìm theo mã key hoặc @user...">
+                </div>
               </div>
 
-              <div class="admin-table-wrap">
-                <table class="admin-table">
-                  <thead>
-                    <tr>
-                      <th>Mã Key</th>
-                      <th>Môn học</th>
-                      <th>Trạng thái</th>
-                      <th>Người kích hoạt</th>
-                      <th style="text-align: right;">Thao tác</th>
-                    </tr>
-                  </thead>
-                  <tbody id="adminKeysTableBody"></tbody>
-                </table>
+              <div class="admin-table-container">
+                <div class="admin-table-scroll">
+                  <table class="admin-data-table">
+                    <thead>
+                      <tr>
+                        <th>Mã Key Bản quyền</th>
+                        <th>Môn học áp dụng</th>
+                        <th>Trạng thái</th>
+                        <th>Người kích hoạt</th>
+                        <th style="text-align: right;">Thao tác</th>
+                      </tr>
+                    </thead>
+                    <tbody id="adminKeysTableBody"></tbody>
+                  </table>
+                </div>
               </div>
             </div>
+
+            <!-- PANE 3: SUBJECTS -->
+            <div id="paneAdminSubjects" style="display: none;">
+              <div style="margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                  <h3 style="font-size: 15px; font-weight: 800; color: #0f2657; margin: 0 0 3px 0;">Tổng quan 8 Môn thi tốt nghiệp THPT</h3>
+                  <p style="font-size: 12px; color: #64748b; margin: 0;">Kiểm tra tiến độ soạn câu hỏi và tạo nhanh mã Key kích hoạt cho từng môn</p>
+                </div>
+              </div>
+              <div class="admin-subjects-grid" id="adminSubjectsGridContainer"></div>
+            </div>
+
+            <!-- PANE 4: BACKUP & DATA -->
+            <div id="paneAdminBackup" style="display: none;">
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                <div class="admin-metric-card" style="flex-direction: column; gap: 12px;">
+                  <div>
+                    <h4 style="font-size: 15px; font-weight: 800; color: #0f2657; margin: 0 0 6px 0;">Sao lưu Dữ liệu Hệ thống (Backup JSON)</h4>
+                    <p style="font-size: 12px; color: #64748b; margin: 0; line-height: 1.5;">Tải xuống tệp JSON chứa toàn bộ tài khoản người dùng, phân quyền và kho mã key bản quyền để lưu trữ an toàn.</p>
+                  </div>
+                  <button type="button" class="btn-admin-primary" id="btnAdminExportBackup">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>Tải file sao lưu JSON</span>
+                  </button>
+                </div>
+
+                <div class="admin-metric-card" style="flex-direction: column; gap: 12px;">
+                  <div>
+                    <h4 style="font-size: 15px; font-weight: 800; color: #0f2657; margin: 0 0 6px 0;">Khôi phục Dữ liệu (Restore JSON)</h4>
+                    <p style="font-size: 12px; color: #64748b; margin: 0; line-height: 1.5;">Chọn tệp JSON sao lưu trước đó để nạp lại dữ liệu người dùng và mã key vào trình duyệt này.</p>
+                  </div>
+                  <input type="file" id="fileAdminBackupInput" accept=".json" style="display: none;">
+                  <button type="button" class="btn-admin-secondary" id="btnAdminImportBackup">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <span>Chọn tệp JSON khôi phục</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- IN-APP SUB-MODAL: TẠO TÀI KHOẢN MỚI -->
+      <div class="admin-dialog-overlay" id="adminDialogCreateUser">
+        <div class="admin-dialog-card">
+          <div class="admin-dialog-head">
+            <h3 class="admin-dialog-title">Thêm tài khoản người dùng mới</h3>
+            <button type="button" class="btn-admin-close" id="btnCloseCreateUserModal" style="color:#64748b; width:28px; height:28px;" title="Đóng">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <form id="formAdminCreateUser">
+            <div class="admin-dialog-body">
+              <div class="admin-form-group">
+                <label class="admin-form-label" for="adminNewUserUsername">Tên tài khoản (Username) *</label>
+                <input type="text" class="admin-form-input" id="adminNewUserUsername" placeholder="ví dụ: hocsinh12a, thaykhoa..." required autocomplete="off">
+              </div>
+              <div class="admin-form-group">
+                <label class="admin-form-label" for="adminNewUserPassword">Mật khẩu ban đầu (tối thiểu 6 ký tự) *</label>
+                <input type="password" class="admin-form-input" id="adminNewUserPassword" placeholder="Nhập mật khẩu..." required minlength="6">
+              </div>
+              <div class="admin-form-group">
+                <label class="admin-form-label" for="adminNewUserRole">Vai trò tài khoản *</label>
+                <select class="admin-form-input" id="adminNewUserRole">
+                  <option value="student">Học viên (Chỉ mở các môn được cấp)</option>
+                  <option value="admin">Quản trị viên (Toàn quyền hệ thống & tất cả môn)</option>
+                </select>
+              </div>
+              <div class="admin-form-group" id="adminNewUserSubjectsGroup">
+                <label class="admin-form-label">Môn học mở khóa ngay (Học viên):</label>
+                <div class="admin-subjects-checkboxes" id="adminNewUserSubjectsList"></div>
+              </div>
+            </div>
+            <div class="admin-dialog-footer">
+              <button type="button" class="btn-admin-secondary" id="btnCancelCreateUserModal">Hủy bỏ</button>
+              <button type="submit" class="btn-admin-primary">Tạo tài khoản</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- IN-APP SUB-MODAL: ĐẶT LẠI MẬT KHẨU -->
+      <div class="admin-dialog-overlay" id="adminDialogResetPass">
+        <div class="admin-dialog-card">
+          <div class="admin-dialog-head">
+            <h3 class="admin-dialog-title">Đặt lại mật khẩu cho <span id="adminResetPassTargetUser" style="color:#d42525;"></span></h3>
+            <button type="button" class="btn-admin-close" id="btnCloseResetPassModal" style="color:#64748b; width:28px; height:28px;" title="Đóng">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <form id="formAdminResetPass">
+            <div class="admin-dialog-body">
+              <div class="admin-form-group">
+                <label class="admin-form-label" for="adminResetPassNewPassword">Mật khẩu mới (tối thiểu 6 ký tự) *</label>
+                <input type="password" class="admin-form-input" id="adminResetPassNewPassword" placeholder="Nhập mật khẩu mới..." required minlength="6">
+              </div>
+              <p style="font-size:12px; color:#64748b; margin:0;">Mật khẩu mới sẽ có hiệu lực ngay lập tức. Người dùng có thể đăng nhập bằng mật khẩu này.</p>
+            </div>
+            <div class="admin-dialog-footer">
+              <button type="button" class="btn-admin-secondary" id="btnCancelResetPassModal">Hủy bỏ</button>
+              <button type="submit" class="btn-admin-primary">Cập nhật mật khẩu</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- IN-APP SUB-MODAL: PHÂN QUYỀN MÔN HỌC -->
+      <div class="admin-dialog-overlay" id="adminDialogUserSubjects">
+        <div class="admin-dialog-card">
+          <div class="admin-dialog-head">
+            <h3 class="admin-dialog-title">Phân quyền môn học: <span id="adminUserSubjectsTargetUser" style="color:#2563eb;"></span></h3>
+            <button type="button" class="btn-admin-close" id="btnCloseUserSubjectsModal" style="color:#64748b; width:28px; height:28px;" title="Đóng">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <form id="formAdminUserSubjects">
+            <div class="admin-dialog-body">
+              <p style="font-size:12px; color:#64748b; margin:0 0 12px 0;">Chọn các môn học mà học viên này được phép vào làm bài thi ôn luyện:</p>
+              <div class="admin-subjects-checkboxes" id="adminUserSubjectsCheckboxes"></div>
+              <div style="margin-top: 10px; display: flex; gap: 8px;">
+                <button type="button" class="btn-table-action btn-action-role" id="btnSelectAllUserSubjects">Chọn tất cả</button>
+                <button type="button" class="btn-table-action btn-action-reset" id="btnUnselectAllUserSubjects">Bỏ chọn hết</button>
+              </div>
+            </div>
+            <div class="admin-dialog-footer">
+              <button type="button" class="btn-admin-secondary" id="btnCancelUserSubjectsModal">Hủy bỏ</button>
+              <button type="submit" class="btn-admin-primary">Lưu phân quyền</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- IN-APP SUB-MODAL: HỘP THOẠI XÁC NHẬN (CONFIRM) -->
+      <div class="admin-dialog-overlay" id="adminDialogConfirm">
+        <div class="admin-dialog-card" style="max-width: 420px;">
+          <div class="admin-dialog-head">
+            <h3 class="admin-dialog-title" id="adminConfirmTitle">Xác nhận thao tác</h3>
+            <button type="button" class="btn-admin-close" id="btnCloseConfirmModal" style="color:#64748b; width:28px; height:28px;" title="Đóng">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="admin-dialog-body">
+            <p id="adminConfirmMsg" style="font-size: 13.5px; color: #334155; margin: 0; line-height: 1.5;"></p>
+          </div>
+          <div class="admin-dialog-footer">
+            <button type="button" class="btn-admin-secondary" id="btnCancelConfirmModal">Hủy</button>
+            <button type="button" class="btn-admin-primary" id="adminConfirmSubmitBtn">Xác nhận</button>
           </div>
         </div>
       </div>
@@ -1064,17 +1565,16 @@
    * BIND SỰ KIỆN CHO FORM VÀ MODAL
    */
   function bindModalEvents() {
-    const modal = document.getElementById("authModal");
-    const closeBtn = document.getElementById("authModalCloseBtn");
-    const tabLogin = document.getElementById("tabBtnLogin");
-    const tabRegister = document.getElementById("tabBtnRegister");
-    const tabsRow = document.getElementById("authTabsRow");
-    const titleEl = document.getElementById("authModalTitle");
+    const loginModal = document.getElementById("loginModal");
+    const loginModalCloseBtn = document.getElementById("loginModalCloseBtn");
+    const registerModal = document.getElementById("registerModal");
+    const registerModalCloseBtn = document.getElementById("registerModalCloseBtn");
+    const changePasswordModal = document.getElementById("changePasswordModal");
+    const changePasswordModalCloseBtn = document.getElementById("changePasswordModalCloseBtn");
 
     const formLogin = document.getElementById("formLogin");
     const formRegister = document.getElementById("formRegister");
     const formChangePassword = document.getElementById("formChangePassword");
-    const alertBox = document.getElementById("authAlertBox");
 
     const linkToRegister = document.getElementById("linkToRegister");
     const linkToLogin = document.getElementById("linkToLogin");
@@ -1097,7 +1597,22 @@
     const activateKeyModalCloseBtn = document.getElementById("activateKeyModalCloseBtn");
     const formActivateKey = document.getElementById("formActivateKey");
 
-    function showAlert(msg, type = "error") {
+    function showAlert(msg, type = "error", targetBoxId = null) {
+      let alertBox = null;
+      if (targetBoxId) {
+        alertBox = document.getElementById(targetBoxId);
+      }
+      if (!alertBox) {
+        if (registerModal?.classList.contains("active")) {
+          alertBox = document.getElementById("registerAlertBox");
+        } else if (changePasswordModal?.classList.contains("active")) {
+          alertBox = document.getElementById("changePasswordAlertBox");
+        } else {
+          alertBox = document.getElementById("loginAlertBox");
+        }
+      }
+      if (!alertBox) return;
+
       alertBox.className = `auth-alert show ${type === "success" ? "alert-success" : "alert-error"}`;
       alertBox.innerHTML = `
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;">
@@ -1110,8 +1625,13 @@
     }
 
     function hideAlert() {
-      alertBox.className = "auth-alert";
-      alertBox.innerHTML = "";
+      ["loginAlertBox", "registerAlertBox", "changePasswordAlertBox"].forEach(id => {
+        const box = document.getElementById(id);
+        if (box) {
+          box.className = "auth-alert";
+          box.innerHTML = "";
+        }
+      });
     }
 
     function setBtnLoading(btn, isLoading, loadingText = "Đang xử lý...") {
@@ -1211,45 +1731,10 @@
     });
     regConfirmPwdInput?.addEventListener("input", checkPwdMatch);
 
-    function switchTab(tab) {
-      hideAlert();
-      tabsRow.style.display = "grid";
-      if (tab === "login") {
-        tabLogin.classList.add("active");
-        tabRegister.classList.remove("active");
-        tabLogin.setAttribute("aria-selected", "true");
-        tabRegister.setAttribute("aria-selected", "false");
-        formLogin.classList.add("active");
-        formRegister.classList.remove("active");
-        formChangePassword.classList.remove("active");
-        titleEl.textContent = "Đăng nhập tài khoản KEdu";
-        setTimeout(() => document.getElementById("loginUsername")?.focus(), 100);
-      } else if (tab === "register") {
-        tabLogin.classList.remove("active");
-        tabRegister.classList.add("active");
-        tabLogin.setAttribute("aria-selected", "false");
-        tabRegister.setAttribute("aria-selected", "true");
-        formLogin.classList.remove("active");
-        formRegister.classList.add("active");
-        formChangePassword.classList.remove("active");
-        titleEl.textContent = "Tạo tài khoản học viên mới";
-        setTimeout(() => document.getElementById("regUsername")?.focus(), 100);
-      } else if (tab === "changePassword") {
-        tabsRow.style.display = "none";
-        formLogin.classList.remove("active");
-        formRegister.classList.remove("active");
-        formChangePassword.classList.add("active");
-        titleEl.textContent = "Đổi mật khẩu tài khoản";
-        setTimeout(() => document.getElementById("changeOldPassword")?.focus(), 100);
-      }
-    }
-
-    tabLogin.addEventListener("click", () => switchTab("login"));
-    tabRegister.addEventListener("click", () => switchTab("register"));
-    linkToRegister.addEventListener("click", () => switchTab("register"));
-    linkToLogin.addEventListener("click", () => switchTab("login"));
+    linkToRegister?.addEventListener("click", () => openRegisterModal());
+    linkToLogin?.addEventListener("click", () => openLoginModal());
     if (linkCancelChangePwd) {
-      linkCancelChangePwd.addEventListener("click", () => closeModal());
+      linkCancelChangePwd.addEventListener("click", () => closeAllAuthModals());
     }
 
     // Toggle password eye button
@@ -1268,9 +1753,18 @@
       });
     });
 
-    closeBtn.addEventListener("click", closeModal);
-    modal.addEventListener("click", (e) => {
-      if (e.target === modal) closeModal();
+    loginModalCloseBtn?.addEventListener("click", closeAllAuthModals);
+    registerModalCloseBtn?.addEventListener("click", closeAllAuthModals);
+    changePasswordModalCloseBtn?.addEventListener("click", closeAllAuthModals);
+
+    loginModal?.addEventListener("click", (e) => {
+      if (e.target === loginModal) closeAllAuthModals();
+    });
+    registerModal?.addEventListener("click", (e) => {
+      if (e.target === registerModal) closeAllAuthModals();
+    });
+    changePasswordModal?.addEventListener("click", (e) => {
+      if (e.target === changePasswordModal) closeAllAuthModals();
     });
 
     if (adminModalCloseBtn && adminModal) {
@@ -1287,21 +1781,73 @@
       });
     }
 
-    // Switch Admin Tabs (Users vs Keys)
-    tabAdminUsers?.addEventListener("click", () => {
-      tabAdminUsers.classList.add("active");
-      tabAdminKeys.classList.remove("active");
-      paneAdminUsers.style.display = "block";
-      paneAdminKeys.style.display = "none";
-      renderAdminUsersTable();
+    // Admin Tabs Switcher (4 Tabs: Users, Keys, Subjects, Backup)
+    const tabAdminSubjects = document.getElementById("tabAdminSubjects");
+    const tabAdminBackup = document.getElementById("tabAdminBackup");
+    const paneAdminSubjects = document.getElementById("paneAdminSubjects");
+    const paneAdminBackup = document.getElementById("paneAdminBackup");
+
+    function switchAdminTab(targetTab) {
+      const allTabs = [tabAdminUsers, tabAdminKeys, tabAdminSubjects, tabAdminBackup];
+      const allPanes = [paneAdminUsers, paneAdminKeys, paneAdminSubjects, paneAdminBackup];
+
+      allTabs.forEach(t => t?.classList.remove("active"));
+      allPanes.forEach(p => { if (p) p.style.display = "none"; });
+
+      if (targetTab === "users") {
+        tabAdminUsers?.classList.add("active");
+        if (paneAdminUsers) paneAdminUsers.style.display = "block";
+        renderAdminUsersTable();
+      } else if (targetTab === "keys") {
+        tabAdminKeys?.classList.add("active");
+        if (paneAdminKeys) paneAdminKeys.style.display = "block";
+        renderAdminKeysTable();
+        const selSubject = document.getElementById("selAdminKeySubject");
+        if (selSubject) {
+          setTimeout(() => selSubject.focus(), 80);
+        }
+      } else if (targetTab === "subjects") {
+        tabAdminSubjects?.classList.add("active");
+        if (paneAdminSubjects) paneAdminSubjects.style.display = "block";
+        renderAdminSubjectsGrid();
+      } else if (targetTab === "backup") {
+        tabAdminBackup?.classList.add("active");
+        if (paneAdminBackup) paneAdminBackup.style.display = "block";
+      }
+    }
+
+    switchAdminTabFn = switchAdminTab;
+
+    tabAdminUsers?.addEventListener("click", () => switchAdminTab("users"));
+    tabAdminKeys?.addEventListener("click", () => switchAdminTab("keys"));
+    tabAdminSubjects?.addEventListener("click", () => switchAdminTab("subjects"));
+    tabAdminBackup?.addEventListener("click", () => switchAdminTab("backup"));
+
+    // User Role Filter Pills
+    let currentUserRoleFilter = "all";
+    document.querySelectorAll(".admin-filter-pill[data-role]").forEach(pill => {
+      pill.addEventListener("click", () => {
+        document.querySelectorAll(".admin-filter-pill[data-role]").forEach(p => p.classList.remove("active"));
+        pill.classList.add("active");
+        currentUserRoleFilter = pill.getAttribute("data-role");
+        renderAdminUsersTable(adminSearchInput?.value || "", currentUserRoleFilter);
+      });
     });
 
-    tabAdminKeys?.addEventListener("click", () => {
-      tabAdminKeys.classList.add("active");
-      tabAdminUsers.classList.remove("active");
-      paneAdminUsers.style.display = "none";
-      paneAdminKeys.style.display = "block";
-      renderAdminKeysTable();
+    // Key Status Filter Pills
+    let currentKeyStatusFilter = "all";
+    document.querySelectorAll(".admin-filter-pill[data-status]").forEach(pill => {
+      pill.addEventListener("click", () => {
+        document.querySelectorAll(".admin-filter-pill[data-status]").forEach(p => p.classList.remove("active"));
+        pill.classList.add("active");
+        currentKeyStatusFilter = pill.getAttribute("data-status");
+        const selSubj = document.getElementById("selAdminKeyFilterSubject")?.value || "all";
+        renderAdminKeysTable(adminSearchKeyInput?.value || "", currentKeyStatusFilter, selSubj);
+      });
+    });
+
+    document.getElementById("selAdminKeyFilterSubject")?.addEventListener("change", (e) => {
+      renderAdminKeysTable(adminSearchKeyInput?.value || "", currentKeyStatusFilter, e.target.value);
     });
 
     // Admin Gen Keys
@@ -1309,28 +1855,154 @@
       const selSubj = document.getElementById("selAdminKeySubject")?.value || "toan";
       const selCount = parseInt(document.getElementById("selAdminKeyCount")?.value || "1", 10);
       adminCreateLicenseKeys(selSubj, selCount);
+      renderAdminSummaryMetrics();
+      renderAdminKeysTable(adminSearchKeyInput?.value || "", currentKeyStatusFilter, document.getElementById("selAdminKeyFilterSubject")?.value || "all");
     });
 
+    // Copy Unused Keys
+    document.getElementById("btnAdminCopyUnusedKeys")?.addEventListener("click", () => {
+      const selSubj = document.getElementById("selAdminKeyFilterSubject")?.value || "all";
+      adminCopyUnusedKeys(selSubj);
+    });
+
+    // Export Keys TXT
+    document.getElementById("btnAdminExportKeysTxt")?.addEventListener("click", () => {
+      adminExportKeys("txt");
+    });
+
+    // Backup & Restore
+    document.getElementById("btnAdminExportBackup")?.addEventListener("click", adminExportDataBackup);
+    const fileBackupInput = document.getElementById("fileAdminBackupInput");
+    document.getElementById("btnAdminImportBackup")?.addEventListener("click", () => {
+      fileBackupInput?.click();
+    });
+    fileBackupInput?.addEventListener("change", (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        adminImportDataBackup(evt.target.result);
+      };
+      reader.readAsText(file);
+      e.target.value = "";
+    });
+
+    // Live Search
     adminSearchInput?.addEventListener("input", (e) => {
-      renderAdminUsersTable(e.target.value);
+      renderAdminUsersTable(e.target.value, currentUserRoleFilter);
     });
 
     adminSearchKeyInput?.addEventListener("input", (e) => {
-      renderAdminKeysTable(e.target.value);
+      const selSubj = document.getElementById("selAdminKeyFilterSubject")?.value || "all";
+      renderAdminKeysTable(e.target.value, currentKeyStatusFilter, selSubj);
     });
 
-    btnAdminCreateUser?.addEventListener("click", promptAdminCreateUser);
+    // In-App Create User Dialog
+    btnAdminCreateUser?.addEventListener("click", openAdminCreateUserDialog);
+    document.getElementById("btnCloseCreateUserModal")?.addEventListener("click", closeAdminCreateUserDialog);
+    document.getElementById("btnCancelCreateUserModal")?.addEventListener("click", closeAdminCreateUserDialog);
+
+    document.getElementById("formAdminCreateUser")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const uVal = document.getElementById("adminNewUserUsername")?.value.trim();
+      const pVal = document.getElementById("adminNewUserPassword")?.value;
+      const rVal = document.getElementById("adminNewUserRole")?.value || "student";
+
+      if (!uVal) {
+        showToast("Vui lòng nhập tên tài khoản!", "error");
+        return;
+      }
+      if (!pVal || pVal.length < 6) {
+        showToast("Mật khẩu phải từ 6 ký tự trở lên!", "error");
+        return;
+      }
+
+      const users = getAllUsers();
+      const normKey = uVal.toLowerCase();
+      if (users[normKey]) {
+        showToast("Tên tài khoản này đã tồn tại!", "error");
+        return;
+      }
+
+      // Collect checked subjects
+      const checkedBoxes = document.querySelectorAll("input[name='newUserSubject']:checked");
+      let selectedSubjects = Array.from(checkedBoxes).map(cb => cb.value);
+      if (rVal === "admin") {
+        selectedSubjects = ["all"];
+      }
+
+      const passwordHash = await hashPassword(pVal);
+      users[normKey] = {
+        username: uVal,
+        fullName: uVal,
+        role: rVal,
+        passwordHash: passwordHash,
+        unlockedSubjects: selectedSubjects,
+        createdAt: new Date().toISOString()
+      };
+      saveAllUsers(users);
+
+      showToast(`Đã tạo thành công tài khoản @${uVal} (${rVal === "admin" ? "Quản trị viên" : "Học viên"})!`, "success");
+      closeAdminCreateUserDialog();
+      renderAdminSummaryMetrics();
+      renderAdminUsersTable(adminSearchInput?.value || "", currentUserRoleFilter);
+    });
+
+    // In-App Reset Password Dialog
+    document.getElementById("btnCloseResetPassModal")?.addEventListener("click", closeAdminResetPassDialog);
+    document.getElementById("btnCancelResetPassModal")?.addEventListener("click", closeAdminResetPassDialog);
+    document.getElementById("formAdminResetPass")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const targetUser = document.getElementById("adminDialogResetPass")?.getAttribute("data-target-user");
+      const newPassword = document.getElementById("adminResetPassNewPassword")?.value;
+      if (!targetUser) return;
+      if (!newPassword || newPassword.length < 6) {
+        showToast("Mật khẩu mới phải từ 6 ký tự trở lên!", "error");
+        return;
+      }
+      const ok = await adminResetPassword(targetUser, newPassword);
+      if (ok) closeAdminResetPassDialog();
+    });
+
+    // In-App User Subjects Dialog
+    document.getElementById("btnCloseUserSubjectsModal")?.addEventListener("click", closeAdminUserSubjectsDialog);
+    document.getElementById("btnCancelUserSubjectsModal")?.addEventListener("click", closeAdminUserSubjectsDialog);
+    document.getElementById("btnSelectAllUserSubjects")?.addEventListener("click", () => {
+      document.querySelectorAll("input[name='manageUserSubject']").forEach(cb => cb.checked = true);
+    });
+    document.getElementById("btnUnselectAllUserSubjects")?.addEventListener("click", () => {
+      document.querySelectorAll("input[name='manageUserSubject']").forEach(cb => cb.checked = false);
+    });
+    document.getElementById("formAdminUserSubjects")?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const targetUser = document.getElementById("adminDialogUserSubjects")?.getAttribute("data-target-user");
+      if (!targetUser) return;
+      const checkedBoxes = document.querySelectorAll("input[name='manageUserSubject']:checked");
+      const selectedSubjects = Array.from(checkedBoxes).map(cb => cb.value);
+      adminSetUserSubjects(targetUser, selectedSubjects);
+      closeAdminUserSubjectsDialog();
+    });
+
+    // In-App Confirm Dialog
+    document.getElementById("btnCloseConfirmModal")?.addEventListener("click", closeAdminConfirmDialog);
+    document.getElementById("btnCancelConfirmModal")?.addEventListener("click", closeAdminConfirmDialog);
+    document.getElementById("adminConfirmSubmitBtn")?.addEventListener("click", () => {
+      if (typeof activeConfirmCallback === "function") {
+        activeConfirmCallback();
+      }
+      closeAdminConfirmDialog();
+    });
 
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
-        if (modal.classList.contains("active")) closeModal();
+        closeAllAuthModals();
         if (adminModal && adminModal.classList.contains("active")) closeAdminPanel();
         if (activateKeyModal && activateKeyModal.classList.contains("active")) closeActivateKeyModal();
       }
     });
 
     // Submit ĐĂNG NHẬP
-    formLogin.addEventListener("submit", async (e) => {
+    formLogin?.addEventListener("submit", async (e) => {
       e.preventDefault();
       hideAlert();
       const submitBtn = document.getElementById("btnLoginSubmit");
@@ -1344,16 +2016,16 @@
       setBtnLoading(submitBtn, false);
 
       if (!res.success) {
-        showAlert(res.message, "error");
+        showAlert(res.message, "error", "loginAlertBox");
       } else {
-        showAlert(res.message, "success");
+        showAlert(res.message, "success", "loginAlertBox");
         showToast(res.message, "success");
-        setTimeout(() => closeModal(), 600);
+        setTimeout(() => closeAllAuthModals(), 600);
       }
     });
 
     // Submit ĐĂNG KÝ
-    formRegister.addEventListener("submit", async (e) => {
+    formRegister?.addEventListener("submit", async (e) => {
       e.preventDefault();
       hideAlert();
       const submitBtn = document.getElementById("btnRegisterSubmit");
@@ -1367,16 +2039,16 @@
       setBtnLoading(submitBtn, false);
 
       if (!res.success) {
-        showAlert(res.message, "error");
+        showAlert(res.message, "error", "registerAlertBox");
       } else {
-        showAlert(res.message, "success");
+        showAlert(res.message, "success", "registerAlertBox");
         showToast(res.message, "success");
-        setTimeout(() => closeModal(), 800);
+        setTimeout(() => closeAllAuthModals(), 800);
       }
     });
 
     // Submit ĐỔI MẬT KHẨU
-    formChangePassword.addEventListener("submit", async (e) => {
+    formChangePassword?.addEventListener("submit", async (e) => {
       e.preventDefault();
       hideAlert();
       const submitBtn = document.getElementById("btnChangePasswordSubmit");
@@ -1390,11 +2062,11 @@
       setBtnLoading(submitBtn, false);
 
       if (!res.success) {
-        showAlert(res.message, "error");
+        showAlert(res.message, "error", "changePasswordAlertBox");
       } else {
-        showAlert(res.message, "success");
+        showAlert(res.message, "success", "changePasswordAlertBox");
         showToast("Đổi mật khẩu thành công!", "success");
-        setTimeout(() => closeModal(), 800);
+        setTimeout(() => closeAllAuthModals(), 800);
       }
     });
 
@@ -1418,24 +2090,52 @@
     });
   }
 
-  function openModal(tab = "login") {
+  function closeAllAuthModals() {
+    ["loginModal", "registerModal", "changePasswordModal"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.remove("active");
+        el.setAttribute("aria-hidden", "true");
+      }
+    });
+    const authModal = document.getElementById("authModal");
+    if (authModal) {
+      authModal.classList.remove("active");
+      authModal.setAttribute("aria-hidden", "true");
+    }
+  }
+
+  function closeModal() {
+    closeAllAuthModals();
+  }
+
+  function openLoginModal() {
     injectAuthModal();
-    const modal = document.getElementById("authModal");
+    closeAllAuthModals();
+    const modal = document.getElementById("loginModal");
     if (!modal) return;
     modal.classList.add("active");
     modal.setAttribute("aria-hidden", "false");
+    const alertBox = document.getElementById("loginAlertBox");
+    if (alertBox) {
+      alertBox.className = "auth-alert";
+      alertBox.innerHTML = "";
+    }
+    setTimeout(() => document.getElementById("loginUsername")?.focus(), 150);
+  }
 
-    const tabLogin = document.getElementById("tabBtnLogin");
-    const tabRegister = document.getElementById("tabBtnRegister");
-    const tabsRow = document.getElementById("authTabsRow");
-    const formLogin = document.getElementById("formLogin");
-    const formRegister = document.getElementById("formRegister");
-    const formChangePassword = document.getElementById("formChangePassword");
-    const titleEl = document.getElementById("authModalTitle");
-    const alertBox = document.getElementById("authAlertBox");
-
-    alertBox.className = "auth-alert";
-    alertBox.innerHTML = "";
+  function openRegisterModal() {
+    injectAuthModal();
+    closeAllAuthModals();
+    const modal = document.getElementById("registerModal");
+    if (!modal) return;
+    modal.classList.add("active");
+    modal.setAttribute("aria-hidden", "false");
+    const alertBox = document.getElementById("registerAlertBox");
+    if (alertBox) {
+      alertBox.className = "auth-alert";
+      alertBox.innerHTML = "";
+    }
 
     // Reset password strength bars
     const bars = [document.getElementById("pwdBar1"), document.getElementById("pwdBar2"), document.getElementById("pwdBar3"), document.getElementById("pwdBar4")];
@@ -1450,44 +2150,32 @@
       regPwdMatchNotice.textContent = "";
       regPwdMatchNotice.className = "auth-pwd-match-text";
     }
-
-    if (tab === "register") {
-      tabsRow.style.display = "grid";
-      tabLogin.classList.remove("active");
-      tabRegister.classList.add("active");
-      tabLogin.setAttribute("aria-selected", "false");
-      tabRegister.setAttribute("aria-selected", "true");
-      formLogin.classList.remove("active");
-      formRegister.classList.add("active");
-      formChangePassword.classList.remove("active");
-      titleEl.textContent = "Tạo tài khoản học viên mới";
-      setTimeout(() => document.getElementById("regUsername")?.focus(), 150);
-    } else if (tab === "changePassword") {
-      tabsRow.style.display = "none";
-      formLogin.classList.remove("active");
-      formRegister.classList.remove("active");
-      formChangePassword.classList.add("active");
-      titleEl.textContent = "Đổi mật khẩu tài khoản";
-      setTimeout(() => document.getElementById("changeOldPassword")?.focus(), 150);
-    } else {
-      tabsRow.style.display = "grid";
-      tabLogin.classList.add("active");
-      tabRegister.classList.remove("active");
-      tabLogin.setAttribute("aria-selected", "true");
-      tabRegister.setAttribute("aria-selected", "false");
-      formLogin.classList.add("active");
-      formRegister.classList.remove("active");
-      formChangePassword.classList.remove("active");
-      titleEl.textContent = "Đăng nhập tài khoản KEdu";
-      setTimeout(() => document.getElementById("loginUsername")?.focus(), 150);
-    }
+    setTimeout(() => document.getElementById("regUsername")?.focus(), 150);
   }
 
-  function closeModal() {
-    const modal = document.getElementById("authModal");
+  function openChangePasswordModal() {
+    injectAuthModal();
+    closeAllAuthModals();
+    const modal = document.getElementById("changePasswordModal");
     if (!modal) return;
-    modal.classList.remove("active");
-    modal.setAttribute("aria-hidden", "true");
+    modal.classList.add("active");
+    modal.setAttribute("aria-hidden", "false");
+    const alertBox = document.getElementById("changePasswordAlertBox");
+    if (alertBox) {
+      alertBox.className = "auth-alert";
+      alertBox.innerHTML = "";
+    }
+    setTimeout(() => document.getElementById("changeOldPassword")?.focus(), 150);
+  }
+
+  function openModal(tab = "login") {
+    if (tab === "register") {
+      openRegisterModal();
+    } else if (tab === "changePassword") {
+      openChangePasswordModal();
+    } else {
+      openLoginModal();
+    }
   }
 
   function openActivateKeyModal() {
@@ -1511,21 +2199,36 @@
   }
 
   /**
-   * ADMIN PANEL MODAL CONTROLS
+   * ADMIN PANEL MODAL CONTROLS & RENDERING
    */
-  function openAdminPanel() {
+  function openAdminPanel(targetTab = "users") {
     if (!isAdmin()) {
       showToast("Chỉ Quản trị viên mới có quyền mở Bảng quản trị!", "error");
       return;
     }
+
+    // Nếu đang ở trang chuyên dụng admin.html, chuyển tab trực tiếp trên trang
+    const onPageTab = document.getElementById("dashTab" + (targetTab.charAt(0).toUpperCase() + targetTab.slice(1)));
+    if (onPageTab) {
+      onPageTab.click();
+      onPageTab.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      return;
+    }
+
     injectAuthModal();
     const adminModal = document.getElementById("adminModal");
     if (!adminModal) return;
 
+    renderAdminSummaryMetrics();
     renderAdminUsersTable();
     renderAdminKeysTable();
+    renderAdminSubjectsGrid();
     adminModal.classList.add("active");
     adminModal.setAttribute("aria-hidden", "false");
+
+    if (typeof switchAdminTabFn === "function") {
+      switchAdminTabFn(targetTab);
+    }
   }
 
   function closeAdminPanel() {
@@ -1535,151 +2238,299 @@
     adminModal.setAttribute("aria-hidden", "true");
   }
 
-  function renderAdminUsersTable(keyword = "") {
+  function renderAdminSummaryMetrics() {
+    const users = getAllUsers();
+    const keys = getAllLicenseKeys();
+    const userKeys = Object.keys(users);
+    const keyCodes = Object.keys(keys);
+
+    let totalUsers = userKeys.length;
+    let adminCount = 0;
+    let studentCount = 0;
+    userKeys.forEach(k => {
+      if (users[k].role === "admin") adminCount++;
+      else studentCount++;
+    });
+
+    let totalKeys = keyCodes.length;
+    let usedKeys = 0;
+    keyCodes.forEach(c => {
+      if (keys[c].isUsed) usedKeys++;
+    });
+    let unusedKeys = totalKeys - usedKeys;
+    let usagePercent = totalKeys > 0 ? Math.round((usedKeys / totalKeys) * 100) : 0;
+
+    const elTotalUsers = document.getElementById("statTotalUsers");
+    const elAdminUsers = document.getElementById("statAdminUsers");
+    const elStudentUsers = document.getElementById("statStudentUsers");
+    const elBadgeUsersCount = document.getElementById("adminBadgeUsersCount");
+    if (elTotalUsers) elTotalUsers.textContent = totalUsers;
+    if (elAdminUsers) elAdminUsers.textContent = adminCount;
+    if (elStudentUsers) elStudentUsers.textContent = studentCount;
+    if (elBadgeUsersCount) elBadgeUsersCount.textContent = totalUsers;
+
+    const elTotalKeys = document.getElementById("statTotalKeys");
+    const elUnusedKeys = document.getElementById("statUnusedKeys");
+    const elUsedKeys = document.getElementById("statUsedKeys");
+    const elKeyUsageRate = document.getElementById("statKeyUsageRate");
+    const elBadgeKeysCount = document.getElementById("adminBadgeKeysCount");
+    if (elTotalKeys) elTotalKeys.textContent = totalKeys;
+    if (elUnusedKeys) elUnusedKeys.textContent = unusedKeys;
+    if (elUsedKeys) elUsedKeys.textContent = usedKeys;
+    if (elKeyUsageRate) elKeyUsageRate.textContent = `${usagePercent}%`;
+    if (elBadgeKeysCount) elBadgeKeysCount.textContent = totalKeys;
+
+    const elTotalSubjects = document.getElementById("statTotalSubjects");
+    if (elTotalSubjects) elTotalSubjects.textContent = "8";
+  }
+
+  function openAdminCreateUserDialog() {
+    const overlay = document.getElementById("adminDialogCreateUser");
+    if (!overlay) return;
+    const uInput = document.getElementById("adminNewUserUsername");
+    const pInput = document.getElementById("adminNewUserPassword");
+    const rSelect = document.getElementById("adminNewUserRole");
+    if (uInput) uInput.value = "";
+    if (pInput) pInput.value = "";
+    if (rSelect) rSelect.value = "student";
+
+    const chkContainer = document.getElementById("adminNewUserSubjectsList");
+    if (chkContainer) {
+      chkContainer.innerHTML = SUBJECTS.map(s => `
+        <label class="admin-checkbox-label">
+          <input type="checkbox" name="newUserSubject" value="${s.id}">
+          <span>${s.name}</span>
+        </label>
+      `).join("");
+    }
+    overlay.classList.add("active");
+    setTimeout(() => uInput?.focus(), 100);
+  }
+
+  function closeAdminCreateUserDialog() {
+    const overlay = document.getElementById("adminDialogCreateUser");
+    if (overlay) overlay.classList.remove("active");
+  }
+
+  function openAdminResetPassDialog(targetUsername) {
+    const overlay = document.getElementById("adminDialogResetPass");
+    if (!overlay) return;
+    const userLabel = document.getElementById("adminResetPassTargetUser");
+    const pInput = document.getElementById("adminResetPassNewPassword");
+    if (userLabel) userLabel.textContent = `@${targetUsername}`;
+    if (pInput) pInput.value = "";
+    overlay.setAttribute("data-target-user", targetUsername);
+    overlay.classList.add("active");
+    setTimeout(() => pInput?.focus(), 100);
+  }
+
+  function closeAdminResetPassDialog() {
+    const overlay = document.getElementById("adminDialogResetPass");
+    if (overlay) overlay.classList.remove("active");
+  }
+
+  function openAdminUserSubjectsDialog(targetUsername) {
+    const overlay = document.getElementById("adminDialogUserSubjects");
+    if (!overlay) return;
+    const users = getAllUsers();
+    const u = users[targetUsername.toLowerCase()];
+    if (!u) return;
+
+    const userLabel = document.getElementById("adminUserSubjectsTargetUser");
+    if (userLabel) userLabel.textContent = `@${targetUsername}`;
+    overlay.setAttribute("data-target-user", targetUsername);
+
+    const container = document.getElementById("adminUserSubjectsCheckboxes");
+    if (container) {
+      const unlocked = u.unlockedSubjects || [];
+      const hasAll = unlocked.includes("all") || u.role === "admin";
+      container.innerHTML = SUBJECTS.map(s => {
+        const isChecked = hasAll || unlocked.includes(s.id);
+        return `
+          <label class="admin-checkbox-label">
+            <input type="checkbox" name="manageUserSubject" value="${s.id}" ${isChecked ? 'checked' : ''} ${u.role === "admin" ? 'disabled' : ''}>
+            <span>${s.name}</span>
+          </label>
+        `;
+      }).join("");
+    }
+    overlay.classList.add("active");
+  }
+
+  function closeAdminUserSubjectsDialog() {
+    const overlay = document.getElementById("adminDialogUserSubjects");
+    if (overlay) overlay.classList.remove("active");
+  }
+
+  function renderAdminUsersTable(keyword = "", roleFilter = "all") {
     const tbody = document.getElementById("adminUsersTableBody");
     if (!tbody) return;
 
     const users = getAllUsers();
     const currentUser = getCurrentUser();
-    const userKeys = Object.keys(users);
-
-    let total = userKeys.length;
-    let adminCount = 0;
-    let studentCount = 0;
-
-    userKeys.forEach((k) => {
-      const u = users[k];
-      if (u.role === "admin") adminCount++;
-      else studentCount++;
-    });
-
-    const elTotal = document.getElementById("statTotalUsers");
-    const elAdmin = document.getElementById("statAdminUsers");
-    const elStudent = document.getElementById("statStudentUsers");
-    if (elTotal) elTotal.textContent = total;
-    if (elAdmin) elAdmin.textContent = adminCount;
-    if (elStudent) elStudent.textContent = studentCount;
+    let userKeys = Object.keys(users);
 
     const kw = (keyword || "").toLowerCase().trim();
-    const filteredKeys = userKeys.filter((k) => {
-      const u = users[k];
-      return u.username.toLowerCase().includes(kw);
-    });
+    if (kw) {
+      userKeys = userKeys.filter(k => users[k].username.toLowerCase().includes(kw));
+    }
 
-    if (filteredKeys.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 24px; color: #94a3b8;">Không tìm thấy tài khoản nào phù hợp</td></tr>`;
+    if (roleFilter && roleFilter !== "all") {
+      userKeys = userKeys.filter(k => users[k].role === roleFilter);
+    }
+
+    if (userKeys.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 32px; color: #94a3b8; font-weight: 500;">Không tìm thấy tài khoản người dùng nào phù hợp</td></tr>`;
       return;
     }
 
-    tbody.innerHTML = filteredKeys
-      .map((k) => {
-        const u = users[k];
-        const isMe = currentUser && currentUser.username.toLowerCase() === u.username.toLowerCase();
-        const isAdminRole = u.role === "admin";
-        const unlockedList = (u.unlockedSubjects && u.unlockedSubjects.length > 0)
-          ? u.unlockedSubjects.map(s => {
-              const sub = getSubjectById(s);
-              return `<span style="font-size:10px; background:#eff6ff; color:#2563eb; padding:2px 5px; border-radius:4px; margin-right:4px;">${sub ? sub.name : s}</span>`;
-            }).join("")
-          : `<span style="font-size:11px; color:#94a3b8;">Chưa mở khóa môn nào</span>`;
+    tbody.innerHTML = userKeys.map(k => {
+      const u = users[k];
+      const isMe = currentUser && currentUser.username.toLowerCase() === u.username.toLowerCase();
+      const isAdminRole = u.role === "admin";
+      const initial = escapeHTML((u.username || "U").charAt(0).toUpperCase());
+      const hasPhoto = !!u.avatar;
+      const avatarHTML = hasPhoto
+        ? `<img src="${escapeHTML(u.avatar)}" alt="${escapeHTML(u.username)}" class="user-avatar-photo" onerror="this.parentElement.innerHTML='${initial}';">`
+        : (isAdminRole 
+            ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>`
+            : initial);
 
-        return `
-          <tr>
-            <td>
-              <div style="display:flex; align-items:center; gap:8px;">
-                <span style="font-weight:700; color: #1e293b;">@${escapeHTML(u.username)}</span>
-                ${isMe ? '<span style="font-size:10px; background:#eff6ff; color:#2563eb; padding:1px 5px; border-radius:4px; font-weight:700;">(Bạn)</span>' : ''}
-              </div>
-            </td>
-            <td>
-              <span class="user-role-badge ${isAdminRole ? 'role-admin' : 'role-student'}">
-                ${isAdminRole
-                  ? `<svg class="role-badge-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg><span>Quản trị viên</span>`
-                  : `<svg class="role-badge-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg><span>Học viên</span>`}
-              </span>
-            </td>
-            <td>
-              <div style="display:flex; flex-wrap:wrap; gap:3px;">
-                ${isAdminRole ? '<span style="font-size:11px; color:#b45309; font-weight:700;">Toàn quyền (Tất cả môn)</span>' : unlockedList}
-              </div>
-            </td>
-            <td style="text-align: right;">
-              <div class="admin-table-actions" style="justify-content: flex-end;">
-                <button type="button" class="btn-table-action btn-action-role" data-user="${escapeHTML(u.username)}" data-current-role="${u.role || 'student'}" ${isMe ? 'disabled style="opacity:0.4; cursor:not-allowed;" title="Không thể tự đổi quyền của chính mình"' : 'title="Đổi quyền"'}>
-                  ${isAdminRole ? 'Hạ quyền' : 'Cấp Admin'}
-                </button>
-                <button type="button" class="btn-table-action btn-action-reset" data-user="${escapeHTML(u.username)}" title="Đặt lại mật khẩu">
-                  Mật khẩu
-                </button>
-                ${!isMe ? `
-                  <button type="button" class="btn-table-action btn-action-delete" data-user="${escapeHTML(u.username)}" title="Xóa tài khoản">
-                    Xóa
-                  </button>
-                ` : ''}
-              </div>
-            </td>
-          </tr>
-        `;
-      })
-      .join("");
+      const unlockedChips = (u.unlockedSubjects && u.unlockedSubjects.length > 0)
+        ? u.unlockedSubjects.map(s => {
+            const sub = getSubjectById(s);
+            return `<span class="admin-subject-chip">${sub ? sub.name : s}</span>`;
+          }).join(" ")
+        : `<span style="font-size:11px; color:#94a3b8;">Chưa mở khóa môn nào</span>`;
 
-    tbody.querySelectorAll(".btn-action-role").forEach((btn) => {
+      return `
+        <tr>
+          <td>
+            <div class="admin-user-cell">
+              <div class="admin-user-avatar ${hasPhoto ? 'has-photo' : ''} ${isAdminRole ? 'is-admin' : ''}">
+                ${avatarHTML}
+              </div>
+              <div>
+                <div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap;">
+                  <strong style="color: #0f2657;">@${escapeHTML(u.username)}</strong>
+                  ${isMe ? '<span style="font-size:10px; background:#eff6ff; color:#2563eb; padding:1px 5px; border-radius:4px; font-weight:700;">(Bạn)</span>' : ''}
+                </div>
+                ${u.email ? `<div style="font-size:11px; color:#64748b; margin-top:1px;">${escapeHTML(u.email)}</div>` : ''}
+              </div>
+            </div>
+          </td>
+          <td>
+            <span class="user-role-badge ${isAdminRole ? 'role-admin' : 'role-student'}">
+              ${isAdminRole
+                ? `<svg class="role-badge-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg><span>Quản trị viên</span>`
+                : `<svg class="role-badge-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg><span>Học viên</span>`}
+            </span>
+          </td>
+          <td>
+            <div style="display:flex; flex-wrap:wrap; gap:4px;">
+              ${isAdminRole ? '<span style="font-size:11px; color:#b45309; font-weight:700;">Toàn quyền (Tất cả 8 môn THPT)</span>' : unlockedChips}
+            </div>
+          </td>
+          <td style="text-align: right;">
+            <div class="admin-action-btn-group">
+              <button type="button" class="btn-row-action role btn-action-role" data-user="${escapeHTML(u.username)}" data-current-role="${u.role || 'student'}" ${isMe ? 'disabled style="opacity:0.4; cursor:not-allowed;" title="Không thể tự đổi quyền của chính mình"' : 'title="Đổi quyền Admin / Học viên"'}>
+                ${isAdminRole ? 'Hạ quyền' : 'Cấp Admin'}
+              </button>
+              ${!isAdminRole ? `
+                <button type="button" class="btn-row-action subjects btn-action-subjects" data-user="${escapeHTML(u.username)}" title="Cấp quyền môn học trực tiếp">
+                  Phân quyền môn
+                </button>
+              ` : ''}
+              <button type="button" class="btn-row-action reset btn-action-reset" data-user="${escapeHTML(u.username)}" title="Đặt lại mật khẩu">
+                Đổi MK
+              </button>
+              ${!isMe ? `
+                <button type="button" class="btn-row-action danger btn-action-delete" data-user="${escapeHTML(u.username)}" title="Xóa tài khoản này">
+                  Xóa
+                </button>
+              ` : ''}
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join("");
+
+    tbody.querySelectorAll(".btn-action-role").forEach(btn => {
       btn.addEventListener("click", () => {
         const uName = btn.getAttribute("data-user");
         const curRole = btn.getAttribute("data-current-role");
         const targetRole = curRole === "admin" ? "student" : "admin";
-        const confirmMsg = targetRole === "admin" 
-          ? `Bạn có chắc chắn muốn cấp quyền Quản trị viên (Admin) cho @${uName}?`
-          : `Bạn có chắc muốn hạ quyền tài khoản @${uName} xuống Học viên?`;
-        if (confirm(confirmMsg)) {
-          setUserRole(uName, targetRole);
-        }
+        showAdminConfirmDialog({
+          title: "Đổi vai trò người dùng",
+          message: targetRole === "admin" 
+            ? `Bạn có chắc chắn muốn cấp quyền <strong>Quản trị viên (Admin)</strong> cho <strong>@${escapeHTML(uName)}</strong>? Tài khoản này sẽ có toàn quyền can thiệp hệ thống.`
+            : `Bạn có chắc muốn hạ quyền tài khoản <strong>@${escapeHTML(uName)}</strong> xuống <strong>Học viên</strong>?`,
+          confirmText: targetRole === "admin" ? "Cấp Admin" : "Hạ quyền",
+          danger: targetRole !== "admin",
+          onConfirm: () => setUserRole(uName, targetRole)
+        });
       });
     });
 
-    tbody.querySelectorAll(".btn-action-reset").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        const uName = btn.getAttribute("data-user");
-        const newPass = prompt(`Nhập mật khẩu mới cho tài khoản @${uName} (tối thiểu 6 ký tự):`);
-        if (newPass !== null) {
-          if (newPass.length < 6) {
-            alert("Mật khẩu phải từ 6 ký tự trở lên!");
-            return;
-          }
-          await adminResetPassword(uName, newPass);
-        }
-      });
-    });
-
-    tbody.querySelectorAll(".btn-action-delete").forEach((btn) => {
+    tbody.querySelectorAll(".btn-action-subjects").forEach(btn => {
       btn.addEventListener("click", () => {
         const uName = btn.getAttribute("data-user");
-        if (confirm(`CẢNH BÁO: Bạn có chắc chắn muốn xóa tài khoản @${uName}? Thao tác này không thể hoàn tác!`)) {
-          adminDeleteUser(uName);
-        }
+        openAdminUserSubjectsDialog(uName);
+      });
+    });
+
+    tbody.querySelectorAll(".btn-action-reset").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const uName = btn.getAttribute("data-user");
+        openAdminResetPassDialog(uName);
+      });
+    });
+
+    tbody.querySelectorAll(".btn-action-delete").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const uName = btn.getAttribute("data-user");
+        showAdminConfirmDialog({
+          title: "Xóa tài khoản người dùng",
+          message: `CẢNH BÁO: Bạn có chắc chắn muốn xóa vĩnh viễn tài khoản <strong>@${escapeHTML(uName)}</strong>?<br><span style="color:#dc2626; font-size:12px;">Hành động này không thể hoàn tác!</span>`,
+          confirmText: "Xóa vĩnh viễn",
+          danger: true,
+          onConfirm: () => adminDeleteUser(uName)
+        });
       });
     });
   }
 
-  function renderAdminKeysTable(keyword = "") {
+  function renderAdminKeysTable(keyword = "", statusFilter = "all", subjectFilter = "all") {
     const tbody = document.getElementById("adminKeysTableBody");
     if (!tbody) return;
 
     const keys = getAllLicenseKeys();
-    const keyCodes = Object.keys(keys).reverse(); // Mới nhất lên đầu
+    let keyCodes = Object.keys(keys).reverse(); // Mới nhất lên đầu
     const kw = (keyword || "").toLowerCase().trim();
 
-    const filtered = keyCodes.filter(c => {
-      const k = keys[c];
-      return c.toLowerCase().includes(kw) || (k.usedBy && k.usedBy.toLowerCase().includes(kw)) || k.subjectId.toLowerCase().includes(kw);
-    });
+    if (kw) {
+      keyCodes = keyCodes.filter(c => {
+        const k = keys[c];
+        return c.toLowerCase().includes(kw) || (k.usedBy && k.usedBy.toLowerCase().includes(kw)) || k.subjectId.toLowerCase().includes(kw);
+      });
+    }
 
-    if (filtered.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 24px; color: #94a3b8;">Chưa có mã key nào hoặc không tìm thấy kết quả phù hợp</td></tr>`;
+    if (statusFilter === "unused") {
+      keyCodes = keyCodes.filter(c => !keys[c].isUsed);
+    } else if (statusFilter === "used") {
+      keyCodes = keyCodes.filter(c => keys[c].isUsed);
+    }
+
+    if (subjectFilter && subjectFilter !== "all") {
+      keyCodes = keyCodes.filter(c => keys[c].subjectId === subjectFilter);
+    }
+
+    if (keyCodes.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 32px; color: #94a3b8; font-weight: 500;">Chưa có mã key nào hoặc không tìm thấy kết quả phù hợp</td></tr>`;
       return;
     }
 
-    tbody.innerHTML = filtered.map(c => {
+    tbody.innerHTML = keyCodes.map(c => {
       const k = keys[c];
       const subj = getSubjectById(k.subjectId);
       const isUsed = k.isUsed;
@@ -1687,10 +2538,15 @@
       return `
         <tr>
           <td>
-            <span class="key-code-badge">${escapeHTML(k.code)}</span>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span class="admin-key-badge">${escapeHTML(k.code)}</span>
+              <button type="button" class="btn-copy-chip btn-copy-key-icon" data-code="${escapeHTML(k.code)}" title="Sao chép mã Key">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </button>
+            </div>
           </td>
           <td>
-            <span style="font-weight: 600; color: #1e293b;">${escapeHTML(subj.name)}</span>
+            <span style="font-weight: 700; color: #0f2657;">${escapeHTML(subj ? subj.name : k.subjectId)}</span>
           </td>
           <td>
             <span class="key-status-pill ${isUsed ? 'key-status-used' : 'key-status-unused'}">
@@ -1706,11 +2562,11 @@
             ` : '<span style="color: #94a3b8; font-size: 12px;">—</span>'}
           </td>
           <td style="text-align: right;">
-            <div class="admin-table-actions" style="justify-content: flex-end;">
-              <button type="button" class="btn-table-action btn-action-role btn-copy-key" data-code="${escapeHTML(k.code)}" title="Sao chép mã Key">
-                📋 Copy
+            <div class="admin-action-btn-group">
+              <button type="button" class="btn-row-action role btn-copy-key" data-code="${escapeHTML(k.code)}" title="Sao chép mã Key">
+                Copy
               </button>
-              <button type="button" class="btn-table-action btn-action-delete btn-del-key" data-code="${escapeHTML(k.code)}" title="Xóa mã Key">
+              <button type="button" class="btn-row-action danger btn-del-key" data-code="${escapeHTML(k.code)}" title="Xóa mã Key">
                 Xóa
               </button>
             </div>
@@ -1719,58 +2575,79 @@
       `;
     }).join("");
 
-    tbody.querySelectorAll(".btn-copy-key").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const code = btn.getAttribute("data-code");
-        navigator.clipboard.writeText(code).then(() => {
-          showToast(`Đã sao chép mã: ${code}`, "success");
-        }).catch(() => {
-          prompt("Mã key của bạn:", code);
-        });
+    const handleCopy = (code) => {
+      navigator.clipboard.writeText(code).then(() => {
+        showToast(`Đã sao chép mã Key: ${code}`, "success");
+      }).catch(() => {
+        prompt("Mã key:", code);
       });
+    };
+
+    tbody.querySelectorAll(".btn-copy-key").forEach(btn => {
+      btn.addEventListener("click", () => handleCopy(btn.getAttribute("data-code")));
+    });
+
+    tbody.querySelectorAll(".btn-copy-key-icon").forEach(btn => {
+      btn.addEventListener("click", () => handleCopy(btn.getAttribute("data-code")));
     });
 
     tbody.querySelectorAll(".btn-del-key").forEach(btn => {
       btn.addEventListener("click", () => {
         const code = btn.getAttribute("data-code");
-        if (confirm(`Bạn có chắc chắn muốn xóa mã key ${code}?`)) {
-          adminDeleteLicenseKey(code);
-        }
+        showAdminConfirmDialog({
+          title: "Xóa mã Key",
+          message: `Bạn có chắc chắn muốn xóa mã key <strong>${code}</strong> khỏi hệ thống?`,
+          confirmText: "Xóa Key",
+          danger: true,
+          onConfirm: () => {
+            adminDeleteLicenseKey(code);
+            renderAdminSummaryMetrics();
+          }
+        });
       });
     });
   }
 
-  async function promptAdminCreateUser() {
-    const username = prompt("Nhập tên tài khoản cần tạo:");
-    if (!username || !username.trim()) return;
-    const password = prompt("Nhập mật khẩu cho tài khoản (tối thiểu 6 ký tự):");
-    if (!password || password.length < 6) {
-      alert("Mật khẩu phải từ 6 ký tự trở lên!");
-      return;
-    }
-    const roleChoice = confirm("Bấm OK để cấp quyền QUẢN TRỊ VIÊN (Admin)\nBấm Hủy (Cancel) để tạo tài khoản HỌC VIÊN.");
-    const role = roleChoice ? "admin" : "student";
+  function renderAdminSubjectsGrid() {
+    const container = document.getElementById("adminSubjectsGridContainer");
+    if (!container) return;
 
-    const users = getAllUsers();
-    const normalizedKey = username.trim().toLowerCase();
-    if (users[normalizedKey]) {
-      alert("Tên tài khoản này đã tồn tại!");
-      return;
-    }
+    container.innerHTML = SUBJECTS.filter(s => s.id !== "all").map(s => {
+      const isPopulated = s.id === "toan" || s.id === "tinhoc";
+      return `
+        <div class="admin-subject-card">
+          <div class="admin-subject-card-head">
+            <div>
+              <h4 class="admin-subject-card-title">
+                <span class="adm-subj-icon-wrap">${getSubjectIconSvg(s.id)}</span>
+                <span>${s.name}</span>
+              </h4>
+              <div class="admin-subject-card-meta">${s.questions}</div>
+            </div>
+            <span class="key-status-pill ${isPopulated ? 'key-status-unused' : 'key-status-used'}">
+              ${isPopulated ? '● Hoạt động' : '● Đang soạn đề'}
+            </span>
+          </div>
+          <div class="admin-subject-card-foot">
+            <a href="${isSubPage ? s.page : 'pages/' + s.page}" class="btn-table-action btn-action-role" style="text-decoration:none;">
+              Xem trang ↗
+            </a>
+            <button type="button" class="btn-table-action btn-action-reset btn-quick-gen-keys" data-subject="${s.id}">
+              + Tạo 5 Key
+            </button>
+          </div>
+        </div>
+      `;
+    }).join("");
 
-    const passwordHash = await hashPassword(password);
-    users[normalizedKey] = {
-      username: username.trim(),
-      fullName: username.trim(),
-      role: role,
-      passwordHash: passwordHash,
-      unlockedSubjects: role === "admin" ? ["all"] : [],
-      createdAt: new Date().toISOString()
-    };
-    saveAllUsers(users);
-
-    showToast(`Đã tạo thành công tài khoản @${username.trim()} (${role === "admin" ? "Quản trị viên" : "Học viên"})!`, "success");
-    renderAdminUsersTable();
+    container.querySelectorAll(".btn-quick-gen-keys").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const subId = btn.getAttribute("data-subject");
+        adminCreateLicenseKeys(subId, 5);
+        renderAdminSummaryMetrics();
+        renderAdminKeysTable();
+      });
+    });
   }
 
   /**
@@ -1788,6 +2665,20 @@
     }
 
     const currentUser = getCurrentUser();
+    const isUserAdmin = currentUser && currentUser.role === "admin";
+
+    // Phân quyền hiển thị các liên kết quản trị đề & đáp án trên thanh điều hướng
+    if (isUserAdmin) {
+      document.body.classList.add("is-admin-session");
+      document.querySelectorAll(".admin-only-nav, [data-admin-only='true'], a[href*='quan-ly-de']").forEach(el => {
+        el.style.setProperty("display", "inline-flex", "important");
+      });
+    } else {
+      document.body.classList.remove("is-admin-session");
+      document.querySelectorAll(".admin-only-nav, [data-admin-only='true'], a[href*='quan-ly-de']").forEach(el => {
+        el.style.setProperty("display", "none", "important");
+      });
+    }
 
     if (!currentUser) {
       // Chưa đăng nhập: Hiện nút Đăng nhập & Đăng ký
@@ -1802,8 +2693,8 @@
         </button>
       `;
 
-      document.getElementById("btnNavLogin")?.addEventListener("click", () => openModal("login"));
-      document.getElementById("btnNavRegister")?.addEventListener("click", () => openModal("register"));
+      document.getElementById("btnNavLogin")?.addEventListener("click", () => openLoginModal());
+      document.getElementById("btnNavRegister")?.addEventListener("click", () => openRegisterModal());
     } else {
       // Đã đăng nhập
       const userIsAdmin = currentUser.role === "admin";
@@ -1823,8 +2714,17 @@
       `;
 
       const studentInitial = escapeHTML((currentUser.username || "U").charAt(0).toUpperCase());
-      const avatarContentSmall = userIsAdmin ? adminCrownSvgSmall : `<span>${studentInitial}</span>`;
-      const avatarContentLarge = userIsAdmin ? adminCrownSvgLarge : `<span>${studentInitial}</span>`;
+      const hasPhoto = !!currentUser.avatar;
+
+      const avatarContentSmall = hasPhoto
+        ? `<img src="${escapeHTML(currentUser.avatar)}" alt="${escapeHTML(displayName)}" class="user-avatar-photo" onerror="this.style.display='none';">`
+        : (userIsAdmin ? adminCrownSvgSmall : `<span>${studentInitial}</span>`);
+
+      const avatarContentLarge = hasPhoto
+        ? `<img src="${escapeHTML(currentUser.avatar)}" alt="${escapeHTML(displayName)}" class="user-avatar-photo-lg" onerror="this.style.display='none';">`
+        : (userIsAdmin ? adminCrownSvgLarge : `<span>${studentInitial}</span>`);
+
+      const emailHTML = currentUser.email ? `<div class="user-dropdown-email" title="${escapeHTML(currentUser.email)}">${escapeHTML(currentUser.email)}</div>` : "";
 
       // Role Badge chuẩn SVG
       const roleBadgeHTML = userIsAdmin
@@ -1840,33 +2740,48 @@
       authSlot.innerHTML = `
         <div class="user-menu-wrapper" id="userMenuWrapper">
           <button type="button" class="user-profile-btn" id="userProfileBtn" title="Tài khoản cá nhân: @${escapeHTML(currentUser.username)}" aria-expanded="false">
-            <span class="user-avatar-badge ${userIsAdmin ? 'is-admin' : ''}">${avatarContentSmall}</span>
+            <span class="user-avatar-badge ${hasPhoto ? 'has-photo' : ''} ${userIsAdmin ? 'is-admin' : ''}">${avatarContentSmall}</span>
             <span class="user-display-name">${escapeHTML(displayName)}</span>
             <svg class="user-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
 
           <div class="user-dropdown-panel" id="userDropdownPanel">
             <div class="user-dropdown-header">
-              <div class="user-dropdown-avatar-lg ${userIsAdmin ? 'is-admin' : ''}">${avatarContentLarge}</div>
+              <div class="user-dropdown-avatar-lg ${hasPhoto ? 'has-photo' : ''} ${userIsAdmin ? 'is-admin' : ''}">${avatarContentLarge}</div>
               <div class="user-dropdown-meta">
                 <div class="user-dropdown-username">@${escapeHTML(displayName)}</div>
-                ${roleBadgeHTML}
+                ${emailHTML}
+                <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:3px;">
+                  ${roleBadgeHTML}
+                </div>
               </div>
             </div>
 
             <ul class="user-dropdown-list">
               ${userIsAdmin ? `
                 <li>
-                  <button type="button" class="user-dropdown-item-btn item-admin" id="btnAdminOpenPanel">
+                  <button type="button" class="user-dropdown-item-btn item-admin" id="btnAdminOpenPanel" title="Mở Bảng quản trị hệ thống">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    <span>Bảng Quản Trị & Tạo Key</span>
+                    <span>Bảng Quản Trị</span>
                   </button>
+                </li>
+                <li>
+                  <button type="button" class="user-dropdown-item-btn item-admin" id="btnAdminOpenKeys" title="Mở công cụ Tạo Key bản quyền">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m21 3-9.5 9.5"/><path d="m15.5 7.5 3 3"/><path d="M14 3h7v7"/></svg>
+                    <span>Tạo Key</span>
+                  </button>
+                </li>
+                <li>
+                  <a href="${isSubPage ? 'quan-ly-de.html' : 'pages/quan-ly-de.html'}" class="user-dropdown-item-btn item-admin" id="btnAdminOpenExamManager" title="Quản lý ngân hàng đề thi & đáp án chuẩn" style="text-decoration:none;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10M6 14h6"/></svg>
+                    <span>Quản Lý Đề & Đáp Án</span>
+                  </a>
                 </li>
               ` : ''}
               <li>
-                <button type="button" class="user-dropdown-item-btn" id="btnUserOpenActivateKey">
+                <button type="button" class="user-dropdown-item-btn" id="btnUserOpenActivateKey" title="Kích hoạt mã môn học">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-1.5 1.5L14 9l-1.5-1.5L11 9l-1.5-1.5L8 9l-4.5 4.5a3 3 0 1 0 4.24 4.24L12 13.5l1.5 1.5 1.5-1.5 1.5 1.5 3.5-3.5a3 3 0 0 0-4.24-4.24z"/></svg>
-                  <span>Kích hoạt môn học (Nhập Key)</span>
+                  <span>Kích hoạt môn học</span>
                 </button>
               </li>
               <li>
@@ -1914,7 +2829,13 @@
       document.getElementById("btnAdminOpenPanel")?.addEventListener("click", () => {
         dropdownPanel.classList.remove("show");
         profileBtn.classList.remove("active");
-        openAdminPanel();
+        openAdminPanel("users");
+      });
+
+      document.getElementById("btnAdminOpenKeys")?.addEventListener("click", () => {
+        dropdownPanel.classList.remove("show");
+        profileBtn.classList.remove("active");
+        openAdminPanel("keys");
       });
 
       document.getElementById("btnUserOpenActivateKey")?.addEventListener("click", () => {
@@ -1926,7 +2847,7 @@
       document.getElementById("btnUserChangePassword")?.addEventListener("click", () => {
         dropdownPanel.classList.remove("show");
         profileBtn.classList.remove("active");
-        openModal("changePassword");
+        openChangePasswordModal();
       });
 
       document.getElementById("btnUserLogout")?.addEventListener("click", () => {
@@ -1963,13 +2884,27 @@
     activateLicenseKey,
     openModal,
     closeModal,
+    openLoginModal,
+    openRegisterModal,
+    openChangePasswordModal,
+    closeAllAuthModals,
     openActivateKeyModal,
     closeActivateKeyModal,
     openAdminPanel,
     closeAdminPanel,
+    getAllUsers,
+    getAllLicenseKeys,
+    SUBJECTS,
+    getSubjectById,
+    getSubjectIconSvg,
     setUserRole,
+    adminSetUserSubjects,
     adminCreateLicenseKeys,
     adminDeleteLicenseKey,
+    adminCopyUnusedKeys,
+    adminExportKeys,
+    adminExportDataBackup,
+    adminImportDataBackup,
     adminResetPassword,
     adminDeleteUser,
     showToast

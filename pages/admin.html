@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Bảng Quản Trị Hệ Thống | KEdu</title>
+  <meta name="description" content="Trung tâm quản trị hệ thống KEdu - Phân quyền người dùng, quản lý mã bản quyền và ngân hàng câu hỏi.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Fira+Code:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="../assets/images/favicon.png">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/auth.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+
+  <style>
+    /* ========================================================
+       ADMIN COMMAND CENTER — MODERN UI/UX PRO MAX DESIGN SYSTEM
+       ======================================================== */
+    :root {
+      --adm-navy-dark: #0b1e42;
+      --adm-navy: #0f2657;
+      --adm-navy-light: #1b2b43;
+      --adm-amber: #d97706;
+      --adm-amber-light: #fffbeb;
+      --adm-emerald: #10b981;
+      --adm-emerald-light: #ecfdf5;
+      --adm-crimson: #dc2626;
+      --adm-border: #e2e8f0;
+      --adm-border-subtle: #f1f5f9;
+      --adm-card-bg: #ffffff;
+      --adm-text-main: #0f172a;
+      --adm-text-muted: #64748b;
+    }
+
+    body {
+      background: #f8fafc;
+      color: var(--adm-text-main);
+    }
+
+    /* Top Breadcrumb */
+    .admin-breadcrumb-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: var(--adm-text-muted);
+    }
+    .admin-breadcrumbs {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .admin-breadcrumbs a {
+      color: var(--adm-navy);
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .admin-breadcrumbs a:hover {
+      color: var(--adm-amber);
+    }
+    .admin-breadcrumbs-sep {
+      color: #cbd5e1;
+    }
+    .admin-breadcrumbs-current {
+      color: var(--adm-text-muted);
+      font-weight: 500;
+    }
+
+    /* Live Cloud Status Pill */
+    .admin-cloud-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      background: #ecfdf5;
+      color: #059669;
+      border: 1px solid #a7f3d0;
+    }
+    .admin-cloud-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+      animation: pulseDot 2s infinite;
+    }
+    @keyframes pulseDot {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.7; }
+    }
+
+    /* Hero Banner */
+    .admin-hero-banner {
+      background: linear-gradient(135deg, var(--adm-navy-dark) 0%, var(--adm-navy-light) 100%);
+      color: #ffffff;
+      padding: 32px 30px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 12px 35px rgba(11, 30, 66, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .admin-hero-banner::before {
+      content: "";
+      position: absolute;
+      top: -70px;
+      right: -70px;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(217, 119, 6, 0.3) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .admin-hero-banner::after {
+      content: "";
+      position: absolute;
+      bottom: -60px;
+      left: 30%;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.2) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .admin-hero-inner {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .admin-hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      background: rgba(251, 191, 36, 0.2);
+      color: #fde68a;
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      margin-bottom: 12px;
+    }
+    .admin-hero-title {
+      font-family: var(--font-heading);
+      font-size: 26px;
+      font-weight: 800;
+      color: #ffffff;
+      margin: 0 0 8px 0;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .admin-hero-desc {
+      font-size: 14px;
+      color: #cbd5e1;
+      max-width: 720px;
+      line-height: 1.6;
+      margin: 0;
+    }
+    .admin-hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* KPI METRICS GRID */
+    .admin-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .admin-kpi-card {
+      background: #ffffff;
+      border: 1px solid var(--adm-border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(15, 38, 87, 0.04);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .admin-kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(15, 38, 87, 0.08);
+      border-color: #cbd5e1;
+    }
+    .admin-kpi-info {
+      flex: 1;
+    }
+    .admin-kpi-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--adm-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+    .admin-kpi-num {
+      font-family: var(--font-heading);
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--adm-navy);
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+    .admin-kpi-meta {
+      font-size: 12px;
+      color: var(--adm-text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .admin-kpi-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .admin-kpi-icon.blue { background: #eff6ff; color: #2563eb; }
+    .admin-kpi-icon.amber { background: #fffbeb; color: #d97706; }
+    .admin-kpi-icon.emerald { background: #ecfdf5; color: #059669; }
+    .admin-kpi-icon.purple { background: #f5f3ff; color: #7c3aed; }
+
+    /* DASHBOARD CARD & TABS */
+    .admin-dashboard-card {
+      background: #ffffff;
+      border: 1px solid var(--adm-border);
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(15, 38, 87, 0.04);
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+    .admin-nav-tabs {
+      display: flex;
+      align-items: center;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--adm-border);
+      padding: 8px 16px 0;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .admin-nav-tabs::-webkit-scrollbar { display: none; }
+    .admin-tab-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 18px;
+      font-family: var(--font-heading);
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--adm-text-muted);
+      background: transparent;
+      border: 1px solid transparent;
+      border-bottom: none;
+      border-radius: 12px 12px 0 0;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .admin-tab-item:hover {
+      color: var(--adm-navy);
+      background: #f1f5f9;
+    }
+    .admin-tab-item.active {
+      color: var(--adm-navy);
+      background: #ffffff;
+      border-color: var(--adm-border);
+      box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.02);
+    }
+    .admin-tab-pill {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 9999px;
+      background: #e2e8f0;
+      color: #475569;
+    }
+    .admin-tab-item.active .admin-tab-pill {
+      background: #eff6ff;
+      color: #2563eb;
+    }
+
+    .admin-tab-pane {
+      display: none;
+      padding: 24px;
+    }
+    .admin-tab-pane.active {
+      display: block;
+      animation: tabFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes tabFadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* TOOLBAR */
+    .admin-toolbar-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .admin-filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .adm-filter-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--adm-text-muted);
+      background: #f8fafc;
+      border: 1px solid var(--adm-border);
+      padding: 6px 14px;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .adm-filter-btn:hover {
+      background: #f1f5f9;
+      color: var(--adm-navy);
+    }
+    .adm-filter-btn.active {
+      background: var(--adm-navy);
+      color: #ffffff;
+      border-color: var(--adm-navy);
+      box-shadow: 0 2px 6px rgba(15, 38, 87, 0.2);
+    }
+
+    .admin-search-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      border: 1px solid var(--adm-border);
+      border-radius: 10px;
+      padding: 0 12px;
+      width: 280px;
+      height: 38px;
+      transition: all 0.15s ease;
+    }
+    .admin-search-box:focus-within {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+    .admin-search-box input {
+      border: none;
+      outline: none;
+      width: 100%;
+      font-size: 13px;
+      font-family: var(--font-body);
+      color: var(--adm-text-main);
+    }
+
+    /* KEY GEN CARD */
+    .adm-keygen-box {
+      background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+      border: 1px solid #fde68a;
+      border-radius: 16px;
+      padding: 18px 20px;
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .adm-keygen-form {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .adm-select {
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1f2937;
+      outline: none;
+    }
+    .adm-select:focus {
+      border-color: var(--adm-amber);
+    }
+
+    /* DATA TABLES */
+    .adm-table-container {
+      border: 1px solid var(--adm-border);
+      border-radius: 14px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+    .adm-table-scroll {
+      overflow-x: auto;
+      max-height: 520px;
+      scrollbar-width: thin;
+    }
+    .adm-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+    .adm-table th {
+      background: #f8fafc;
+      color: #475569;
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--adm-border);
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .adm-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--adm-border-subtle);
+      vertical-align: middle;
+      color: #334155;
+    }
+    .adm-table tr:last-child td { border-bottom: none; }
+    .adm-table tr:hover td {
+      background: #f8fafc;
+    }
+
+    /* BADGES & CHIPS */
+    .adm-badge-role {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .adm-badge-role.admin {
+      background: #fffbeb;
+      color: #b45309;
+      border: 1px solid #fde68a;
+    }
+    .adm-badge-role.student {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+    }
+
+    .adm-key-code {
+      font-family: 'Fira Code', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: 0.05em;
+      background: #f1f5f9;
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .adm-btn-copy-code {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: #64748b;
+      padding: 2px;
+      display: inline-flex;
+      align-items: center;
+      transition: color 0.15s ease;
+    }
+    .adm-btn-copy-code:hover { color: #2563eb; }
+
+    .adm-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 9999px;
+    }
+    .adm-status-pill.ready {
+      background: #ecfdf5;
+      color: #059669;
+      border: 1px solid #a7f3d0;
+    }
+    .adm-status-pill.used {
+      background: #f1f5f9;
+      color: #64748b;
+      border: 1px solid #e2e8f0;
+    }
+
+    .adm-subj-chip {
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: #f1f5f9;
+      color: #334155;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin: 2px;
+    }
+    .adm-subj-chip svg {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
+    }
+    .adm-subj-chip.all {
+      background: #fef3c7;
+      color: #b45309;
+      font-weight: 700;
+    }
+
+    /* ACTION BUTTONS IN TABLE */
+    .adm-actions-group {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+    }
+    .adm-btn-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: #ffffff;
+      border: 1px solid var(--adm-border);
+      color: #475569;
+    }
+    .adm-btn-action:hover {
+      background: #f8fafc;
+      color: var(--adm-navy);
+      border-color: #cbd5e1;
+    }
+    .adm-btn-action.danger:hover {
+      background: #fee2e2;
+      color: #dc2626;
+      border-color: #fca5a5;
+    }
+
+    /* SUBJECT CARDS GRID (PANE 3) */
+    .adm-subjects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .adm-subject-item-card {
+      background: #ffffff;
+      border: 1px solid var(--adm-border);
+      border-radius: 16px;
+      padding: 20px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .adm-subject-item-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(15, 38, 87, 0.06);
+      border-color: #cbd5e1;
+    }
+    .adm-subj-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .adm-subj-card-title {
+      font-family: var(--font-heading);
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--adm-navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .adm-subj-icon-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: #eff6ff;
+      color: #2563eb;
+      flex-shrink: 0;
+    }
+    .adm-subj-icon-wrap svg {
+      width: 16px;
+      height: 16px;
+    }
+    .adm-subj-card-desc {
+      font-size: 13px;
+      color: var(--adm-text-muted);
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+    .adm-subj-card-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    /* BACKUP PANE (PANE 4) */
+    .adm-backup-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .adm-backup-box {
+      background: #ffffff;
+      border: 1px solid var(--adm-border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 2px 10px rgba(15, 38, 87, 0.03);
+    }
+    .adm-backup-title {
+      font-family: var(--font-heading);
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--adm-navy);
+      margin: 0 0 8px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .adm-backup-desc {
+      font-size: 13px;
+      color: var(--adm-text-muted);
+      line-height: 1.5;
+      margin-bottom: 18px;
+    }
+
+    /* ACCESS GATE */
+    .admin-gate-wrap {
+      max-width: 520px;
+      margin: 60px auto;
+      text-align: center;
+      background: #ffffff;
+      border: 1px solid var(--adm-border);
+      border-radius: 20px;
+      padding: 48px 32px;
+      box-shadow: 0 10px 30px rgba(15, 38, 87, 0.06);
+    }
+    .admin-gate-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      background: #fffbeb;
+      border: 1.5px solid #fde68a;
+      color: #d97706;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+  </style>
+</head>
+<body class="dol-main-theme">
+
+<!-- SITE HEADER -->
+<header class="sh">
+  <div class="sh-inner">
+    <div class="sh-left-nav">
+      <a href="../index.html" class="sh-logo-group" title="KEdu - Về trang chủ">
+        <img src="../assets/images/logo_kedu_horizontal.png" alt="KEdu Logo" class="bp-logo-img">
+        <div class="bp-brand-text-block">
+          <span class="bp-brand-short">KEdu</span>
+          <span class="bp-brand-full">HỆ THỐNG ÔN LUYỆN ĐỀ</span>
+        </div>
+      </a>
+
+      <a href="../index.html" class="sh-nav-item" title="Về trang chủ">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Trang chủ</span>
+      </a>
+
+      <a href="quan-ly-de.html" class="sh-nav-item admin-only-nav" data-admin-only="true" title="Quản lý ngân hàng đề & Đáp án (Dành cho Quản trị viên)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10M6 14h6"/></svg>
+        <span>Quản lý đề & Đáp án</span>
+      </a>
+    </div>
+
+    <div class="sh-auth-slot" id="shAuthSlot"></div>
+  </div>
+</header>
+
+<!-- MAIN APP BODY -->
+<main class="app-main">
+  <!-- BREADCRUMBS & CLOUD STATUS -->
+  <div class="admin-breadcrumb-bar">
+    <div class="admin-breadcrumbs">
+      <a href="../index.html">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Trang chủ
+      </a>
+      <span class="admin-breadcrumbs-sep">/</span>
+      <span class="admin-breadcrumbs-current">Trung Tâm Quản Trị Hệ Thống (Admin Command Center)</span>
+    </div>
+
+    <div class="admin-cloud-pill" id="adminCloudStatusPill" title="Kết nối trực tuyến Supabase Cloud">
+      <span class="admin-cloud-dot"></span>
+      <span>Hệ thống bảo mật SHA-256</span>
+    </div>
+  </div>
+
+  <!-- CONTAINER HIỂN THỊ DÀNH CHO ADMIN / GATE -->
+  <div id="adminContentContainer">
+    <!-- Dynamic Injection via JavaScript -->
+  </div>
+</main>
+
+<!-- SITE FOOTER -->
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div class="footer-meta">
+      Cổng ôn luyện thi Tốt nghiệp THPT 2026 • Biên soạn & phát triển: <strong>TRẦN ĐĂNG KHOA</strong>
+    </div>
+  </div>
+</footer>
+
+<!-- AUTH SYSTEM -->
+<script src="../js/auth.js"></script>
+
+<script>
+(function() {
+  "use strict";
+
+  const container = document.getElementById("adminContentContainer");
+
+  let currentTab = "users";
+  let userRoleFilter = "all";
+  let userKeyword = "";
+  let keyStatusFilter = "all";
+  let keySubjectFilter = "all";
+  let keyKeyword = "";
+
+  function checkAdminAndRender() {
+    if (!window.KeduAuth) {
+      setTimeout(checkAdminAndRender, 100);
+      return;
+    }
+
+    const user = window.KeduAuth.getCurrentUser();
+    const isAdmin = window.KeduAuth.isAdmin();
+
+    if (!user || !isAdmin) {
+      renderAccessGate(user);
+    } else {
+      renderAdminDashboard(user);
+    }
+  }
+
+  /* 1. MÀN HÌNH CHẶN TRUY CẬP (ACCESS GATE) */
+  function renderAccessGate(currentUser) {
+    container.innerHTML = `
+      <div class="admin-gate-wrap">
+        <div class="admin-gate-icon">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h2 style="font-family: var(--font-heading); font-size: 22px; font-weight: 800; color: #0f2657; margin-bottom: 8px;">
+          Khu Vực Quản Trị Hệ Thống (Admin Only)
+        </h2>
+        <p style="font-size: 14px; color: #64748b; line-height: 1.6; margin-bottom: 24px;">
+          ${currentUser 
+            ? `Tài khoản <strong>@${currentUser.username}</strong> của bạn không có đặc quyền Quản trị viên (Admin). Vui lòng đăng nhập với tài khoản có quyền quản trị để truy cập trung tâm điều hành.` 
+            : 'Trang này yêu cầu quyền Quản trị viên (Admin). Vui lòng đăng nhập tài khoản quản trị để phát hành mã key bản quyền, quản lý phân quyền và kiểm soát ngân hàng đề thi.'}
+        </p>
+        <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; align-items: center;">
+          <button type="button" class="btn-admin-primary" id="btnGateLoginAdmin" style="padding: 10px 22px; font-size: 14px; font-weight: 700; border-radius: 10px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            <span>Đăng nhập tài khoản Admin</span>
+          </button>
+          <a href="../index.html" class="btn-admin-secondary" style="text-decoration: none; padding: 10px 18px; font-size: 14px; font-weight: 600; border-radius: 10px;">
+            ← Về Trang chủ
+          </a>
+        </div>
+      </div>
+    `;
+
+    document.getElementById("btnGateLoginAdmin")?.addEventListener("click", () => {
+      window.KeduAuth.openModal("login");
+    });
+  }
+
+  /* 2. MÀN HÌNH DASHBOARD TOÀN DIỆN CHO ADMIN */
+  function renderAdminDashboard(adminUser) {
+    const users = window.KeduAuth.getAllUsers ? window.KeduAuth.getAllUsers() : {};
+    const keys = window.KeduAuth.getAllLicenseKeys ? window.KeduAuth.getAllLicenseKeys() : {};
+    const subjects = window.KeduAuth.SUBJECTS ? window.KeduAuth.SUBJECTS.filter(s => s.id !== "all") : [];
+
+    const userKeys = Object.keys(users);
+    const keyCodes = Object.keys(keys);
+
+    let totalUsers = userKeys.length;
+    let adminCount = 0;
+    let studentCount = 0;
+    userKeys.forEach(k => {
+      if (users[k].role === "admin") adminCount++;
+      else studentCount++;
+    });
+
+    let totalKeys = keyCodes.length;
+    let usedKeys = 0;
+    keyCodes.forEach(c => {
+      if (keys[c].isUsed) usedKeys++;
+    });
+    let unusedKeys = totalKeys - usedKeys;
+    let usageRate = totalKeys > 0 ? Math.round((usedKeys / totalKeys) * 100) : 0;
+
+    const subjectsOptionsHTML = (window.KeduAuth.SUBJECTS || [])
+      .map(s => `<option value="${s.id}">${s.icon || ''} ${s.name}</option>`)
+      .join("");
+
+    container.innerHTML = `
+      <!-- HERO BANNER -->
+      <div class="admin-hero-banner">
+        <div class="admin-hero-inner">
+          <div>
+            <div class="admin-hero-badge">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span>Quyền Quản Trị Cấp Cao • @${escapeHTML(adminUser.username)}</span>
+            </div>
+            <h1 class="admin-hero-title">
+              Trung Tâm Quản Trị Hệ Thống
+            </h1>
+            <p class="admin-hero-desc">
+              Phát hành mã Key bản quyền, quản lý phân quyền học viên, giám sát ngân hàng 245 câu hỏi chuẩn Bộ GD&ĐT và sao lưu dữ liệu toàn diện cho kỳ thi Tốt nghiệp THPT 2026.
+            </p>
+          </div>
+
+          <div class="admin-hero-actions">
+            <a href="quan-ly-de.html" class="btn-admin-secondary" style="background:#ffffff; color:#0f2657; border:1px solid #cbd5e1; text-decoration:none; padding:10px 18px; font-size:13.5px; border-radius:10px; display:inline-flex; align-items:center; gap:8px; font-weight:700;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10M6 14h6"/></svg>
+              <span>Quản Lý Đề & Đáp Án</span>
+            </a>
+            <button type="button" class="btn-admin-primary" id="btnQuickBackupHero" style="background:#d97706; padding:10px 18px; font-size:13.5px; border-radius:10px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Xuất Sao Lưu Dữ Liệu</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 KPI METRIC CARDS -->
+      <div class="admin-kpi-grid">
+        <div class="admin-kpi-card">
+          <div class="admin-kpi-info">
+            <div class="admin-kpi-label">Tổng người dùng</div>
+            <div class="admin-kpi-num">${totalUsers}</div>
+            <div class="admin-kpi-meta">
+              <span style="color:#d97706; font-weight:700;">${adminCount} Admin</span> • 
+              <span style="color:#2563eb; font-weight:700;">${studentCount} Học viên</span>
+            </div>
+          </div>
+          <div class="admin-kpi-icon blue">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+        </div>
+
+        <div class="admin-kpi-card">
+          <div class="admin-kpi-info">
+            <div class="admin-kpi-label">Kho Mã Key Bản Quyền</div>
+            <div class="admin-kpi-num">${totalKeys}</div>
+            <div class="admin-kpi-meta">
+              <span style="color:#16a34a; font-weight:700;">${unusedKeys} Sẵn sàng</span> • 
+              <span style="color:#64748b;">${usedKeys} Đã dùng</span>
+            </div>
+          </div>
+          <div class="admin-kpi-icon amber">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m21 3-9.5 9.5"/><path d="m15.5 7.5 3 3"/><path d="M14 3h7v7"/></svg>
+          </div>
+        </div>
+
+        <div class="admin-kpi-card">
+          <div class="admin-kpi-info">
+            <div class="admin-kpi-label">Môn học phủ sóng</div>
+            <div class="admin-kpi-num">${subjects.length} Môn</div>
+            <div class="admin-kpi-meta">
+              <span style="color:#16a34a; font-weight:700;">Toán (125 câu) • Tin (120 câu)</span>
+            </div>
+          </div>
+          <div class="admin-kpi-icon emerald">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          </div>
+        </div>
+
+        <div class="admin-kpi-card">
+          <div class="admin-kpi-info">
+            <div class="admin-kpi-label">Tỷ lệ kích hoạt Key</div>
+            <div class="admin-kpi-num">${usageRate}%</div>
+            <div class="admin-kpi-meta">
+              <span style="color:#2563eb; font-weight:700;">Chuẩn SHA-256 + Salt</span>
+            </div>
+          </div>
+          <div class="admin-kpi-icon purple">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN DASHBOARD CARD & TABS -->
+      <div class="admin-dashboard-card">
+        <div class="admin-nav-tabs">
+          <button type="button" class="admin-tab-item active" data-tab="users" id="dashTabUsers">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>Quản Lý Người Dùng</span>
+            <span class="admin-tab-pill">${totalUsers}</span>
+          </button>
+
+          <button type="button" class="admin-tab-item" data-tab="keys" id="dashTabKeys">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m21 3-9.5 9.5"/><path d="m15.5 7.5 3 3"/><path d="M14 3h7v7"/></svg>
+            <span>Tạo & Quản Lý Key</span>
+            <span class="admin-tab-pill">${totalKeys}</span>
+          </button>
+
+          <button type="button" class="admin-tab-item" data-tab="subjects" id="dashTabSubjects">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <span>Kho Môn Học & Tiến Độ</span>
+            <span class="admin-tab-pill">${subjects.length}</span>
+          </button>
+
+          <button type="button" class="admin-tab-item" data-tab="backup" id="dashTabBackup">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Sao Lưu & Dữ Liệu</span>
+          </button>
+        </div>
+
+        <!-- PANE 1: USERS -->
+        <div class="admin-tab-pane active" id="paneDashUsers">
+          <div class="admin-toolbar-wrap">
+            <div class="admin-filter-bar">
+              <button type="button" class="adm-filter-btn active" data-role="all">Tất cả (${totalUsers})</button>
+              <button type="button" class="adm-filter-btn" data-role="admin">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>
+                <span>Quản trị viên (${adminCount})</span>
+              </button>
+              <button type="button" class="adm-filter-btn" data-role="student">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                <span>Học viên (${studentCount})</span>
+              </button>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+              <div class="admin-search-box">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="dashUserSearchInput" placeholder="Tìm tài khoản theo tên...">
+              </div>
+              <button type="button" class="btn-admin-primary" id="btnDashCreateUser" style="padding: 8px 16px; font-size: 13px; font-weight: 700; border-radius: 8px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <span>Thêm tài khoản</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="adm-table-container">
+            <div class="adm-table-scroll">
+              <table class="adm-table">
+                <thead>
+                  <tr>
+                    <th>Người dùng</th>
+                    <th>Vai trò</th>
+                    <th>Môn học mở khóa</th>
+                    <th>Ngày đăng ký</th>
+                    <th style="text-align: right;">Thao tác quản trị</th>
+                  </tr>
+                </thead>
+                <tbody id="dashUsersTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANE 2: KEYS -->
+        <div class="admin-tab-pane" id="paneDashKeys">
+          <!-- Key Studio -->
+          <div class="adm-keygen-box">
+            <div class="adm-keygen-form">
+              <span style="font-weight: 700; font-size: 13.5px; color: #78350f; display:flex; align-items:center; gap:6px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m21 3-9.5 9.5"/><path d="m15.5 7.5 3 3"/><path d="M14 3h7v7"/></svg>
+                Tạo mã Key mới:
+              </span>
+              <select id="selDashKeySubject" class="adm-select">
+                ${subjectsOptionsHTML}
+              </select>
+              <select id="selDashKeyCount" class="adm-select" style="width: 110px;">
+                <option value="1">1 Key</option>
+                <option value="3">3 Key</option>
+                <option value="5" selected>5 Key</option>
+                <option value="10">10 Key</option>
+                <option value="20">20 Key</option>
+              </select>
+              <button type="button" class="btn-admin-primary" id="btnDashGenKeys" style="background: linear-gradient(135deg, #d97706, #b45309); padding: 8px 18px; font-size: 13px; font-weight: 700; border-radius: 8px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
+                <span>Tạo Key Ngay</span>
+              </button>
+            </div>
+
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button type="button" class="btn-admin-secondary" id="btnDashCopyUnusedKeys" style="padding: 7px 14px; font-size: 12.5px; border-radius: 8px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                <span>Copy key chưa dùng</span>
+              </button>
+              <button type="button" class="btn-admin-secondary" id="btnDashExportTxt" style="padding: 7px 14px; font-size: 12.5px; border-radius: 8px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Xuất TXT</span>
+              </button>
+              <button type="button" class="btn-admin-secondary" id="btnDashExportJson" style="padding: 7px 14px; font-size: 12.5px; border-radius: 8px;">
+                <span>Xuất JSON</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Key Filters -->
+          <div class="admin-toolbar-wrap">
+            <div class="admin-filter-bar">
+              <button type="button" class="adm-filter-btn active" data-keystatus="all">Tất cả (${totalKeys})</button>
+              <button type="button" class="adm-filter-btn" data-keystatus="unused"><span style="color:#10b981; font-weight:bold; margin-right:4px;">●</span>Chưa dùng (${unusedKeys})</button>
+              <button type="button" class="adm-filter-btn" data-keystatus="used"><span style="color:#94a3b8; font-weight:bold; margin-right:4px;">●</span>Đã dùng (${usedKeys})</button>
+
+              <select id="selDashFilterSubject" class="adm-select" style="padding: 5px 10px; font-size: 12px; height: 32px; border-radius: 9999px;">
+                <option value="all">Tất cả môn học</option>
+                ${subjectsOptionsHTML}
+              </select>
+            </div>
+
+            <div class="admin-search-box">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="dashKeySearchInput" placeholder="Tìm kiếm theo mã key hoặc username...">
+            </div>
+          </div>
+
+          <div class="adm-table-container">
+            <div class="adm-table-scroll">
+              <table class="adm-table">
+                <thead>
+                  <tr>
+                    <th>Mã Key kích hoạt</th>
+                    <th>Môn học</th>
+                    <th>Trạng thái</th>
+                    <th>Người kích hoạt</th>
+                    <th>Ngày tạo</th>
+                    <th style="text-align: right;">Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody id="dashKeysTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANE 3: SUBJECTS PROGRESS -->
+        <div class="admin-tab-pane" id="paneDashSubjects">
+          <div class="adm-subjects-grid" id="dashSubjectsGridContainer">
+            ${subjects.map(s => {
+              const isReady = s.id === "toan" || s.id === "tinhoc";
+              return `
+                <div class="adm-subject-item-card">
+                  <div>
+                    <div class="adm-subj-card-head">
+                      <div class="adm-subj-card-title">
+                        <span class="adm-subj-icon-wrap">${window.KeduAuth.getSubjectIconSvg ? window.KeduAuth.getSubjectIconSvg(s.id) : ''}</span>
+                        <span>${s.name}</span>
+                      </div>
+                      <span class="adm-status-pill ${isReady ? 'ready' : 'used'}">
+                        ${isReady ? '● Hoạt động' : '● Đang soạn đề'}
+                      </span>
+                    </div>
+                    <div class="adm-subj-card-desc">
+                      ${s.questions}
+                    </div>
+                  </div>
+                  <div class="adm-subj-card-actions">
+                    <a href="${s.page}" class="adm-btn-action" style="text-decoration:none; color:#2563eb; font-weight:700;">
+                      Vào ôn luyện ↗
+                    </a>
+                    <button type="button" class="adm-btn-action btn-dash-create-5-keys" data-subject="${s.id}" style="color:#d97706; font-weight:700;">
+                      + Tạo 5 Key
+                    </button>
+                  </div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        </div>
+
+        <!-- PANE 4: BACKUP & DATA -->
+        <div class="admin-tab-pane" id="paneDashBackup">
+          <div class="adm-backup-grid">
+            <div class="adm-backup-box">
+              <h3 class="adm-backup-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Sao lưu toàn bộ dữ liệu</span>
+              </h3>
+              <p class="adm-backup-desc">
+                Tải tệp tin sao lưu JSON chứa toàn bộ tài khoản người dùng, phân quyền môn học và danh sách mã Key bản quyền về máy tính an toàn.
+              </p>
+              <button type="button" class="btn-admin-primary" id="btnDashDownloadBackup" style="background:#0f2657; padding: 10px 20px; font-size: 13.5px; border-radius: 8px;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Tải tệp JSON sao lưu</span>
+              </button>
+            </div>
+
+            <div class="adm-backup-box">
+              <h3 class="adm-backup-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <span>Khôi phục dữ liệu từ tệp</span>
+              </h3>
+              <p class="adm-backup-desc">
+                Chọn file JSON sao lưu trước đó để nạp lại danh sách tài khoản và mã bản quyền vào hệ thống.
+              </p>
+              <input type="file" id="dashInputImportFile" accept=".json" style="display:none;">
+              <button type="button" class="btn-admin-secondary" id="btnDashTriggerImport" style="padding: 10px 20px; font-size: 13.5px; border-radius: 8px;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <span>Chọn file JSON để khôi phục</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    bindDashboardEvents(adminUser);
+    renderDashUsersTable();
+    renderDashKeysTable();
+  }
+
+  /* 3. BIND SỰ KIỆN DASHBOARD */
+  function bindDashboardEvents(adminUser) {
+    // Tab switching
+    const tabs = container.querySelectorAll(".admin-tab-item");
+    const panes = container.querySelectorAll(".admin-tab-pane");
+
+    function switchDashTab(target) {
+      currentTab = target;
+      tabs.forEach(t => t.classList.toggle("active", t.getAttribute("data-tab") === target));
+      panes.forEach(p => p.classList.toggle("active", p.id === `paneDash${capitalize(target)}`));
+
+      if (target === "users") renderDashUsersTable();
+      if (target === "keys") renderDashKeysTable();
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        switchDashTab(tab.getAttribute("data-tab"));
+      });
+    });
+
+    // Quick Hero Backup
+    document.getElementById("btnQuickBackupHero")?.addEventListener("click", () => {
+      window.KeduAuth.adminExportDataBackup();
+    });
+
+    // Users Filter Pills
+    container.querySelectorAll(".adm-filter-btn[data-role]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        container.querySelectorAll(".adm-filter-btn[data-role]").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        userRoleFilter = btn.getAttribute("data-role");
+        renderDashUsersTable();
+      });
+    });
+
+    // User Search Input
+    const userSearchInput = document.getElementById("dashUserSearchInput");
+    userSearchInput?.addEventListener("input", (e) => {
+      userKeyword = e.target.value.trim().toLowerCase();
+      renderDashUsersTable();
+    });
+
+    // Add User Button
+    document.getElementById("btnDashCreateUser")?.addEventListener("click", () => {
+      openAddUserDialog();
+    });
+
+    // Key Gen Form
+    document.getElementById("btnDashGenKeys")?.addEventListener("click", () => {
+      const selSub = document.getElementById("selDashKeySubject")?.value || "toan";
+      const selCnt = parseInt(document.getElementById("selDashKeyCount")?.value || "5", 10);
+      window.KeduAuth.adminCreateLicenseKeys(selSub, selCnt);
+      renderAdminDashboard(adminUser);
+      // Switch back to keys tab
+      switchDashTab("keys");
+    });
+
+    // Key Quick Actions
+    document.getElementById("btnDashCopyUnusedKeys")?.addEventListener("click", () => {
+      window.KeduAuth.adminCopyUnusedKeys();
+    });
+    document.getElementById("btnDashExportTxt")?.addEventListener("click", () => {
+      window.KeduAuth.adminExportKeys("txt");
+    });
+    document.getElementById("btnDashExportJson")?.addEventListener("click", () => {
+      window.KeduAuth.adminExportKeys("json");
+    });
+
+    // Key Filter Pills
+    container.querySelectorAll(".adm-filter-btn[data-keystatus]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        container.querySelectorAll(".adm-filter-btn[data-keystatus]").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        keyStatusFilter = btn.getAttribute("data-keystatus");
+        renderDashKeysTable();
+      });
+    });
+
+    // Key Filter by Subject
+    document.getElementById("selDashFilterSubject")?.addEventListener("change", (e) => {
+      keySubjectFilter = e.target.value;
+      renderDashKeysTable();
+    });
+
+    // Key Search Input
+    document.getElementById("dashKeySearchInput")?.addEventListener("input", (e) => {
+      keyKeyword = e.target.value.trim().toLowerCase();
+      renderDashKeysTable();
+    });
+
+    // Subject Quick 5 Keys
+    container.querySelectorAll(".btn-dash-create-5-keys").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const subId = btn.getAttribute("data-subject");
+        window.KeduAuth.adminCreateLicenseKeys(subId, 5);
+        renderAdminDashboard(adminUser);
+        switchDashTab("keys");
+      });
+    });
+
+    // Backup actions
+    document.getElementById("btnDashDownloadBackup")?.addEventListener("click", () => {
+      window.KeduAuth.adminExportDataBackup();
+    });
+
+    const fileInput = document.getElementById("dashInputImportFile");
+    document.getElementById("btnDashTriggerImport")?.addEventListener("click", () => {
+      fileInput?.click();
+    });
+    fileInput?.addEventListener("change", (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        window.KeduAuth.adminImportDataBackup(event.target.result);
+        renderAdminDashboard(adminUser);
+      };
+      reader.readAsText(file);
+    });
+  }
+
+  /* 4. RENDER BẢNG NGƯỜI DÙNG */
+  function renderDashUsersTable() {
+    const tbody = document.getElementById("dashUsersTableBody");
+    if (!tbody) return;
+
+    const users = window.KeduAuth.getAllUsers ? window.KeduAuth.getAllUsers() : {};
+    const currentUser = window.KeduAuth.getCurrentUser();
+    const userKeys = Object.keys(users);
+
+    const filtered = userKeys.filter(k => {
+      const u = users[k];
+      const matchRole = userRoleFilter === "all" || u.role === userRoleFilter;
+      const matchKey = !userKeyword || 
+        u.username.toLowerCase().includes(userKeyword) || 
+        (u.fullName && u.fullName.toLowerCase().includes(userKeyword));
+      return matchRole && matchKey;
+    });
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="5" style="text-align: center; padding: 40px 20px; color: #94a3b8;">
+            <div style="margin-bottom: 12px; display:flex; justify-content:center;">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </div>
+            <div style="font-size: 14px; font-weight: 600; color: #475569;">Không tìm thấy người dùng phù hợp</div>
+            <div style="font-size: 12px; margin-top: 4px;">Thử đổi từ khóa tìm kiếm hoặc bỏ bộ lọc vai trò</div>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(k => {
+      const u = users[k];
+      const isAdmin = u.role === "admin";
+      const isSelf = currentUser && currentUser.username.toLowerCase() === u.username.toLowerCase();
+      const initial = (u.fullName || u.username).charAt(0).toUpperCase();
+      const userPhoto = u.avatar ? `<img src="${escapeHTML(u.avatar)}" alt="${escapeHTML(u.username)}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;" onerror="this.parentElement.innerHTML='${initial}';">` : initial;
+
+      const unlockedChips = (u.unlockedSubjects || []).map(sid => {
+        if (sid === "all") return '<span class="adm-subj-chip all"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg> Toàn bộ môn (VIP)</span>';
+        const subj = window.KeduAuth.getSubjectById ? window.KeduAuth.getSubjectById(sid) : null;
+        return `<span class="adm-subj-chip">${window.KeduAuth.getSubjectIconSvg ? window.KeduAuth.getSubjectIconSvg(sid) : ''}<span>${subj ? subj.name : sid}</span></span>`;
+      }).join("") || '<span style="color:#94a3b8; font-size:12px;">Chưa mở khóa</span>';
+
+      const dateStr = u.createdAt ? new Date(u.createdAt).toLocaleDateString("vi-VN") : "Hệ thống";
+
+      return `
+        <tr>
+          <td>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="width:34px; height:34px; border-radius:50%; background:${isAdmin ? 'linear-gradient(135deg, #d97706, #b45309)' : '#e2e8f0'}; color:${isAdmin ? '#ffffff' : '#334155'}; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; flex-shrink:0; overflow:hidden;">
+                ${userPhoto}
+              </div>
+              <div>
+                <div style="font-weight:700; color:#0f172a; display:flex; align-items:center; gap:4px; flex-wrap:wrap;">
+                  <span>@${escapeHTML(u.username)}</span>
+                  ${isSelf ? '<span style="font-size:10px; color:#2563eb; font-weight:800; background:#eff6ff; padding:1px 5px; border-radius:4px;">BẠN</span>' : ''}
+                </div>
+                <div style="font-size:12px; color:#64748b;">
+                  ${escapeHTML(u.fullName || u.username)}
+                  ${u.email ? ` • <span style="color:#94a3b8; font-size:11.5px;">${escapeHTML(u.email)}</span>` : ''}
+                </div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <span class="adm-badge-role ${isAdmin ? 'admin' : 'student'}">
+              ${isAdmin ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg> <span>Quản trị</span>' : '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> <span>Học viên</span>'}
+            </span>
+          </td>
+          <td>${unlockedChips}</td>
+          <td style="color:#64748b; font-size:12px;">${dateStr}</td>
+          <td>
+            <div class="adm-actions-group">
+              <button type="button" class="adm-btn-action btn-dash-edit-subjects" data-username="${u.username}" title="Mở khóa môn học cho tài khoản">
+                Môn học
+              </button>
+              ${!isSelf ? `
+                <button type="button" class="adm-btn-action btn-dash-toggle-role" data-username="${u.username}" data-current-role="${u.role}" title="Chuyển đổi vai trò">
+                  ${isAdmin ? 'Hạ cấp' : 'Thăng cấp'}
+                </button>
+              ` : ''}
+              <button type="button" class="adm-btn-action btn-dash-reset-pwd" data-username="${u.username}" title="Đặt lại mật khẩu">
+                Đổi MK
+              </button>
+              ${!isSelf ? `
+                <button type="button" class="adm-btn-action danger btn-dash-delete-user" data-username="${u.username}" title="Xóa tài khoản này">
+                  Xóa
+                </button>
+              ` : ''}
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join("");
+
+    bindUserTableActions();
+  }
+
+  function bindUserTableActions() {
+    // Edit subjects
+    container.querySelectorAll(".btn-dash-edit-subjects").forEach(btn => {
+      btn.addEventListener("click", () => {
+        openEditSubjectsDialog(btn.getAttribute("data-username"));
+      });
+    });
+
+    // Toggle role
+    container.querySelectorAll(".btn-dash-toggle-role").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const username = btn.getAttribute("data-username");
+        const curRole = btn.getAttribute("data-current-role");
+        const newRole = curRole === "admin" ? "student" : "admin";
+        if (confirm(`Bạn có chắc muốn chuyển vai trò của @${username} thành ${newRole === "admin" ? "Quản trị viên" : "Học viên"}?`)) {
+          window.KeduAuth.setUserRole(username, newRole);
+          renderDashUsersTable();
+        }
+      });
+    });
+
+    // Reset password
+    container.querySelectorAll(".btn-dash-reset-pwd").forEach(btn => {
+      btn.addEventListener("click", () => {
+        openResetPasswordDialog(btn.getAttribute("data-username"));
+      });
+    });
+
+    // Delete user
+    container.querySelectorAll(".btn-dash-delete-user").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const username = btn.getAttribute("data-username");
+        if (confirm(`CẢNH BÁO: Xóa tài khoản @${username}? Thao tác này không thể hoàn tác!`)) {
+          window.KeduAuth.adminDeleteUser(username);
+          renderDashUsersTable();
+        }
+      });
+    });
+  }
+
+  /* 5. RENDER BẢNG MÃ BẢN QUYỀN (KEYS) */
+  function renderDashKeysTable() {
+    const tbody = document.getElementById("dashKeysTableBody");
+    if (!tbody) return;
+
+    const keys = window.KeduAuth.getAllLicenseKeys ? window.KeduAuth.getAllLicenseKeys() : {};
+    const keyCodes = Object.keys(keys);
+
+    const filtered = keyCodes.filter(c => {
+      const k = keys[c];
+      const matchStatus = keyStatusFilter === "all" || 
+        (keyStatusFilter === "used" ? k.isUsed : !k.isUsed);
+      const matchSubject = keySubjectFilter === "all" || k.subjectId === keySubjectFilter;
+      const matchSearch = !keyKeyword || 
+        c.toLowerCase().includes(keyKeyword) || 
+        (k.usedBy && k.usedBy.toLowerCase().includes(keyKeyword));
+      return matchStatus && matchSubject && matchSearch;
+    });
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align: center; padding: 40px 20px; color: #94a3b8;">
+            <div style="margin-bottom: 12px; display:flex; justify-content:center;">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.8"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m21 3-9.5 9.5"/><path d="m15.5 7.5 3 3"/><path d="M14 3h7v7"/></svg>
+            </div>
+            <div style="font-size: 14px; font-weight: 600; color: #475569;">Không có mã Key nào khớp với điều kiện tìm kiếm</div>
+            <div style="font-size: 12px; margin-top: 4px;">Bấm nút "Tạo Key Ngay" ở trên để phát hành mã mới</div>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(c => {
+      const k = keys[c];
+      const subj = window.KeduAuth.getSubjectById ? window.KeduAuth.getSubjectById(k.subjectId) : null;
+      const subjName = subj ? subj.name : (k.subjectId === "all" ? "Combo Tất cả môn" : k.subjectId);
+      const dateStr = k.createdAt ? new Date(k.createdAt).toLocaleDateString("vi-VN") : "Hệ thống";
+
+      return `
+        <tr>
+          <td>
+            <span class="adm-key-code">
+              ${c}
+              <button type="button" class="adm-btn-copy-code btn-copy-single-key" data-key="${c}" title="Sao chép mã Key">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </button>
+            </span>
+          </td>
+          <td>
+            <span class="adm-subj-chip ${k.subjectId === 'all' ? 'all' : ''}">
+              ${window.KeduAuth.getSubjectIconSvg ? window.KeduAuth.getSubjectIconSvg(k.subjectId) : ''}
+              <span>${subjName}</span>
+            </span>
+          </td>
+          <td>
+            <span class="adm-status-pill ${k.isUsed ? 'used' : 'ready'}">
+              ${k.isUsed ? '● Đã dùng' : '● Sẵn sàng'}
+            </span>
+          </td>
+          <td>
+            ${k.isUsed ? `<span style="font-weight:700; color:#0f172a;">@${escapeHTML(k.usedBy || '')}</span>` : '<span style="color:#94a3b8;">—</span>'}
+          </td>
+          <td style="color:#64748b; font-size:12px;">${dateStr}</td>
+          <td>
+            <div class="adm-actions-group">
+              <button type="button" class="adm-btn-action danger btn-dash-delete-key" data-code="${c}" title="Xóa mã Key này">
+                Xóa
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join("");
+
+    // Copy single key
+    container.querySelectorAll(".btn-copy-single-key").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const code = btn.getAttribute("data-key");
+        navigator.clipboard.writeText(code).then(() => {
+          window.KeduAuth.showToast(`Đã sao chép mã Key: ${code}`, "success");
+        });
+      });
+    });
+
+    // Delete single key
+    container.querySelectorAll(".btn-dash-delete-key").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const code = btn.getAttribute("data-code");
+        if (confirm(`Xóa mã Key ${code}?`)) {
+          window.KeduAuth.adminDeleteLicenseKey(code);
+          renderDashKeysTable();
+        }
+      });
+    });
+  }
+
+  /* 6. DIALOGS (MODALS) */
+  function openAddUserDialog() {
+    const username = prompt("Nhập tên đăng nhập mới (viết liền không dấu):");
+    if (!username || !username.trim()) return;
+    const fullName = prompt("Nhập họ tên hiển thị:", username.trim()) || username.trim();
+    const password = prompt("Nhập mật khẩu cho tài khoản:");
+    if (!password || !password.trim()) {
+      alert("Mật khẩu không được để trống!");
+      return;
+    }
+    const role = confirm("Tài khoản này có vai trò Quản trị viên (Admin) không?\n- OK: Quản trị viên\n- Cancel: Học viên") ? "admin" : "student";
+
+    window.KeduAuth.register(username.trim(), password.trim(), fullName.trim(), role).then(res => {
+      if (res && res.success) {
+        renderDashUsersTable();
+      }
+    });
+  }
+
+  function openResetPasswordDialog(targetUsername) {
+    const newPwd = prompt(`Nhập mật khẩu mới cho tài khoản @${targetUsername}:`);
+    if (!newPwd || !newPwd.trim()) return;
+    window.KeduAuth.adminResetPassword(targetUsername, newPwd.trim()).then(() => {
+      renderDashUsersTable();
+    });
+  }
+
+  function openEditSubjectsDialog(targetUsername) {
+    const users = window.KeduAuth.getAllUsers ? window.KeduAuth.getAllUsers() : {};
+    const norm = targetUsername.toLowerCase().trim();
+    const user = users[norm];
+    if (!user) return;
+
+    const subjects = window.KeduAuth.SUBJECTS || [];
+    let promptMsg = `Mở khóa môn học cho @${targetUsername}:\n\nNhập các mã môn cách nhau bởi dấu phẩy.\nVí dụ: toan, tinhoc (hoặc nhập 'all' để mở toàn bộ)\n\nDanh sách mã môn:\n` +
+      subjects.map(s => `- ${s.id}: ${s.name}`).join("\n");
+
+    const currentVal = (user.unlockedSubjects || []).join(", ");
+    const inputVal = prompt(promptMsg, currentVal);
+    if (inputVal === null) return;
+
+    const arr = inputVal.split(",").map(s => s.trim().toLowerCase()).filter(Boolean);
+    window.KeduAuth.adminSetUserSubjects(targetUsername, arr);
+    renderDashUsersTable();
+  }
+
+  function capitalize(s) {
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+
+  function escapeHTML(str) {
+    if (!str) return "";
+    return str.replace(/[&<>'"]/g, tag => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      "'": '&#39;',
+      '"': '&quot;'
+    }[tag] || tag));
+  }
+
+  // Khởi chạy khi DOM sẵn sàng
+  document.addEventListener("DOMContentLoaded", () => {
+    checkAdminAndRender();
+    window.addEventListener("kedu-auth-change", checkAdminAndRender);
+  });
+})();
+</script>
+
+</body>
+</html>

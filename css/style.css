@@ -3375,23 +3375,11 @@ body.tv-mode .fb-text-field {
   --subj-border: #DDD6FE;
   --subj-shadow: rgba(124, 58, 237, 0.22);
 }
-.card-ngu-van {
-  --subj-color: #E11D48;
-  --subj-soft-bg: #FFF1F2;
-  --subj-border: #FECDD3;
-  --subj-shadow: rgba(225, 29, 72, 0.22);
-}
 .card-lich-su {
   --subj-color: #D97706;
   --subj-soft-bg: #FFFBEB;
   --subj-border: #FDE68A;
   --subj-shadow: rgba(217, 119, 6, 0.22);
-}
-.card-ngoai-ngu {
-  --subj-color: #0891B2;
-  --subj-soft-bg: #ECFEFF;
-  --subj-border: #A5F3FC;
-  --subj-shadow: rgba(8, 145, 178, 0.22);
 }
 
 .section-subtitle-pill {

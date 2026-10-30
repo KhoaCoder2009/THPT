@@ -1,6 +1,6 @@
 # KEdu
 
-Website ôn luyện 8 môn thi chuẩn chương trình Giáo dục Phổ thông mới (GDPT 2018): **Toán học, Vật lí, Hóa học, Sinh học, Tin học, Ngữ văn, Lịch sử, Ngoại ngữ**.
+Website ôn luyện 6 môn thi chuẩn chương trình Giáo dục Phổ thông mới (GDPT 2018): **Toán học, Vật lí, Hóa học, Sinh học, Tin học, Lịch sử**.
 
 **Người biên soạn**: **TRẦN ĐĂNG KHOA**
 
@@ -10,18 +10,17 @@ Website ôn luyện 8 môn thi chuẩn chương trình Giáo dục Phổ thông 
 
 ```
 THPT/
-├── index.html                   # Trang chủ Cổng thông tin 8 môn học
+├── index.html                   # Trang chủ Cổng thông tin 6 môn học
 ├── README.md                    # Tài liệu tổng quan dự án
 │
-├── pages/                       # Các trang chức năng luyện thi 8 môn
+├── pages/                       # Các trang chức năng luyện thi 6 môn
 │   ├── toan-hoc.html            # Môn Toán học 12
 │   ├── vat-li.html              # Môn Vật lí 12
 │   ├── hoa-hoc.html             # Môn Hóa học 12
 │   ├── sinh-hoc.html            # Môn Sinh học 12
 │   ├── tin-hoc.html             # Môn Tin học 12 (120 câu hỏi)
-│   ├── ngu-van.html             # Môn Ngữ văn 12
 │   ├── lich-su.html             # Môn Lịch Sử 12
-│   └── ngoai-ngu.html           # Môn Ngoại ngữ 12
+│   └── quan-ly-de.html          # Hệ thống Quản lý đề & Chỉnh sửa đáp án
 │
 ├── css/                         # Định dạng giao diện & giao diện TV
 │   └── style.css                # Toàn bộ CSS hệ thống (DOL THPT / KEdu theme)

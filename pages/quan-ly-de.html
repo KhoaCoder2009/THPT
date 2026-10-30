@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Quản Lý Ngân Hàng Đề & Đáp Án | KEdu</title>
+  <meta name="description" content="Hệ thống quản lý đề thi, tra cứu đáp án và chỉnh sửa đáp án câu hỏi ôn luyện tốt nghiệp THPT 2026.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="../assets/images/favicon.png">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/auth.css">
+
+  <!-- KaTeX for Math Rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Supabase & Bundle Data -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="../database/bundled-data.js"></script>
+  <script src="../js/question-manager.js"></script>
+  <script src="../js/auth.js"></script>
+
+  <style>
+    /* CUSTOM STYLES CHO TRANG QUẢN LÝ ĐỀ & ĐÁP ÁN */
+    .qm-hero {
+      background: linear-gradient(135deg, #0b1e42 0%, #1e293b 100%);
+      color: #ffffff;
+      padding: 32px 28px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+      position: relative;
+      box-shadow: 0 10px 25px rgba(11, 30, 66, 0.12);
+    }
+    .qm-hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      background: rgba(37, 99, 235, 0.25);
+      color: #93c5fd;
+      border: 1px solid rgba(147, 197, 253, 0.35);
+      margin-bottom: 12px;
+    }
+    .qm-hero-title {
+      font-family: var(--font-heading);
+      font-size: 26px;
+      font-weight: 800;
+      color: #ffffff;
+      margin: 0 0 8px 0;
+      letter-spacing: -0.02em;
+    }
+    .qm-hero-desc {
+      font-size: 14px;
+      color: #94a3b8;
+      max-width: 720px;
+      line-height: 1.6;
+      margin: 0;
+    }
+    .qm-hero-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    /* METRICS BAR */
+    .qm-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .qm-metric-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 16px 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .qm-metric-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+    }
+    .qm-metric-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #64748b;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .qm-metric-val {
+      font-family: var(--font-heading);
+      font-size: 26px;
+      font-weight: 800;
+      color: #0f2657;
+      line-height: 1;
+    }
+    .qm-metric-sub {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    /* FILTER TOOLBAR */
+    .qm-filter-box {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    }
+    .qm-filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      align-items: end;
+    }
+    .qm-form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .qm-label {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #334155;
+    }
+    .qm-select, .qm-input {
+      width: 100%;
+      height: 42px;
+      padding: 0 14px;
+      border-radius: 10px;
+      border: 1.5px solid #cbd5e1;
+      font-size: 13.5px;
+      font-family: inherit;
+      color: #0f172a;
+      background: #ffffff;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .qm-select:focus, .qm-input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    /* QUESTION CARD */
+    .qm-card-list {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .qm-qcard {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+      position: relative;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .qm-qcard.is-modified {
+      border-left: 4.5px solid #ea580c;
+      background: #fffdfa;
+    }
+    .qm-qcard-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .qm-badges-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .qm-id-badge {
+      font-size: 11px;
+      font-family: monospace;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+    .qm-type-badge {
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 6px;
+    }
+    .qm-type-badge.mc {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+    }
+    .qm-type-badge.tf {
+      background: #fdf2f8;
+      color: #be185d;
+      border: 1px solid #fbcfe8;
+    }
+    .qm-type-badge.sa {
+      background: #f0fdf4;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+    .qm-mod-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 9px;
+      border-radius: 6px;
+      background: #ffedd5;
+      color: #c2410c;
+      border: 1px solid #fed7aa;
+    }
+
+    .qm-qcard-prompt {
+      font-size: 15.5px;
+      font-weight: 600;
+      color: #0f172a;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    /* OPTIONS & ANSWERS DISPLAY */
+    .qm-options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .qm-opt-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1.5px solid #e2e8f0;
+      background: #f8fafc;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .qm-opt-item.is-correct-opt {
+      border-color: #16a34a;
+      background: #f0fdf4;
+      color: #14532d;
+      font-weight: 600;
+    }
+    .qm-opt-letter {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #cbd5e1;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .qm-opt-item.is-correct-opt .qm-opt-letter {
+      background: #16a34a;
+      color: #ffffff;
+    }
+    .qm-correct-indicator {
+      margin-left: auto;
+      font-size: 11px;
+      font-weight: 800;
+      background: #dcfce7;
+      color: #15803d;
+      padding: 2px 7px;
+      border-radius: 9999px;
+      border: 1px solid #bbf7d0;
+    }
+
+    /* TF LIST */
+    .qm-tf-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 16px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .qm-tf-row {
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .qm-tf-row:last-child {
+      border-bottom: none;
+    }
+    .qm-tf-cell-lbl {
+      width: 40px;
+      padding: 10px 12px;
+      font-weight: 800;
+      color: #475569;
+      background: #f8fafc;
+      border-right: 1px solid #e2e8f0;
+    }
+    .qm-tf-cell-text {
+      padding: 10px 14px;
+      font-size: 14px;
+      color: #1e293b;
+    }
+    .qm-tf-cell-val {
+      width: 90px;
+      text-align: center;
+      padding: 10px 14px;
+    }
+    .qm-tf-badge-true {
+      display: inline-block;
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 6px;
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+    .qm-tf-badge-false {
+      display: inline-block;
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 6px;
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    /* SA ANSWERS */
+    .qm-sa-box {
+      background: #f0fdf4;
+      border: 1.5px solid #86efac;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .qm-sa-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #15803d;
+    }
+    .qm-sa-pill {
+      font-size: 13px;
+      font-weight: 700;
+      background: #ffffff;
+      color: #047857;
+      padding: 4px 12px;
+      border-radius: 8px;
+      border: 1px solid #a7f3d0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+
+    /* EXPLANATION ACCORDION */
+    .qm-explain-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 13.5px;
+      color: #334155;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    .qm-explain-header {
+      font-weight: 700;
+      color: #2563eb;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    /* BUTTONS */
+    .btn-qm-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 9px;
+      background: #2563eb;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-qm-primary:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+    }
+    .btn-qm-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 9px;
+      background: #ffffff;
+      color: #475569;
+      font-size: 13px;
+      font-weight: 700;
+      border: 1.5px solid #cbd5e1;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .btn-qm-secondary:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+    }
+    .btn-qm-danger {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 12px;
+      border-radius: 8px;
+      background: #fff1f2;
+      color: #be123c;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid #fecdd3;
+      cursor: pointer;
+    }
+    .btn-qm-danger:hover {
+      background: #ffe4e6;
+    }
+
+    /* EDIT MODAL */
+    .qm-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .qm-modal-overlay.active {
+      display: flex;
+    }
+    .qm-modal-card {
+      background: #ffffff;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 760px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+      padding: 28px;
+      position: relative;
+    }
+    .qm-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .qm-modal-title {
+      font-family: var(--font-heading);
+      font-size: 20px;
+      font-weight: 800;
+      color: #0f2657;
+      margin: 0;
+    }
+    .qm-modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+    }
+    .qm-modal-close:hover {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .qm-edit-section {
+      margin-bottom: 20px;
+    }
+    .qm-edit-section-title {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #0f2657;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .qm-textarea {
+      width: 100%;
+      min-height: 80px;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1.5px solid #cbd5e1;
+      font-size: 14px;
+      font-family: inherit;
+      line-height: 1.5;
+      resize: vertical;
+      outline: none;
+    }
+    .qm-textarea:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    /* MC ANSWER SELECTOR */
+    .qm-mc-selector-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .qm-mc-pick-btn {
+      padding: 12px 8px;
+      border-radius: 10px;
+      border: 2px solid #cbd5e1;
+      background: #f8fafc;
+      font-family: var(--font-heading);
+      font-size: 16px;
+      font-weight: 800;
+      color: #475569;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .qm-mc-pick-btn:hover {
+      border-color: #94a3b8;
+    }
+    .qm-mc-pick-btn.active {
+      border-color: #16a34a;
+      background: #f0fdf4;
+      color: #15803d;
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);
+    }
+
+    /* TOAST */
+    .qm-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 12px 20px;
+      border-radius: 10px;
+      background: #0f172a;
+      color: #ffffff;
+      font-size: 13.5px;
+      font-weight: 600;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      z-index: 100000;
+      display: none;
+      animation: qmFadeIn 0.2s ease-out;
+    }
+    @keyframes qmFadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="dol-main-theme">
+
+<!-- SITE HEADER -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="sh-left-nav">
+      <a href="../index.html" class="sh-brand-group" title="KEdu - Về trang chủ">
+        <div class="sh-logo-circle">
+          <img src="../assets/images/logo_kedu_horizontal.png" alt="Logo KEdu" class="sh-logo-img">
+        </div>
+        <div class="sh-text-group">
+          <span class="bp-brand-short">KEdu</span>
+          <span class="bp-brand-full">HỆ THỐNG ÔN LUYỆN ĐỀ</span>
+        </div>
+      </a>
+
+      <a href="../index.html" class="sh-nav-item" title="Về trang chủ">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Trang chủ</span>
+      </a>
+
+      <a href="toan-hoc.html" class="sh-nav-item" title="Đến môn Toán học">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24M14.83 9.17l4.24-4.24M14.83 14.83l4.24 4.24M9.17 14.83l-4.24 4.24"/></svg>
+        <span>Môn Toán 12</span>
+      </a>
+
+      <a href="quan-ly-de.html" class="sh-nav-item active admin-only-nav" data-admin-only="true" title="Quản lý ngân hàng đề">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10M6 14h6"/></svg>
+        <span>Quản lý đề & Đáp án</span>
+      </a>
+    </div>
+
+    <div class="sh-auth-slot" id="shAuthSlot"></div>
+  </div>
+</header>
+
+<!-- MAIN APP BODY -->
+<main class="app-main">
+  <!-- ACCESS GATE DÀNH CHO NON-ADMIN -->
+  <div id="qmAccessGate" class="qm-gate-wrap" style="display:none;"></div>
+
+  <!-- NỘI DUNG QUẢN LÝ DÀNH RIÊNG CHO ADMIN -->
+  <div id="qmMainContent" style="display:none;">
+  <!-- HERO BANNER -->
+  <div class="qm-hero">
+    <div class="qm-hero-badge">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span>Ngân hàng câu hỏi • Tra cứu & Chỉnh sửa đáp án</span>
+    </div>
+    <h1 class="qm-hero-title">Trung Tâm Quản Lý Ngân Hàng Đề & Đáp Án</h1>
+    <p class="qm-hero-desc">
+      Hệ thống cho phép duyệt toàn bộ danh sách câu hỏi theo môn học, xem chi tiết đáp án chính xác của từng câu (Trắc nghiệm, Đúng/Sai, Trả lời ngắn), và trực tiếp chỉnh sửa đáp án hoặc nội dung câu hỏi. Mọi thay đổi sẽ có hiệu lực ngay lập tức trong bài thi ôn luyện.
+    </p>
+
+    <div class="qm-hero-actions">
+      <button type="button" class="btn-qm-primary" id="btnExportJson">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Xuất File JSON (Đã đồng bộ)</span>
+      </button>
+
+      <button type="button" class="btn-qm-secondary" id="btnExportSql">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        <span>Tạo Script SQL Update</span>
+      </button>
+
+      <button type="button" class="btn-qm-danger" id="btnResetAllOverrides">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        <span>Khôi phục toàn bộ gốc</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- METRICS CARDS -->
+  <div class="qm-metrics-grid">
+    <div class="qm-metric-card">
+      <div class="qm-metric-label">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+        <span>Tổng câu hỏi</span>
+      </div>
+      <div class="qm-metric-val" id="metricTotalQ">0</div>
+      <div class="qm-metric-sub">Phù hợp với bộ lọc hiện tại</div>
+    </div>
+
+    <div class="qm-metric-card">
+      <div class="qm-metric-label">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+        <span>Trắc nghiệm 4 lựa chọn</span>
+      </div>
+      <div class="qm-metric-val" id="metricMcQ">0</div>
+      <div class="qm-metric-sub">Phần I (Nhiều lựa chọn)</div>
+    </div>
+
+    <div class="qm-metric-card">
+      <div class="qm-metric-label">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#be185d" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        <span>Đúng / Sai</span>
+      </div>
+      <div class="qm-metric-val" id="metricTfQ">0</div>
+      <div class="qm-metric-sub">Phần II (4 mệnh đề a, b, c, d)</div>
+    </div>
+
+    <div class="qm-metric-card">
+      <div class="qm-metric-label">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        <span>Trả lời ngắn</span>
+      </div>
+      <div class="qm-metric-val" id="metricSaQ">0</div>
+      <div class="qm-metric-sub">Phần III (Tự luận chuyển đổi)</div>
+    </div>
+
+    <div class="qm-metric-card">
+      <div class="qm-metric-label">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        <span>Đã chỉnh sửa đáp án</span>
+      </div>
+      <div class="qm-metric-val" style="color:#ea580c;" id="metricModQ">0</div>
+      <div class="qm-metric-sub">Đã lưu trong LocalStorage</div>
+    </div>
+  </div>
+
+  <!-- FILTER BOX -->
+  <div class="qm-filter-box">
+    <div class="qm-filter-grid">
+      <div class="qm-form-group">
+        <label class="qm-label" for="filterSubject">1. Môn học</label>
+        <select class="qm-select" id="filterSubject">
+          <option value="all">-- Tất cả môn học --</option>
+        </select>
+      </div>
+
+      <div class="qm-form-group">
+        <label class="qm-label" for="filterTopic">2. Bộ đề / Bài học</label>
+        <select class="qm-select" id="filterTopic">
+          <option value="all">-- Tất cả bộ đề --</option>
+        </select>
+      </div>
+
+      <div class="qm-form-group">
+        <label class="qm-label" for="filterType">3. Dạng câu hỏi</label>
+        <select class="qm-select" id="filterType">
+          <option value="all">-- Tất cả dạng câu --</option>
+          <option value="mc">Trắc nghiệm nhiều lựa chọn (MC)</option>
+          <option value="tf">Trắc nghiệm Đúng / Sai (TF)</option>
+          <option value="sa">Trả lời ngắn (SA)</option>
+        </select>
+      </div>
+
+      <div class="qm-form-group">
+        <label class="qm-label" for="filterStatus">4. Trạng thái</label>
+        <select class="qm-select" id="filterStatus">
+          <option value="all">Tất cả câu hỏi</option>
+          <option value="modified">Chỉ câu đã sửa đáp án</option>
+          <option value="original">Chỉ câu nguyên bản</option>
+        </select>
+      </div>
+
+      <div class="qm-form-group" style="grid-column: 1 / -1;">
+        <label class="qm-label" for="filterSearch">5. Tìm kiếm câu hỏi hoặc nội dung đáp án</label>
+        <input type="text" class="qm-input" id="filterSearch" placeholder="Nhập từ khóa câu hỏi, công thức toán, mã đề, hoặc nội dung đáp án...">
+      </div>
+    </div>
+  </div>
+
+  <!-- QUESTION LIST CONTAINER -->
+  <div class="qm-card-list" id="questionsContainer">
+    <!-- Rendered dynamically -->
+  </div>
+</main>
+
+<!-- EDIT QUESTION MODAL -->
+<div class="qm-modal-overlay" id="editModalOverlay">
+  <div class="qm-modal-card">
+    <div class="qm-modal-header">
+      <div>
+        <h2 class="qm-modal-title">Chỉnh Sửa Câu Hỏi & Đáp Án</h2>
+        <div style="font-size:12px; color:#64748b; margin-top:3px;" id="modalQuestionIdSub">ID: ...</div>
+      </div>
+      <button type="button" class="qm-modal-close" id="btnModalClose" title="Đóng">✕</button>
+    </div>
+
+    <form id="editQuestionForm">
+      <input type="hidden" id="editQuestionId">
+
+      <!-- Question Text -->
+      <div class="qm-edit-section">
+        <label class="qm-edit-section-title" for="editPrompt">
+          <span>Nội dung câu hỏi:</span>
+        </label>
+        <textarea class="qm-textarea" id="editPrompt" rows="3" placeholder="Nhập nội dung câu hỏi..."></textarea>
+      </div>
+
+      <!-- Diagram Preview / Edit Info -->
+      <div id="diagramNoticeBox" style="display:none; margin-bottom:16px; padding:10px 14px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; font-size:12.5px; color:#475569;">
+        ℹ️ Câu hỏi này có đính kèm hình vẽ SVG / Bảng biến thiên.
+      </div>
+
+      <!-- DYNAMIC ANSWER EDITOR (MC / TF / SA) -->
+      <div class="qm-edit-section" id="answerEditorArea">
+        <!-- Rendered based on question type -->
+      </div>
+
+      <!-- Explanation -->
+      <div class="qm-edit-section">
+        <label class="qm-edit-section-title" for="editExplanation">
+          <span>Hướng dẫn giải chi tiết (Explanation):</span>
+        </label>
+        <textarea class="qm-textarea" id="editExplanation" rows="3" placeholder="Nhập lời giải thích hoặc các bước giải..."></textarea>
+      </div>
+
+      <!-- Live Preview -->
+      <div class="qm-edit-section">
+        <div class="qm-edit-section-title">
+          <span>Xem trước định dạng KaTeX:</span>
+        </div>
+        <div id="modalLivePreview" style="padding:14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; line-height:1.6;">
+          (Xem trước sẽ hiển thị ở đây)
+        </div>
+      </div>
+
+      <!-- Modal Actions -->
+      <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px; padding-top:16px; border-top:1px solid #e2e8f0;">
+        <button type="button" class="btn-qm-secondary" id="btnModalCancel">Hủy bỏ</button>
+        <button type="submit" class="btn-qm-primary" id="btnModalSave">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          <span>Lưu Thay Đổi Đáp Án</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- CODE EXPORT MODAL -->
+<div class="qm-modal-overlay" id="exportModalOverlay">
+  <div class="qm-modal-card" style="max-width:680px;">
+    <div class="qm-modal-header">
+      <h2 class="qm-modal-title" id="exportModalTitle">Xuất Dữ Liệu</h2>
+      <button type="button" class="qm-modal-close" id="btnExportModalClose">✕</button>
+    </div>
+    <div style="margin-bottom:14px; font-size:13px; color:#64748b;" id="exportModalDesc">
+      Dữ liệu câu hỏi & đáp án đã chỉnh sửa:
+    </div>
+    <textarea class="qm-textarea" id="exportCodeText" style="height:320px; font-family:monospace; font-size:12px;" readonly></textarea>
+    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px;">
+      <button type="button" class="btn-qm-secondary" id="btnCopyExport">Sao chép vào Clipboard</button>
+      <button type="button" class="btn-qm-primary" id="btnDownloadExport">Tải file về máy</button>
+    </div>
+  </div>
+</div>
+</div> <!-- /qmMainContent -->
+
+<!-- TOAST -->
+<div class="qm-toast" id="qmToast"></div>
+
+<!-- SITE FOOTER -->
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div class="footer-meta">
+      Hệ thống ôn luyện thi Tốt nghiệp THPT • Phát triển & Biên soạn: <strong>TRẦN ĐĂNG KHOA</strong>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const manager = window.KeduQuestionManager;
+  if (!manager) {
+    alert("Không tìm thấy KeduQuestionManager! Vui lòng kiểm tra lại script.");
+    return;
+  }
+
+  await manager.init();
+
+  // DOM elements
+  const filterSubject = document.getElementById("filterSubject");
+  const filterTopic = document.getElementById("filterTopic");
+  const filterType = document.getElementById("filterType");
+  const filterStatus = document.getElementById("filterStatus");
+  const filterSearch = document.getElementById("filterSearch");
+
+  const metricTotalQ = document.getElementById("metricTotalQ");
+  const metricMcQ = document.getElementById("metricMcQ");
+  const metricTfQ = document.getElementById("metricTfQ");
+  const metricSaQ = document.getElementById("metricSaQ");
+  const metricModQ = document.getElementById("metricModQ");
+
+  const questionsContainer = document.getElementById("questionsContainer");
+
+  const editModalOverlay = document.getElementById("editModalOverlay");
+  const editQuestionForm = document.getElementById("editQuestionForm");
+  const editQuestionId = document.getElementById("editQuestionId");
+  const editPrompt = document.getElementById("editPrompt");
+  const editExplanation = document.getElementById("editExplanation");
+  const answerEditorArea = document.getElementById("answerEditorArea");
+  const modalLivePreview = document.getElementById("modalLivePreview");
+  const modalQuestionIdSub = document.getElementById("modalQuestionIdSub");
+  const diagramNoticeBox = document.getElementById("diagramNoticeBox");
+
+  const btnModalClose = document.getElementById("btnModalClose");
+  const btnModalCancel = document.getElementById("btnModalCancel");
+  const btnResetAllOverrides = document.getElementById("btnResetAllOverrides");
+  const btnExportJson = document.getElementById("btnExportJson");
+  const btnExportSql = document.getElementById("btnExportSql");
+
+  const exportModalOverlay = document.getElementById("exportModalOverlay");
+  const exportModalTitle = document.getElementById("exportModalTitle");
+  const exportModalDesc = document.getElementById("exportModalDesc");
+  const exportCodeText = document.getElementById("exportCodeText");
+  const btnExportModalClose = document.getElementById("btnExportModalClose");
+  const btnCopyExport = document.getElementById("btnCopyExport");
+  const btnDownloadExport = document.getElementById("btnDownloadExport");
+  const qmToast = document.getElementById("qmToast");
+
+  let currentEditingQuestion = null;
+  let exportFileType = "json";
+
+  function showToast(msg) {
+    qmToast.textContent = msg;
+    qmToast.style.display = "block";
+    setTimeout(() => {
+      qmToast.style.display = "none";
+    }, 3000);
+  }
+
+  // Khởi tạo danh sách môn học
+  function populateSubjects() {
+    const subjects = manager.getSubjects();
+    filterSubject.innerHTML = '<option value="all">-- Tất cả môn học --</option>';
+    subjects.forEach(s => {
+      const opt = document.createElement("option");
+      opt.value = s.id;
+      opt.textContent = s.name;
+      filterSubject.appendChild(opt);
+    });
+
+    // Mặc định chọn môn Toán nếu có
+    if (subjects.some(s => s.id === "toan")) {
+      filterSubject.value = "toan";
+    }
+  }
+
+  // Cập nhật danh sách bộ đề theo môn học
+  function populateTopics() {
+    const subjId = filterSubject.value;
+    const topics = manager.getTopics(subjId);
+    filterTopic.innerHTML = '<option value="all">-- Tất cả bộ đề --</option>';
+    topics.forEach(t => {
+      const opt = document.createElement("option");
+      opt.value = t.id;
+      opt.textContent = `${t.index_code || ''} - ${t.title}`;
+      filterTopic.appendChild(opt);
+    });
+  }
+
+  // Render danh sách câu hỏi
+  function renderQuestionList() {
+    const filters = {
+      subjectId: filterSubject.value,
+      topicId: filterTopic.value,
+      type: filterType.value,
+      status: filterStatus.value,
+      searchQuery: filterSearch.value
+    };
+
+    const questions = manager.getQuestions(filters);
+    const overrides = manager.getOverrides();
+
+    // Update metrics
+    metricTotalQ.textContent = questions.length;
+    metricMcQ.textContent = questions.filter(q => q.type === 'mc').length;
+    metricTfQ.textContent = questions.filter(q => q.type === 'tf').length;
+    metricSaQ.textContent = questions.filter(q => q.type === 'sa').length;
+    metricModQ.textContent = Object.keys(overrides).length;
+
+    if (questions.length === 0) {
+      questionsContainer.innerHTML = `
+        <div style="background:#ffffff; border:1.5px dashed #cbd5e1; border-radius:16px; padding:48px 24px; text-align:center; color:#64748b;">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:12px; color:#94a3b8;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <div style="font-weight:700; font-size:16px; color:#334155; margin-bottom:6px;">Không tìm thấy câu hỏi phù hợp</div>
+          <p style="font-size:13.5px; margin:0;">Hãy thử điều chỉnh bộ lọc môn học, chủ đề hoặc từ khóa tìm kiếm.</p>
+        </div>
+      `;
+      return;
+    }
+
+    let html = "";
+    questions.forEach((q, idx) => {
+      const isMod = q.isOverridden;
+      const typeLabel = q.type === 'mc' ? 'Trắc nghiệm 4 lựa chọn' : (q.type === 'tf' ? 'Đúng / Sai (4 ý)' : 'Trả lời ngắn');
+      const subjObj = manager.getSubjects().find(s => s.id === q.subject_id);
+      const subjName = subjObj ? subjObj.name : q.subject_id;
+
+      let answerHtml = "";
+
+      // DẠNG TRẮC NGHIỆM MC
+      if (q.type === 'mc') {
+        const letters = ['A', 'B', 'C', 'D'];
+        const opts = q.options || [];
+        answerHtml = '<div class="qm-options-grid">';
+        opts.forEach((optText, optIdx) => {
+          const isCorrect = (optIdx === q.correct_index);
+          answerHtml += `
+            <div class="qm-opt-item ${isCorrect ? 'is-correct-opt' : ''}">
+              <div class="qm-opt-letter">${letters[optIdx] || optIdx + 1}</div>
+              <div style="flex:1;">${optText}</div>
+              ${isCorrect ? '<span class="qm-correct-indicator">✓ ĐÁP ÁN ĐÚNG</span>' : ''}
+            </div>
+          `;
+        });
+        answerHtml += '</div>';
+      }
+      // DẠNG ĐÚNG SAI TF
+      else if (q.type === 'tf') {
+        const subItems = q.options || [];
+        answerHtml = '<table class="qm-tf-table">';
+        const subLabels = ['a', 'b', 'c', 'd'];
+        subItems.forEach((sub, subIdx) => {
+          const isTrue = !!sub.isCorrect;
+          answerHtml += `
+            <tr class="qm-tf-row">
+              <td class="qm-tf-cell-lbl">${subLabels[subIdx] || subIdx + 1})</td>
+              <td class="qm-tf-cell-text">${sub.text || sub}</td>
+              <td class="qm-tf-cell-val">
+                <span class="${isTrue ? 'qm-tf-badge-true' : 'qm-tf-badge-false'}">
+                  ${isTrue ? 'ĐÚNG' : 'SAI'}
+                </span>
+              </td>
+            </tr>
+          `;
+        });
+        answerHtml += '</table>';
+      }
+      // DẠNG TRẢ LỜI NGẮN SA
+      else if (q.type === 'sa') {
+        const answers = q.accepted_answers || [];
+        answerHtml = `
+          <div class="qm-sa-box">
+            <span class="qm-sa-title">✓ Các đáp án chấp nhận:</span>
+            ${answers.map(ans => `<span class="qm-sa-pill">${ans}</span>`).join('')}
+          </div>
+        `;
+      }
+
+      // Hình vẽ / Sơ đồ nếu có
+      const diagramHtml = q.diagram ? `<div style="margin-bottom:16px;">${q.diagram}</div>` : '';
+
+      // Khung lời giải chi tiết
+      const explainHtml = q.explanation ? `
+        <div class="qm-explain-box">
+          <div class="qm-explain-header">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <span>Hướng dẫn giải chi tiết</span>
+          </div>
+          <div>${q.explanation}</div>
+        </div>
+      ` : '';
+
+      html += `
+        <div class="qm-qcard ${isMod ? 'is-modified' : ''}" id="qcard-${q.id}">
+          <div class="qm-qcard-header">
+            <div class="qm-badges-row">
+              <span class="qm-id-badge">#${q.id}</span>
+              <span class="qm-id-badge" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd;">${subjName}</span>
+              <span class="qm-id-badge" style="background:#fef3c7; color:#92400e; border-color:#fde68a;">Đề ${q.topic_id}</span>
+              <span class="qm-type-badge ${q.type}">${typeLabel}</span>
+              ${isMod ? '<span class="qm-mod-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> ĐÃ CHỈNH SỬA ĐÁP ÁN</span>' : ''}
+            </div>
+
+            <div style="display:flex; gap:8px;">
+              ${isMod ? `
+                <button type="button" class="btn-qm-secondary" onclick="window.resetSingleQuestion('${q.id}')" title="Khôi phục câu này về đáp án gốc">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                  <span>Khôi phục gốc</span>
+                </button>
+              ` : ''}
+
+              <button type="button" class="btn-qm-primary" onclick="window.openEditQuestionModal('${q.id}')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                <span>Chỉnh sửa đáp án</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="qm-qcard-prompt">
+            <strong>Câu ${idx + 1}.</strong> ${q.question_text}
+          </div>
+
+          ${diagramHtml}
+          ${answerHtml}
+          ${explainHtml}
+        </div>
+      `;
+    });
+
+    questionsContainer.innerHTML = html;
+
+    // Render KaTeX Math
+    if (window.renderMathInElement) {
+      renderMathInElement(questionsContainer, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "$", right: "$", display: false },
+          { left: "\\(", right: "\\)", display: false },
+          { left: "\\[", right: "\\]", display: true }
+        ],
+        throwOnError: false
+      });
+    }
+  }
+
+  // Mở Modal Chỉnh Sửa Đáp Án
+  window.openEditQuestionModal = function(id) {
+    const q = manager.getQuestionById(id);
+    if (!q) return;
+
+    currentEditingQuestion = JSON.parse(JSON.stringify(q));
+    editQuestionId.value = q.id;
+    modalQuestionIdSub.textContent = `Mã câu hỏi: #${q.id} • Dạng: ${q.type.toUpperCase()}`;
+    editPrompt.value = q.question_text || "";
+    editExplanation.value = q.explanation || "";
+
+    if (q.diagram) {
+      diagramNoticeBox.style.display = "block";
+    } else {
+      diagramNoticeBox.style.display = "none";
+    }
+
+    renderModalAnswerEditor(currentEditingQuestion);
+    updateModalPreview();
+
+    editModalOverlay.classList.add("active");
+  };
+
+  // Render giao diện sửa đáp án theo đúng dạng câu hỏi
+  function renderModalAnswerEditor(q) {
+    let html = "";
+
+    // 1. DẠNG TRẮC NGHIỆM MC
+    if (q.type === 'mc') {
+      const letters = ['A', 'B', 'C', 'D'];
+      const opts = q.options || ["", "", "", ""];
+      const currentCorrect = q.correct_index !== undefined ? q.correct_index : 0;
+
+      html += `
+        <label class="qm-edit-section-title">
+          <span>Chọn đáp án đúng (Nhấp chọn A, B, C hoặc D):</span>
+        </label>
+        <div class="qm-mc-selector-grid">
+          ${letters.map((L, i) => `
+            <div class="qm-mc-pick-btn ${i === currentCorrect ? 'active' : ''}" onclick="window.pickMcCorrectIndex(${i})">
+              ${i === currentCorrect ? '✓ ' : ''}Phương án ${L}
+            </div>
+          `).join('')}
+        </div>
+
+        <label class="qm-edit-section-title" style="margin-top:14px;">
+          <span>Nội dung 4 phương án lựa chọn:</span>
+        </label>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          ${opts.map((optText, i) => `
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span style="width:28px; height:28px; border-radius:50%; background:#e2e8f0; font-weight:800; font-size:13px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">${letters[i]}</span>
+              <input type="text" class="qm-input" id="mcOptInput_${i}" value="${optText.replace(/"/g, '&quot;')}" oninput="window.updateMcOptionText(${i}, this.value)" placeholder="Nội dung phương án ${letters[i]}...">
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+    // 2. DẠNG ĐÚNG SAI TF
+    else if (q.type === 'tf') {
+      const subItems = q.options || [];
+      const subLabels = ['a', 'b', 'c', 'd'];
+
+      html += `
+        <label class="qm-edit-section-title">
+          <span>Thiết lập tính Đúng / Sai cho 4 mệnh đề:</span>
+        </label>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          ${subItems.map((sub, i) => {
+            const isTrue = !!sub.isCorrect;
+            return `
+              <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:12px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:8px;">
+                  <strong style="color:#0f2657;">Mệnh đề ${subLabels[i]})</strong>
+                  <div style="display:flex; gap:6px;">
+                    <button type="button" class="btn-qm-secondary ${isTrue ? 'qm-tf-badge-true' : ''}" onclick="window.toggleTfSubItem(${i}, true)" style="cursor:pointer; padding:4px 14px;">
+                      ${isTrue ? '✓ ĐÚNG' : 'Đúng'}
+                    </button>
+                    <button type="button" class="btn-qm-secondary ${!isTrue ? 'qm-tf-badge-false' : ''}" onclick="window.toggleTfSubItem(${i}, false)" style="cursor:pointer; padding:4px 14px;">
+                      ${!isTrue ? '✗ SAI' : 'Sai'}
+                    </button>
+                  </div>
+                </div>
+                <input type="text" class="qm-input" value="${(sub.text || sub).replace(/"/g, '&quot;')}" oninput="window.updateTfOptionText(${i}, this.value)" placeholder="Nội dung mệnh đề ${subLabels[i]}...">
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+    // 3. DẠNG TRẢ LỜI NGẮN SA
+    else if (q.type === 'sa') {
+      const answers = q.accepted_answers || [];
+      html += `
+        <label class="qm-edit-section-title">
+          <span>Các đáp số / từ khóa chấp nhận (ngăn cách bởi dấu phẩy):</span>
+        </label>
+        <input type="text" class="qm-input" id="saAnswersInput" value="${answers.join(', ').replace(/"/g, '&quot;')}" oninput="window.updateSaAnswers(this.value)" placeholder="Ví dụ: 149, 149s, 149 giây">
+        <div style="font-size:12px; color:#64748b; margin-top:6px;">
+          Thí sinh nhập bất kỳ giá trị nào trong danh sách trên sẽ được hệ thống chấm ĐÚNG.
+        </div>
+      `;
+    }
+
+    answerEditorArea.innerHTML = html;
+  }
+
+  // Chọn đáp án đúng cho MC
+  window.pickMcCorrectIndex = function(idx) {
+    if (!currentEditingQuestion) return;
+    currentEditingQuestion.correct_index = idx;
+    renderModalAnswerEditor(currentEditingQuestion);
+    updateModalPreview();
+  };
+
+  // Sửa chữ phương án MC
+  window.updateMcOptionText = function(idx, text) {
+    if (!currentEditingQuestion) return;
+    currentEditingQuestion.options[idx] = text;
+    updateModalPreview();
+  };
+
+  // Đổi Đúng/Sai cho mệnh đề TF
+  window.toggleTfSubItem = function(idx, isTrue) {
+    if (!currentEditingQuestion || !currentEditingQuestion.options[idx]) return;
+    currentEditingQuestion.options[idx].isCorrect = isTrue;
+    renderModalAnswerEditor(currentEditingQuestion);
+    updateModalPreview();
+  };
+
+  // Sửa chữ mệnh đề TF
+  window.updateTfOptionText = function(idx, text) {
+    if (!currentEditingQuestion || !currentEditingQuestion.options[idx]) return;
+    currentEditingQuestion.options[idx].text = text;
+    updateModalPreview();
+  };
+
+  // Cập nhật đáp số SA
+  window.updateSaAnswers = function(text) {
+    if (!currentEditingQuestion) return;
+    currentEditingQuestion.accepted_answers = text.split(',').map(s => s.trim()).filter(Boolean);
+    updateModalPreview();
+  };
+
+  // Live KaTeX preview in modal
+  function updateModalPreview() {
+    if (!currentEditingQuestion) return;
+    const prompt = editPrompt.value;
+    const exp = editExplanation.value;
+
+    let ansPreview = "";
+    if (currentEditingQuestion.type === 'mc') {
+      const letters = ['A', 'B', 'C', 'D'];
+      const cIdx = currentEditingQuestion.correct_index;
+      ansPreview = `<div style="margin-top:8px; color:#15803d; font-weight:700;">✓ Đáp án đúng hiện tại: Phương án ${letters[cIdx]} (${currentEditingQuestion.options[cIdx] || ''})</div>`;
+    } else if (currentEditingQuestion.type === 'tf') {
+      const subLabels = ['a', 'b', 'c', 'd'];
+      ansPreview = `<div style="margin-top:8px; font-weight:700;">Trạng thái đáp án: ${currentEditingQuestion.options.map((s, i) => `${subLabels[i]}: ${s.isCorrect ? 'ĐÚNG' : 'SAI'}`).join(' • ')}</div>`;
+    } else if (currentEditingQuestion.type === 'sa') {
+      ansPreview = `<div style="margin-top:8px; color:#15803d; font-weight:700;">✓ Đáp số chấp nhận: ${(currentEditingQuestion.accepted_answers || []).join(' | ')}</div>`;
+    }
+
+    modalLivePreview.innerHTML = `
+      <div style="font-weight:700; margin-bottom:6px;">${prompt}</div>
+      ${ansPreview}
+      ${exp ? `<div style="margin-top:8px; padding-top:8px; border-top:1px dashed #cbd5e1; color:#475569; font-size:13px;"><strong>Giải thích:</strong> ${exp}</div>` : ''}
+    `;
+
+    if (window.renderMathInElement) {
+      renderMathInElement(modalLivePreview, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "$", right: "$", display: false },
+          { left: "\\(", right: "\\)", display: false },
+          { left: "\\[", right: "\\]", display: true }
+        ],
+        throwOnError: false
+      });
+    }
+  }
+
+  editPrompt.addEventListener("input", updateModalPreview);
+  editExplanation.addEventListener("input", updateModalPreview);
+
+  // Đóng Modal
+  function closeEditModal() {
+    editModalOverlay.classList.remove("active");
+    currentEditingQuestion = null;
+  }
+  btnModalClose.addEventListener("click", closeEditModal);
+  btnModalCancel.addEventListener("click", closeEditModal);
+
+  // Submit Save Changes
+  editQuestionForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!currentEditingQuestion) return;
+
+    const id = currentEditingQuestion.id;
+    const patch = {
+      question_text: editPrompt.value.trim(),
+      options: currentEditingQuestion.options,
+      correct_index: currentEditingQuestion.correct_index,
+      accepted_answers: currentEditingQuestion.accepted_answers,
+      explanation: editExplanation.value.trim()
+    };
+
+    const res = await manager.updateQuestion(id, patch);
+    if (res.success) {
+      showToast(`Đã lưu cập nhật đáp án cho câu #${id}!`);
+      closeEditModal();
+      renderQuestionList();
+    } else {
+      alert("Lỗi khi lưu: " + res.message);
+    }
+  });
+
+  // Khôi phục 1 câu hỏi
+  window.resetSingleQuestion = async function(id) {
+    if (!confirm(`Bạn có chắc muốn khôi phục câu hỏi #${id} về đáp án ban đầu?`)) return;
+    const res = await manager.resetQuestion(id);
+    if (res.success) {
+      showToast(`Đã khôi phục câu hỏi #${id} về gốc!`);
+      renderQuestionList();
+    }
+  };
+
+  // Khôi phục toàn bộ
+  btnResetAllOverrides.addEventListener("click", () => {
+    const overrides = manager.getOverrides();
+    const count = Object.keys(overrides).length;
+    if (count === 0) {
+      alert("Hiện chưa có câu hỏi nào bị chỉnh sửa.");
+      return;
+    }
+    if (confirm(`Bạn có chắc muốn khôi phục toàn bộ ${count} câu hỏi đã chỉnh sửa về mặc định gốc?`)) {
+      manager.resetAll();
+      showToast("Đã khôi phục toàn bộ ngân hàng câu hỏi!");
+      renderQuestionList();
+    }
+  });
+
+  // XUẤT FILE JSON
+  btnExportJson.addEventListener("click", () => {
+    exportFileType = "json";
+    const data = manager.exportMergedDatabase();
+    exportModalTitle.textContent = "Xuất Toàn Bộ Ngân Hàng Đề (JSON)";
+    exportModalDesc.textContent = "File JSON chứa toàn bộ các câu hỏi đã được đồng bộ đáp án mới nhất:";
+    exportCodeText.value = JSON.stringify(data, null, 2);
+    exportModalOverlay.classList.add("active");
+  });
+
+  // TẠO SQL UPDATE
+  btnExportSql.addEventListener("click", () => {
+    exportFileType = "sql";
+    const sql = manager.generateSqlUpdateScript();
+    exportModalTitle.textContent = "Script SQL Cập Nhật Đáp Án";
+    exportModalDesc.textContent = "Chạy script này trên SQL Editor của Supabase hoặc PostgreSQL để cập nhật đáp án lên Cloud Database:";
+    exportCodeText.value = sql;
+    exportModalOverlay.classList.add("active");
+  });
+
+  btnExportModalClose.addEventListener("click", () => {
+    exportModalOverlay.classList.remove("active");
+  });
+
+  btnCopyExport.addEventListener("click", () => {
+    exportCodeText.select();
+    navigator.clipboard.writeText(exportCodeText.value).then(() => {
+      showToast("Đã sao chép vào bộ nhớ tạm!");
+    });
+  });
+
+  btnDownloadExport.addEventListener("click", () => {
+    const text = exportCodeText.value;
+    const filename = exportFileType === "json" ? "supabase-data.json" : "update_answers.sql";
+    const mime = exportFileType === "json" ? "application/json" : "text/plain";
+    const blob = new Blob([text], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast(`Đã tải file ${filename}!`);
+  });
+
+  // Lắng nghe sự kiện filter
+  filterSubject.addEventListener("change", () => {
+    populateTopics();
+    renderQuestionList();
+  });
+  filterTopic.addEventListener("change", renderQuestionList);
+  filterType.addEventListener("change", renderQuestionList);
+  filterStatus.addEventListener("change", renderQuestionList);
+
+  let searchDebounce = null;
+  filterSearch.addEventListener("input", () => {
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(renderQuestionList, 250);
+  });
+
+  // Kiểm tra nếu có query param ?q= hoặc ?search= trên URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const searchParam = urlParams.get("search") || urlParams.get("q");
+  if (searchParam) {
+    filterSearch.value = searchParam;
+  }
+  const subjParam = urlParams.get("subject") || urlParams.get("subj");
+  if (subjParam) {
+    filterSubject.value = subjParam;
+  }
+
+  // Kiểm soát phân quyền: Chỉ Quản trị viên mới được xem và quản lý đề / đáp án
+  let hasRenderedOnce = false;
+
+  function checkAdminAccess() {
+    if (!window.KeduAuth || typeof window.KeduAuth.isAdmin !== "function") {
+      setTimeout(checkAdminAccess, 60);
+      return;
+    }
+
+    const isAdmin = window.KeduAuth.isAdmin();
+    const currentUser = window.KeduAuth.getCurrentUser();
+    const mainContent = document.getElementById("qmMainContent");
+    const gateWrap = document.getElementById("qmAccessGate");
+
+    if (!isAdmin) {
+      if (mainContent) mainContent.style.display = "none";
+      if (gateWrap) {
+        gateWrap.style.display = "flex";
+        gateWrap.innerHTML = `
+          <div class="qm-gate-card">
+            <div class="qm-gate-icon">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <h2 class="qm-gate-title">Khu Vực Quản Lý Đề & Đáp Án (Admin Only)</h2>
+            <p class="qm-gate-desc">
+              ${currentUser 
+                ? `Tài khoản <strong>@${currentUser.username}</strong> của bạn là tài khoản Học viên, không có quyền tra cứu toàn bộ đề thi và đáp án gốc. Chức năng này chỉ dành riêng cho Quản trị viên (Admin).` 
+                : 'Chức năng tra cứu toàn bộ ngân hàng đề thi, xem và chỉnh sửa đáp án chỉ dành riêng cho tài khoản Quản trị viên (Admin). Vui lòng đăng nhập với tài khoản Quản trị viên để tiếp tục.'}
+            </p>
+            <div class="qm-gate-actions">
+              <button type="button" class="btn-qm-gate-login" id="btnGateLoginAdmin">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                <span>Đăng nhập Quản trị viên</span>
+              </button>
+              <a href="../index.html" class="btn-qm-gate-home">
+                ← Về Trang chủ
+              </a>
+            </div>
+          </div>
+        `;
+        document.getElementById("btnGateLoginAdmin")?.addEventListener("click", () => {
+          window.KeduAuth.openLoginModal();
+        });
+      }
+    } else {
+      if (gateWrap) gateWrap.style.display = "none";
+      if (mainContent) {
+        mainContent.style.display = "block";
+        if (!hasRenderedOnce) {
+          hasRenderedOnce = true;
+          populateSubjects();
+          populateTopics();
+          renderQuestionList();
+        }
+      }
+    }
+  }
+
+  // Khởi động kiểm soát phân quyền
+  checkAdminAccess();
+  window.addEventListener("kedu:auth-change", checkAdminAccess);
+  window.addEventListener("kedu-auth-change", checkAdminAccess);
+});
+</script>
+
+</body>
+</html>

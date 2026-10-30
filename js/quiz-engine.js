@@ -289,10 +289,7 @@ function getSubjectChapterName(subjectId) {
     'hoa': 'Chương 1: Este - Lipit - Xà phòng',
     'sinh': 'Chương 1: Di truyền học',
     'tinhoc': 'Chuyên đề: Khoa học máy tính & Ứng dụng',
-    'nguvan': 'Chuyên đề: Đọc hiểu & Nghị luận',
-    'lichsu': 'Chuyên đề: Lịch sử hiện đại',
-    'ngoaingu': 'Học kì 1: Units 1 - 3',
-    'anh': 'Học kì 1: Units 1 - 3'
+    'lichsu': 'Chuyên đề: Lịch sử hiện đại'
   };
   return map[subjectId] || 'Chuyên đề ôn tập';
 }
@@ -340,26 +337,12 @@ function renderDashboard() {
 
   const sectionBar = document.getElementById("sectionBar") || document.querySelector(".section-bar");
 
-  // Nếu cả môn học không có câu hỏi nào hết -> Ẩn sectionBar và hiển thị khung thông báo trạng thái rỗng thân thiện
+  // Nếu cả môn học không có câu hỏi nào hết -> Ẩn sectionBar và hiển thị thông báo Chưa cập nhật đề
   if (validTopicSets.length === 0) {
     if (sectionBar) sectionBar.style.display = "none";
     setsGridContainer.innerHTML = `
-      <div class="empty-subject-box">
-        <div class="empty-icon-wrap">
-          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-            <line x1="9" y1="13" x2="15" y2="13"/>
-          </svg>
-        </div>
-        <h3 class="empty-title">Ngân hàng câu hỏi đang được cập nhật</h3>
-        <p class="empty-desc">Môn học này hiện chưa có bộ câu hỏi nào được nạp. Vui lòng quay lại sau hoặc thêm câu hỏi từ cơ sở dữ liệu Supabase.</p>
-        <a href="../index.html" class="btn-empty-back">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12 19 5 12 12 5"></polyline>
-          </svg>
-          <span>Về trang chủ chọn môn khác</span>
-        </a>
+      <div class="empty-subject-box" style="padding: 40px 24px;">
+        <h3 class="empty-title" style="margin: 0; color: var(--dol-text-muted); font-size: 18px; font-weight: 600;">Chưa cập nhật đề</h3>
       </div>
     `;
     return;
@@ -530,46 +513,94 @@ window.filterChapter = filterChapter;
 
 /* Helper tạo câu hỏi chuẩn hóa có gắn điểm từng câu */
 function buildMcQuestionObj(item, maxPoints, setPoints) {
-  const opts = item[1];
-  const correctIdx = item[2];
+  let qText = item[0];
+  let opts = item[1];
+  let correctIdx = item[2];
+  let explain = item[3];
+  let topic = item[4];
+  let diagram = item[5] || null;
+
+  // Áp dụng chỉnh sửa đáp án từ Hệ thống Quản lý đề nếu có
+  if (window.KeduQuestionManager && typeof window.KeduQuestionManager.getOverrideForRaw === 'function') {
+    const ov = window.KeduQuestionManager.getOverrideForRaw(qText, 'mc', topic);
+    if (ov) {
+      if (ov.question_text !== undefined) qText = ov.question_text;
+      if (ov.options !== undefined && Array.isArray(ov.options)) opts = ov.options;
+      if (ov.correct_index !== undefined) correctIdx = ov.correct_index;
+      if (ov.explanation !== undefined) explain = ov.explanation;
+    }
+  }
+
   const order = shuffle(opts.map((_, i) => i));
   return {
     type: 'mc',
-    q: item[0],
+    q: qText,
     options: order.map(i => opts[i]),
     correct: order.indexOf(correctIdx),
-    explain: item[3],
-    topic: item[4],
-    diagram: item[5] || null,
+    originalCorrect: correctIdx,
+    explain: explain,
+    topic: topic,
+    diagram: diagram,
     maxPoints: maxPoints,
     setPoints: setPoints
   };
 }
 
 function buildTfQuestionObj(item, maxPoints, setPoints) {
-  const items = Array.isArray(item[1]) ? item[1] : null;
-  const singleCorrect = typeof item[1] === 'boolean' ? item[1] : (item[1] === 1 || item[1] === 'Đúng' || item[1] === 'true');
+  let qText = item[0];
+  let items = Array.isArray(item[1]) ? item[1] : null;
+  let singleCorrect = typeof item[1] === 'boolean' ? item[1] : (item[1] === 1 || item[1] === 'Đúng' || item[1] === 'true');
+  let explain = item[2] || '';
+  let topic = item[3];
+  let diagram = item[4] || null;
+
+  // Áp dụng chỉnh sửa đáp án từ Hệ thống Quản lý đề nếu có
+  if (window.KeduQuestionManager && typeof window.KeduQuestionManager.getOverrideForRaw === 'function') {
+    const ov = window.KeduQuestionManager.getOverrideForRaw(qText, 'tf', topic);
+    if (ov) {
+      if (ov.question_text !== undefined) qText = ov.question_text;
+      if (ov.options !== undefined && Array.isArray(ov.options)) items = ov.options;
+      if (ov.explanation !== undefined) explain = ov.explanation;
+    }
+  }
+
   return {
     type: 'tf',
-    q: item[0],
+    q: qText,
     items: items,
     singleCorrect: singleCorrect,
-    explain: item[2] || '',
-    topic: item[3],
-    diagram: item[4] || null,
+    explain: explain,
+    topic: topic,
+    diagram: diagram,
     maxPoints: maxPoints,
     setPoints: setPoints
   };
 }
 
 function buildSaQuestionObj(item, maxPoints, setPoints) {
+  let qText = item[0];
+  let answers = item[1];
+  let explain = item[2];
+  let topic = item[3];
+  let diagram = item[4] || null;
+
+  // Áp dụng chỉnh sửa đáp án từ Hệ thống Quản lý đề nếu có
+  if (window.KeduQuestionManager && typeof window.KeduQuestionManager.getOverrideForRaw === 'function') {
+    const ov = window.KeduQuestionManager.getOverrideForRaw(qText, 'sa', topic);
+    if (ov) {
+      if (ov.question_text !== undefined) qText = ov.question_text;
+      if (ov.accepted_answers !== undefined && Array.isArray(ov.accepted_answers)) answers = ov.accepted_answers;
+      if (ov.explanation !== undefined) explain = ov.explanation;
+    }
+  }
+
   return {
     type: 'sa',
-    q: item[0],
-    answers: item[1],
-    explain: item[2],
-    topic: item[3],
-    diagram: item[4] || null,
+    q: qText,
+    answers: answers,
+    explain: explain,
+    topic: topic,
+    diagram: diagram,
     maxPoints: maxPoints,
     setPoints: setPoints
   };
@@ -1029,7 +1060,7 @@ function renderQuizQuestion() {
   const topicSets = window.TOPIC_SETS || [];
   const currentSetObj = topicSets.find(s => s.id === q.topic || s.id?.toString() === q.topic?.toString()) || { title: "Ôn tập" };
   const diagrams = window.DIAGRAMS || {};
-  const diagramHtml = q.diagram && diagrams[q.diagram] ? diagrams[q.diagram] : "";
+  const diagramHtml = q.diagram ? (diagrams[q.diagram] || (typeof q.diagram === 'string' && q.diagram.trim().startsWith('<') ? q.diagram : '')) : "";
 
   if (currentMode === "full" && quizModeBadge) {
     const partLabel = qType === "mc" ? "Phần I: Trắc nghiệm" : (qType === "tf" ? "Phần II: Đúng / Sai" : "Phần III: Trả lời ngắn");
@@ -1046,14 +1077,6 @@ function renderQuizQuestion() {
 
     quizBox.innerHTML = `
       <div class="question-pane">
-        <div class="q-meta-row">
-          <span class="q-topic-tag">${currentSetObj.title} • ${modeLabel}</span>
-          <div class="q-meta-right">
-            <span class="q-point-pill">🎯 Điểm câu này: <strong>+${formatPoints(qMaxPts)} đ</strong></span>
-            <span class="keyboard-hint">Phím 1-4</span>
-          </div>
-        </div>
-
         ${diagramHtml}
 
         <h2 class="question-prompt">${mcPromptDisplay}</h2>
@@ -1078,13 +1101,6 @@ function renderQuizQuestion() {
       const letters = ["a", "b", "c", "d"];
       quizBox.innerHTML = `
         <div class="question-pane">
-          <div class="q-meta-row">
-            <span class="q-topic-tag">${currentSetObj.title} • Phần II: Trắc nghiệm Đúng / Sai</span>
-            <div class="q-meta-right">
-              <span class="q-point-pill tf">🎯 Tối đa: <strong>+${formatPoints(qMaxPts)} đ</strong> (1 ý: 10% • 2 ý: 25% • 3 ý: 50% • 4 ý: 100%)</span>
-            </div>
-          </div>
-
           ${diagramHtml}
 
           <h2 class="question-prompt">${q.q}</h2>
@@ -1113,13 +1129,6 @@ function renderQuizQuestion() {
       // Single True / False prompt
       quizBox.innerHTML = `
         <div class="question-pane">
-          <div class="q-meta-row">
-            <span class="q-topic-tag">${currentSetObj.title} • Phần II: Trắc nghiệm Đúng / Sai</span>
-            <div class="q-meta-right">
-              <span class="q-point-pill tf">🎯 Điểm câu này: <strong>+${formatPoints(qMaxPts)} đ</strong></span>
-            </div>
-          </div>
-
           ${diagramHtml}
 
           <h2 class="question-prompt">${q.q}</h2>
@@ -1148,14 +1157,6 @@ function renderQuizQuestion() {
 
     quizBox.innerHTML = `
       <div class="question-pane">
-        <div class="q-meta-row">
-          <span class="q-topic-tag">${currentSetObj.title} • Phần III: Trả lời ngắn</span>
-          <div class="q-meta-right">
-            <span class="q-point-pill sa">🎯 Điểm câu này: <strong>+${formatPoints(qMaxPts)} đ</strong></span>
-            <span class="keyboard-hint">Nhấn Enter để nộp</span>
-          </div>
-        </div>
-
         ${diagramHtml}
 
         <h2 class="question-prompt">${promptDisplay}</h2>
