@@ -1098,7 +1098,9 @@
                 <option value="30">🏫 30 tài khoản (Lớp)</option>
                 <option value="50">🏫 50 tài khoản (Khối)</option>
                 <option value="100">🎓 100 tài khoản</option>
+                <option value="custom">⚙️ Tùy chỉnh số lượng...</option>
               </select>
+              <input type="number" id="inputDashKeyQuotaCustom" class="adm-select" min="1" max="100000" placeholder="Số TK/key..." style="display:none; width:125px; border-color:#d97706; font-weight:700;" title="Nhập số lượng tài khoản tùy ý cho 1 key">
               <button type="button" class="btn-admin-primary" id="btnDashGenKeys" style="background: linear-gradient(135deg, #d97706, #b45309); padding: 8px 18px; font-size: 13px; font-weight: 700; border-radius: 8px;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
                 <span>Tạo Key Ngay</span>
@@ -1284,11 +1286,27 @@
       openAddUserDialog();
     });
 
-    // Key Gen Form
+    // Key Gen Form - Tùy chỉnh hạn mức tài khoản tùy ý
+    const selDashQuotaEl = document.getElementById("selDashKeyQuota");
+    const inputDashQuotaCustom = document.getElementById("inputDashKeyQuotaCustom");
+    selDashQuotaEl?.addEventListener("change", (e) => {
+      if (inputDashQuotaCustom) {
+        inputDashQuotaCustom.style.display = e.target.value === "custom" ? "inline-block" : "none";
+        if (e.target.value === "custom") inputDashQuotaCustom.focus();
+      }
+    });
+
     document.getElementById("btnDashGenKeys")?.addEventListener("click", () => {
       const selSub = document.getElementById("selDashKeySubject")?.value || "toan";
       const selCnt = parseInt(document.getElementById("selDashKeyCount")?.value || "5", 10);
-      const selQuota = parseInt(document.getElementById("selDashKeyQuota")?.value || "1", 10);
+      let selQuota = 1;
+      if (selDashQuotaEl?.value === "custom") {
+        selQuota = parseInt(inputDashQuotaCustom?.value || "1", 10);
+      } else {
+        selQuota = parseInt(selDashQuotaEl?.value || "1", 10);
+      }
+      if (isNaN(selQuota) || selQuota < 1) selQuota = 1;
+
       const created = window.KeduAuth.adminCreateLicenseKeys(selSub, selCnt, selQuota);
       if (created && created.length > 0) {
         updateDashboardKPI();
@@ -1662,6 +1680,27 @@
         </tr>
       `;
     }).join("");
+
+    // Edit quota of single key
+    container.querySelectorAll(".btn-dash-edit-quota").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const code = btn.getAttribute("data-code");
+        const curQuota = btn.getAttribute("data-quota") || 1;
+        const promptVal = prompt(`Chỉnh sửa hạn mức tài khoản cho mã Key [${code}]:\n(Hiện tại: ${curQuota} tài khoản)\n\nNhập số lượng tài khoản tối đa mới (ví dụ: 1, 5, 25, 100, 500...):`, curQuota);
+        if (promptVal !== null) {
+          const newQuota = parseInt(promptVal.trim(), 10);
+          if (isNaN(newQuota) || newQuota < 1) {
+            alert("Vui lòng nhập một số lượng tài khoản hợp lệ (số nguyên >= 1)!");
+            return;
+          }
+          if (window.KeduAuth.adminUpdateKeyQuota) {
+            window.KeduAuth.adminUpdateKeyQuota(code, newQuota);
+          }
+          renderDashKeysTable();
+          updateDashboardKPI();
+        }
+      });
+    });
 
     // Copy single key
     container.querySelectorAll(".btn-copy-single-key").forEach(btn => {

@@ -39,6 +39,15 @@
   }
 
   /* Helper: Lấy danh sách lịch sử từ LocalStorage */
+  function isCurrentUserAdmin() {
+    try {
+      if (window.KeduAuth && typeof window.KeduAuth.isAdmin === "function") {
+        return window.KeduAuth.isAdmin();
+      }
+    } catch (e) {}
+    return false;
+  }
+
   function getRawHistory() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -169,6 +178,10 @@
      * Xóa 1 bài thi
      */
     deleteAttempt: function (id) {
+      if (!isCurrentUserAdmin()) {
+        alert("Học sinh chỉ có quyền xem lại bài làm, không có quyền xóa hay chỉnh sửa lịch sử bài thi!");
+        return false;
+      }
       if (!id) return false;
       let list = getRawHistory();
       const initialLen = list.length;
@@ -185,6 +198,10 @@
      * Xóa toàn bộ lịch sử
      */
     clearAllHistory: function (subjectId = null) {
+      if (!isCurrentUserAdmin()) {
+        alert("Học sinh chỉ có quyền xem lại bài làm, không có quyền xóa toàn bộ lịch sử thi!");
+        return false;
+      }
       if (subjectId && subjectId !== "all") {
         let list = getRawHistory();
         list = list.filter(item => item.subjectId !== subjectId);
@@ -920,12 +937,9 @@
         </div>
 
         <!-- FOOTER -->
-        <div class="qh-footer">
-          <button type="button" class="btn-qh-sec" id="btnQhdBack">
-            ← Quay lại danh sách lịch sử
-          </button>
-          <button type="button" class="btn-qh-action btn-qh-view" id="btnQhdRetry">
-            🔄 Làm lại bài thi này ngay
+        <div class="qh-footer" style="justify-content: flex-end;">
+          <button type="button" class="btn-qh-sec" id="btnQhdBack" style="padding:9px 22px; font-weight:600;">
+            ← Đóng xem lại (Về danh sách)
           </button>
         </div>
       </div>
@@ -1077,19 +1091,15 @@
             </div>
 
             <div class="qh-item-actions">
-              <button type="button" class="btn-qh-action btn-qh-view" onclick="window.KeduQuizHistory.viewAttemptDetail('${it.id}')" title="Xem chi tiết từng câu hỏi trong lần thi này">
+              <button type="button" class="btn-qh-action btn-qh-view" onclick="window.KeduQuizHistory.viewAttemptDetail('${it.id}')" title="Xem lại chi tiết bài làm đã nộp">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/></svg>
-                <span>Xem chi tiết bài làm</span>
+                <span>Xem lại bài làm</span>
               </button>
-
-              <button type="button" class="btn-qh-action btn-qh-retry" onclick="window.retryFromHistory('${it.subjectId}', '${it.topicId}', '${it.mode}')" title="Làm lại đề thi này">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-                <span>Làm lại</span>
-              </button>
-
-              <button type="button" class="btn-qh-action btn-qh-del" onclick="window.deleteHistoryEntry('${it.id}')" title="Xóa lượt này khỏi lịch sử">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-              </button>
+              ${isCurrentUserAdmin() ? `
+                <button type="button" class="btn-qh-action btn-qh-del" onclick="window.deleteHistoryEntry('${it.id}')" title="Xóa lượt này khỏi lịch sử (Chỉ Quản trị viên)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              ` : ''}
             </div>
           </div>
         </div>
@@ -1097,6 +1107,8 @@
     });
 
     listContainer.innerHTML = html;
+    const btnClearEl = document.getElementById("btnQhClear");
+    if (btnClearEl) btnClearEl.style.display = isCurrentUserAdmin() ? "" : "none";
   }
 
   /* Render Chi Tiết Bài Làm */
@@ -1110,6 +1122,10 @@
       <span>📅 Thời gian nộp: <strong>${attempt.displayTime}</strong></span>
       <span>⏱️ Thời lượng làm bài: <strong>${attempt.durationFormatted}</strong></span>
       <span>🏆 Điểm đạt được: <strong style="color:#22c55e; font-size:15px;">${formatPoints(attempt.score)} / 10.00 điểm</strong> (${attempt.correctCount}/${attempt.totalCount} câu đúng • ${attempt.percentage}%)</span>
+      <span style="display:inline-flex; align-items:center; gap:5px; background:#f1f5f9; color:#475569; padding:3px 10px; border-radius:6px; font-weight:700; font-size:12px; border:1px solid #cbd5e1;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Hồ sơ xem lại bài đã làm (Chỉ đọc • Điểm và câu trả lời đã được khóa)
+      </span>
     `;
 
     const retryBtn = document.getElementById("btnQhdRetry");

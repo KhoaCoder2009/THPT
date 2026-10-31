@@ -710,6 +710,29 @@
     return createdList;
   }
 
+  function adminUpdateKeyQuota(code, newQuota) {
+    if (!isAdmin()) {
+      showToast("Chỉ Quản trị viên mới có quyền chỉnh sửa hạn mức Key!", "error");
+      return false;
+    }
+
+    const keys = getAllLicenseKeys();
+    if (!keys[code]) {
+      showToast("Không tìm thấy mã key này trong hệ thống!", "error");
+      return false;
+    }
+
+    const quota = Math.max(1, parseInt(newQuota, 10) || 1);
+    const k = keys[code];
+    k.maxActivations = quota;
+    k.isUsed = k.usedCount >= quota;
+
+    saveAllLicenseKeys(keys);
+    showToast(`Đã cập nhật hạn mức key ${code} thành ${quota} tài khoản!`, "success");
+    renderAdminKeysTable();
+    return true;
+  }
+
   function adminDeleteLicenseKey(code) {
     if (!isAdmin()) {
       showToast("Chỉ Quản trị viên mới có quyền xóa mã Key!", "error");
@@ -1447,7 +1470,9 @@
                     <option value="30">🏫 30 tài khoản (Lớp)</option>
                     <option value="50">🏫 50 tài khoản (Khối)</option>
                     <option value="100">🎓 100 tài khoản</option>
+                    <option value="custom">⚙️ Tùy chỉnh số lượng...</option>
                   </select>
+                  <input type="number" id="inputAdminKeyQuotaCustom" class="admin-select" min="1" max="100000" placeholder="Số TK/key..." style="display:none; width:115px; border-color:#d97706; font-weight:700;" title="Nhập số lượng tài khoản tùy ý cho 1 key">
                   <button type="button" class="btn-admin-primary" id="btnAdminGenKeys" style="background: linear-gradient(135deg, #d97706, #b45309);">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
                     <span>Tạo Key</span>
@@ -1954,10 +1979,26 @@
     });
 
     // Admin Gen Keys
+    const selAdminQuotaEl = document.getElementById("selAdminKeyQuota");
+    const inputAdminQuotaCustom = document.getElementById("inputAdminKeyQuotaCustom");
+    selAdminQuotaEl?.addEventListener("change", (e) => {
+      if (inputAdminQuotaCustom) {
+        inputAdminQuotaCustom.style.display = e.target.value === "custom" ? "inline-block" : "none";
+        if (e.target.value === "custom") inputAdminQuotaCustom.focus();
+      }
+    });
+
     btnAdminGenKeys?.addEventListener("click", () => {
       const selSubj = document.getElementById("selAdminKeySubject")?.value || "toan";
       const selCount = parseInt(document.getElementById("selAdminKeyCount")?.value || "1", 10);
-      const selQuota = parseInt(document.getElementById("selAdminKeyQuota")?.value || "1", 10);
+      let selQuota = 1;
+      if (selAdminQuotaEl?.value === "custom") {
+        selQuota = parseInt(inputAdminQuotaCustom?.value || "1", 10);
+      } else {
+        selQuota = parseInt(selAdminQuotaEl?.value || "1", 10);
+      }
+      if (isNaN(selQuota) || selQuota < 1) selQuota = 1;
+
       adminCreateLicenseKeys(selSubj, selCount, selQuota);
       renderAdminSummaryMetrics();
       renderAdminKeysTable(adminSearchKeyInput?.value || "", currentKeyStatusFilter, document.getElementById("selAdminKeyFilterSubject")?.value || "all");
@@ -2760,6 +2801,22 @@
       `;
     }).join("");
 
+    tbody.querySelectorAll(".btn-edit-key-quota").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const code = btn.getAttribute("data-code");
+        const curQuota = btn.getAttribute("data-quota") || 1;
+        const promptVal = prompt(`Chỉnh sửa hạn mức tài khoản cho mã Key [${code}]:\n(Hiện tại: ${curQuota} tài khoản)\n\nNhập số lượng tài khoản tối đa mới (ví dụ: 1, 5, 25, 100, 500...):`, curQuota);
+        if (promptVal !== null) {
+          const newQuota = parseInt(promptVal.trim(), 10);
+          if (isNaN(newQuota) || newQuota < 1) {
+            alert("Vui lòng nhập một số lượng tài khoản hợp lệ (số nguyên >= 1)!");
+            return;
+          }
+          adminUpdateKeyQuota(code, newQuota);
+        }
+      });
+    });
+
     const handleCopy = (code) => {
       navigator.clipboard.writeText(code).then(() => {
         showToast(`Đã sao chép mã Key: ${code}`, "success");
@@ -3114,6 +3171,7 @@
     setUserRole,
     adminSetUserSubjects,
     adminCreateLicenseKeys,
+    adminUpdateKeyQuota,
     adminDeleteLicenseKey,
     adminCopyUnusedKeys,
     adminExportKeys,

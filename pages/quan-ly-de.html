@@ -370,40 +370,48 @@
       background: #f0fdf4;
     }
     .qm-shub-circle {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
+      min-width: 28px;
+      height: 26px;
+      padding: 0 8px;
+      border-radius: 9999px;
       border: 1.5px solid #cbd5e1;
       background: #ffffff;
       color: #64748b;
-      font-weight: 800;
-      font-size: 13px;
-      display: flex;
+      font-weight: 700;
+      font-size: 12.5px;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
       transition: all 0.15s ease;
     }
     .qm-shub-opt:hover .qm-shub-circle {
-      border-color: #16a34a;
-      color: #16a34a;
+      border-color: #94a3b8;
+      color: #334155;
     }
     .qm-shub-opt-text {
       flex: 1;
       min-width: 0;
+      font-size: 14.5px;
+      color: #1e293b;
     }
 
-    /* CORRECT OPTION (GREEN BORDER + SOLID GREEN CIRCLE WITH WHITE BOLD LETTER) */
+    /* CORRECT OPTION (EMERALD GREEN BORDER + SOLID GREEN PILL WITH WHITE BOLD LETTER) */
     .qm-shub-opt.is-correct {
-      border: 2px solid #16a34a;
+      border: 2px solid #10b981 !important;
       background: #ffffff;
-      box-shadow: 0 2px 8px rgba(22, 163, 74, 0.08);
+      box-shadow: 0 0 0 1px #10b981;
     }
     .qm-shub-opt.is-correct .qm-shub-circle {
-      border-color: #16a34a;
-      background: #16a34a;
+      border-color: #10b981;
+      background: #10b981;
       color: #ffffff;
-      box-shadow: 0 2px 6px rgba(22, 163, 74, 0.3);
+      font-weight: 800;
+      box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);
+    }
+    .qm-shub-opt.is-correct .qm-shub-opt-text {
+      font-weight: 600;
+      color: #0f172a;
     }
 
     /* TRUE / FALSE ROWS */
@@ -954,357 +962,252 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* TOPIC BANNER & PART SWITCHER - REDESIGNED WHITE & RED THEME */
-    .qm-topic-banner {
-      background: #ffffff;
-      border-radius: 14px;
-      padding: 14px 18px;
-      margin-bottom: 20px;
-      color: var(--dol-navy, #0f2657);
-      border: 1.5px solid #fecaca;
-      border-top: 3.5px solid var(--dol-red, #D42525);
-      box-shadow: 0 4px 14px -3px rgba(212, 37, 37, 0.08), 0 2px 6px rgba(0, 0, 0, 0.03);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+    /* TOPIC BANNER & PART SWITCHER - DEEP NAVY BLUE THEME (EXACT MATCH SCREENSHOT) */
+    .qm-topic-banner-navy {
+      background: #0d1e3a;
+      background: linear-gradient(145deg, #0e203f 0%, #0a172c 100%);
+      border-radius: 18px;
+      padding: 24px 28px;
+      margin-bottom: 22px;
+      color: #ffffff;
+      box-shadow: 0 14px 35px rgba(10, 23, 44, 0.28);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
     }
-    .qm-topic-banner-top {
+    .qm-tbn-top-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 14px;
+      gap: 16px;
       flex-wrap: wrap;
+      margin-bottom: 12px;
     }
-    .qm-topic-banner-info {
-      flex: 1;
-      min-width: 260px;
-    }
-    .qm-topic-banner-badges {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 6px;
-      flex-wrap: wrap;
-    }
-    .qm-tb-badge-subj {
-      font-size: 11px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      padding: 3px 9px;
-      border-radius: 6px;
-      background: #fef2f2;
-      color: var(--dol-red, #D42525);
-      border: 1px solid #fecaca;
-    }
-    .qm-tb-badge-code {
-      font-size: 11px;
-      font-weight: 800;
-      padding: 3px 9px;
-      border-radius: 6px;
-      background: #fffbeb;
-      color: #b45309;
-      border: 1px solid #fde68a;
-    }
-    .qm-tb-badge-count {
-      font-size: 11px;
-      font-weight: 700;
-      padding: 3px 9px;
-      border-radius: 6px;
-      background: #ecfdf5;
-      color: #047857;
-      border: 1px solid #a7f3d0;
-    }
-    .qm-topic-banner-title {
-      font-family: var(--font-heading);
-      font-size: 16.5px;
-      font-weight: 800;
-      color: #0f2657;
-      line-height: 1.35;
-      margin: 0 0 4px 0;
-    }
-    .qm-topic-banner-desc {
-      font-size: 12.5px;
-      color: #64748b;
-      line-height: 1.45;
-      margin: 0;
-    }
-    .qm-topic-banner-actions {
+    .qm-tbn-left-badges {
       display: flex;
       align-items: center;
       gap: 8px;
       flex-wrap: wrap;
     }
-    .qm-topic-quick-select-wrap {
-      display: flex;
+    .btn-qm-tbn-back {
+      display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: #f8fafc;
-      padding: 6px 10px;
-      border-radius: 8px;
-      border: 1px solid #e2e8f0;
-    }
-    .qm-topic-quick-select-label {
-      font-size: 11.5px;
+      background: rgba(255, 255, 255, 0.12);
+      color: #f1f5f9;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 9999px;
+      padding: 5px 14px;
+      font-size: 12px;
       font-weight: 700;
-      color: #64748b;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-qm-tbn-back:hover {
+      background: rgba(255, 255, 255, 0.22);
+      border-color: rgba(255, 255, 255, 0.4);
+      color: #ffffff;
+      transform: translateX(-2px);
+    }
+    .qm-tbn-badge-subject {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      padding: 5px 14px;
+      border-radius: 9999px;
+      background: #1e293b;
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      text-transform: uppercase;
+    }
+    .qm-tbn-badge-chapter {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 14px;
+      border-radius: 9999px;
+      background: #2b3563;
+      color: #c7d2fe;
+      border: 1px solid #3b4782;
+    }
+    .qm-tbn-badge-index {
+      font-size: 12px;
+      font-weight: 800;
+      padding: 5px 14px;
+      border-radius: 9999px;
+      background: #ea580c;
+      color: #ffffff;
+      border: 1px solid #c2410c;
+    }
+    .qm-tbn-right-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .qm-tbn-select-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      padding: 5px 14px;
+      position: relative;
+    }
+    .qm-tbn-select-label {
+      font-size: 12.5px;
+      color: #94a3b8;
+      font-weight: 600;
       white-space: nowrap;
     }
-    .qm-topic-quick-select {
+    .qm-tbn-select {
       background: transparent;
-      color: #0f2657;
+      color: #ffffff;
       border: none;
-      font-size: 12.5px;
+      font-size: 13px;
       font-weight: 700;
       outline: none;
       cursor: pointer;
-      max-width: 250px;
+      padding-right: 18px;
+      appearance: none;
+      max-width: 280px;
     }
-    .qm-topic-quick-select option {
-      background: #ffffff;
-      color: #0f2657;
+    .qm-tbn-select option {
+      background: #0f172a;
+      color: #ffffff;
     }
-    .btn-qm-banner-test {
+    .qm-tbn-select-arrow {
+      position: absolute;
+      right: 10px;
+      pointer-events: none;
+      color: #cbd5e1;
+    }
+    .btn-qm-tbn-test {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      padding: 7px 13px;
-      border-radius: 8px;
-      background: var(--dol-red, #D42525);
-      color: #ffffff;
-      font-size: 12px;
+      gap: 6px;
+      padding: 8px 18px;
+      border-radius: 10px;
+      background: #ffffff;
+      color: #0f172a;
+      font-size: 13px;
       font-weight: 700;
       text-decoration: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
       transition: all 0.15s ease;
+      cursor: pointer;
     }
-    .btn-qm-banner-test:hover {
-      background: var(--dol-red-hover, #b81c1c);
+    .btn-qm-tbn-test:hover {
+      background: #f8fafc;
       transform: translateY(-1px);
-      color: #ffffff;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
     }
-
-    /* PARTS TABS BAR & DRAWER TOGGLES */
-    .qm-parts-tabs-bar {
+    .qm-tbn-scale-pill {
+      display: inline-flex;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 13px;
+      border-radius: 9999px;
+      background: rgba(6, 78, 59, 0.7);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      margin-bottom: 12px;
+      width: fit-content;
+    }
+    .qm-tbn-title {
+      font-family: var(--font-heading, inherit);
+      font-size: 24px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.35;
+      margin: 0 0 10px 0;
+      letter-spacing: -0.01em;
+    }
+    .qm-tbn-desc {
+      font-size: 13.5px;
+      color: #94a3b8;
+      line-height: 1.6;
+      margin: 0 0 20px 0;
+      max-width: 900px;
+    }
+    .qm-tbn-tabs-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .qm-tbn-tabs-list {
+      display: flex;
+      align-items: center;
       gap: 8px;
-      padding-top: 10px;
-      border-top: 1px solid #f1f5f9;
       flex-wrap: wrap;
     }
-    .qm-parts-tabs-list {
-      display: flex;
+    .qm-tbn-tab {
+      display: inline-flex;
       align-items: center;
-      gap: 6px;
-      overflow-x: auto;
-      scrollbar-width: none;
-      flex: 1;
-    }
-    .qm-parts-tabs-list::-webkit-scrollbar {
-      display: none;
-    }
-    .qm-part-tab {
-      padding: 6px 12px;
-      border-radius: 8px;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      color: #475569;
-      font-size: 12px;
-      font-weight: 700;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
+      border: 1px solid rgba(255, 255, 255, 0.14);
       cursor: pointer;
-      white-space: nowrap;
       transition: all 0.15s ease;
-      display: flex;
-      align-items: center;
-      gap: 6px;
     }
-    .qm-part-tab:hover {
-      background: #fef2f2;
-      border-color: #fecaca;
-      color: var(--dol-red, #D42525);
-    }
-    .qm-part-tab.active {
-      background: var(--dol-red, #D42525);
+    .qm-tbn-tab:hover {
+      background: rgba(255, 255, 255, 0.15);
       color: #ffffff;
-      border-color: var(--dol-red, #D42525);
-      font-weight: 800;
-      box-shadow: 0 2px 6px rgba(212, 37, 37, 0.25);
+      border-color: rgba(255, 255, 255, 0.25);
     }
-    .qm-part-tab-count {
-      font-size: 10.5px;
-      font-weight: 800;
-      padding: 1px 6px;
-      border-radius: 6px;
-      background: #e2e8f0;
-      color: #334155;
+    .qm-tbn-tab.active {
+      background: #ffffff;
+      color: #0f172a;
+      border-color: #ffffff;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
-    .qm-part-tab.active .qm-part-tab-count {
-      background: rgba(255, 255, 255, 0.25);
+    .qm-tbn-tab .qm-tbn-tab-count {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 1px 7px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.18);
+      color: #cbd5e1;
+    }
+    .qm-tbn-tab.active .qm-tbn-tab-count {
+      background: #0f172a;
       color: #ffffff;
     }
-
-    /* GLOBAL DRAWER TOGGLES */
-    .qm-global-drawer-toggles {
+    .qm-tbn-drawer-toggles {
       display: flex;
       align-items: center;
       gap: 6px;
       margin-left: auto;
     }
-    .btn-qm-global-toggle {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 6px 11px;
-      border-radius: 7px;
-      background: #ffffff;
-      border: 1px solid #cbd5e1;
-      color: #475569;
-      font-size: 11.5px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-    .btn-qm-global-toggle:hover {
-      background: #fef2f2;
-      border-color: #fecaca;
-      color: var(--dol-red, #D42525);
-    }
-
-    /* DRAWER & SUMMARY PILL STYLES */
-    .qm-ans-summary-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 3px 9px;
-      border-radius: 6px;
-      font-size: 11.5px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      user-select: none;
-    }
-    .qm-ans-summary-pill.mc {
-      background: #f0fdf4;
-      color: #15803d;
-      border: 1px solid #bbf7d0;
-    }
-    .qm-ans-summary-pill.tf {
-      background: #fdf2f8;
-      color: #be185d;
-      border: 1px solid #fbcfe8;
-    }
-    .qm-ans-summary-pill.sa {
-      background: #eff6ff;
-      color: #1d4ed8;
-      border: 1px solid #bfdbfe;
-    }
-    .qm-ans-summary-pill:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 2px 5px rgba(0,0,0,0.06);
-    }
-    .qm-ans-badge-pill {
-      font-weight: 800;
-      padding: 1px 5px;
-      border-radius: 4px;
-      background: rgba(0, 0, 0, 0.07);
-    }
-    .btn-qm-toggle-drawer {
+    .btn-qm-tbn-toggle {
       display: inline-flex;
       align-items: center;
       gap: 5px;
       padding: 6px 12px;
       border-radius: 8px;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      color: #0f2657;
+      background: rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
+      border: 1px solid rgba(255, 255, 255, 0.14);
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 600;
       cursor: pointer;
       transition: all 0.15s ease;
     }
-    .btn-qm-toggle-drawer:hover, .btn-qm-toggle-drawer.active {
-      background: #fef2f2;
-      border-color: #fecaca;
-      color: var(--dol-red, #D42525);
-    }
-    .btn-qm-toggle-drawer.active .toggle-arrow {
-      transform: rotate(180deg);
-    }
-    .toggle-arrow {
-      transition: transform 0.2s ease;
-    }
-    .qm-qcard-drawer {
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 1px dashed #e2e8f0;
-      animation: qmDrawerFade 0.18s ease-out;
-    }
-    @keyframes qmDrawerFade {
-      from { opacity: 0; transform: translateY(-4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .qm-drawer-label {
-      font-size: 11.5px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: #64748b;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .qm-drawer-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-top: 14px;
-      padding-top: 12px;
-      border-top: 1px solid #f1f5f9;
-      flex-wrap: wrap;
-    }
-    .qm-drawer-footer-left {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .btn-qm-edit-act {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 16px;
-      border-radius: 8px;
-      background: var(--dol-red, #D42525);
+    .btn-qm-tbn-toggle:hover {
+      background: rgba(255, 255, 255, 0.16);
       color: #ffffff;
-      font-size: 13px;
-      font-weight: 700;
-      border: none;
-      cursor: pointer;
-      transition: background 0.15s, transform 0.1s;
     }
-    .btn-qm-edit-act:hover {
-      background: var(--dol-red-hover, #b81c1c);
-      transform: translateY(-1px);
-    }
-    .btn-qm-close-drawer {
-      background: transparent;
-      border: none;
-      font-size: 12px;
-      font-weight: 700;
-      color: #64748b;
-      cursor: pointer;
-      padding: 6px 10px;
-      border-radius: 6px;
-      transition: all 0.15s;
-    }
-    .btn-qm-close-drawer:hover {
-      background: #f1f5f9;
-      color: #0f2657;
-    }
-
+    
     /* SECTION DIVIDERS */
     .qm-section-divider {
       background: #ffffff;
@@ -1862,7 +1765,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     filterType.value = "all";
     syncUrl();
     renderQuestionList();
-    window.scrollTo({ top: 380, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Quay lại danh sách các bộ đề ôn tập
@@ -1872,7 +1775,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     filterType.value = "all";
     syncUrl();
     renderQuestionList();
-    window.scrollTo({ top: 300, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   window.selectFirstTopic = function() {
@@ -1891,7 +1794,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const isMod = q.isOverridden;
     const displayNum = intraNum !== undefined ? intraNum : (globalIdx + 1);
 
-    // Type badge matching screenshot: [ ✓ Trắc nghiệm 4 đáp án ] / [ ✓ Đúng / Sai (4 ý) ] / [ ✓ Trả lời ngắn ]
+    // Type badge matching screenshot: [ ✛ Trắc nghiệm 4 đáp án ] / [ ✛ Đúng / Sai (4 ý) ] / [ ✛ Trả lời ngắn ]
     let typeBadgeHtml = '';
     let scoreBadgeHtml = '';
 
@@ -1902,7 +1805,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           <span>Trắc nghiệm 4 đáp án</span>
         </span>
       `;
-      scoreBadgeHtml = `<span class="qm-shub-score-badge">⭐ 0,25 điểm</span>`;
+      scoreBadgeHtml = `<span class="qm-shub-score-badge">★ 0,25 điểm</span>`;
     } else if (q.type === 'tf') {
       typeBadgeHtml = `
         <span class="qm-shub-type-pill tf">
@@ -1910,7 +1813,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           <span>Đúng / Sai (4 ý)</span>
         </span>
       `;
-      scoreBadgeHtml = `<span class="qm-shub-score-badge">⭐ 1,00 điểm</span>`;
+      scoreBadgeHtml = `<span class="qm-shub-score-badge">★ 1,00 điểm</span>`;
     } else if (q.type === 'sa') {
       typeBadgeHtml = `
         <span class="qm-shub-type-pill sa">
@@ -1918,12 +1821,12 @@ document.addEventListener("DOMContentLoaded", async () => {
           <span>Trả lời ngắn</span>
         </span>
       `;
-      scoreBadgeHtml = `<span class="qm-shub-score-badge">⭐ 0,50 điểm</span>`;
+      scoreBadgeHtml = `<span class="qm-shub-score-badge">★ 0,50 điểm</span>`;
     }
 
     let answersBodyHtml = "";
 
-    // 1. TRẮC NGHIỆM 4 ĐÁP ÁN (MC - 2-COLUMN GRID)
+    // 1. TRẮC NGHIỆM 4 ĐÁP ÁN (MC - 2-COLUMN GRID MATCHING SCREENSHOT)
     if (q.type === 'mc') {
       const letters = ['A', 'B', 'C', 'D'];
       const opts = q.options || [];
@@ -2013,10 +1916,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     return `
       <div class="qm-qcard ${isMod ? 'is-modified' : ''}" id="qcard-${q.id}">
-        <!-- HEADER EXACTLY AS SCREENSHOT: [ ∨ Câu 1 ] [ ✓ Trắc nghiệm 4 đáp án ] • Không mức độ ⭐ 0,25 điểm -->
+        <!-- HEADER EXACTLY AS SCREENSHOT: [ ⌵ Câu 1 ] [ ✛ Trắc nghiệm 4 đáp án ] • Không mức độ ★ 0,25 điểm -->
         <div class="qm-shub-header">
           <button type="button" class="qm-shub-qnum-pill" id="qnumPill_${q.id}" onclick="window.toggleQuestionCollapse('${q.id}')" title="Bấm để mở/thu gọn câu này">
-            <svg class="qm-shub-qnum-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            <svg class="qm-shub-qnum-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
             <span>Câu ${displayNum}</span>
           </button>
 
@@ -2052,11 +1955,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       </div>
     `;
   }
-
   // Render danh sách câu hỏi
   function renderQuestionList() {
     const isSingleTopic = (filterTopic.value !== 'all');
     const effectiveType = (activePartFilter !== 'all' ? activePartFilter : (filterType.value !== 'all' ? filterType.value : 'all'));
+
+    // Toggle visibility of general hero & search filters:
+    // When inside a single topic, hide them so the Dark Navy Hero Banner (Image 1) is at the very top!
+    const qmHeroEl = document.querySelector(".qm-hero");
+    const qmMetricsEl = document.querySelector(".qm-metrics-grid");
+    const qmFilterBoxEl = document.querySelector(".qm-filter-box");
+    if (qmHeroEl) qmHeroEl.style.display = isSingleTopic ? "none" : "";
+    if (qmMetricsEl) qmMetricsEl.style.display = isSingleTopic ? "none" : "";
+    if (qmFilterBoxEl) qmFilterBoxEl.style.display = isSingleTopic ? "none" : "";
 
     const filters = {
       subjectId: filterSubject.value,
@@ -2075,7 +1986,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       ? (allTopicsOfSubj.find(t => String(t.id) === String(filterTopic.value)) || manager.getTopics().find(t => String(t.id) === String(filterTopic.value)))
       : null;
 
-    // Lấy toàn bộ câu hỏi của bộ đề này (không bị lọc bởi type hay search) để đếm thống kê cho tab
+    // Lấy toàn bộ câu hỏi của bộ đề này để đếm thống kê cho tab
     const fullTopicQuestions = isSingleTopic
       ? manager.getQuestions({ subjectId: filterSubject.value, topicId: filterTopic.value })
       : questions;
@@ -2086,78 +1997,97 @@ document.addEventListener("DOMContentLoaded", async () => {
     const topicTotalCount = fullTopicQuestions.length;
 
     // Cập nhật Metrics Cards
-    metricTotalQ.textContent = questions.length;
-    metricMcQ.textContent = questions.filter(q => q.type === 'mc').length;
-    metricTfQ.textContent = questions.filter(q => q.type === 'tf').length;
-    metricSaQ.textContent = questions.filter(q => q.type === 'sa').length;
-    metricModQ.textContent = Object.keys(overrides).length;
+    if (metricTotalQ) metricTotalQ.textContent = questions.length;
+    if (metricMcQ) metricMcQ.textContent = questions.filter(q => q.type === 'mc').length;
+    if (metricTfQ) metricTfQ.textContent = questions.filter(q => q.type === 'tf').length;
+    if (metricSaQ) metricSaQ.textContent = questions.filter(q => q.type === 'sa').length;
+    if (metricModQ) metricModQ.textContent = Object.keys(overrides).length;
 
-    // Render Banner thông tin bộ đề
+    // Render Banner thông tin bộ đề (DARK NAVY THEME - IMAGE 1)
     if (topicBannerContainer) {
       if (isSingleTopic && currentTopic) {
         const subjObj = manager.getSubjects().find(s => s.id === currentTopic.subject_id);
-        const subjName = subjObj ? subjObj.name : filterSubject.value;
+        const subjName = subjObj ? subjObj.name : (filterSubject.value === 'toan' ? 'Toán Học 12' : filterSubject.value);
+        const testPageUrl = `../pages/${filterSubject.value === 'toan' ? 'toan-hoc' : (filterSubject.value + '.html')}?topic=${currentTopic.id}`;
 
         topicBannerContainer.innerHTML = `
-          <div class="qm-topic-banner">
-            <div class="qm-topic-banner-top">
-              <div class="qm-topic-banner-info">
-                <button type="button" class="btn-qm-back-to-sets" onclick="window.backToTopicsList()" title="Quay lại danh sách các bộ đề">
+          <div class="qm-topic-banner-navy">
+            <!-- Top Row: Badges on Left, Dropdown & Actions on Right -->
+            <div class="qm-tbn-top-row">
+              <div class="qm-tbn-left-badges">
+                <button type="button" class="btn-qm-tbn-back" onclick="window.backToTopicsList()" title="Quay lại danh sách các bộ đề">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
-                  <span>← Danh sách bộ đề</span>
+                  <span>Danh sách bộ đề</span>
                 </button>
-                <div class="qm-topic-banner-badges">
-                  <span class="qm-tb-badge-subj">${subjName}</span>
-                  ${currentTopic.chapter ? `<span class="qm-tb-badge-code" style="background:#e0e7ff; color:#3730a3; border-color:#c7d2fe;">${currentTopic.chapter}</span>` : ''}
-                  ${currentTopic.index_code ? `<span class="qm-tb-badge-code">Bộ đề ${currentTopic.index_code}</span>` : ''}
-                  <span class="qm-tb-badge-count">Quy mô ${topicTotalCount} câu</span>
-                </div>
-                <h2 class="qm-topic-banner-title">${currentTopic.title}</h2>
-                <p class="qm-topic-banner-desc">${currentTopic.description || 'Toàn bộ câu hỏi, đáp án chính thức và hướng dẫn giải chi tiết của bộ đề.'}</p>
+                <span class="qm-tbn-badge-subject">${subjName.toUpperCase()}</span>
+                ${currentTopic.chapter ? `<span class="qm-tbn-badge-chapter">${currentTopic.chapter}</span>` : ''}
+                ${currentTopic.index_code ? `<span class="qm-tbn-badge-index">Bộ đề ${currentTopic.index_code}</span>` : ''}
               </div>
 
-              <div class="qm-topic-banner-actions">
-                <div class="qm-topic-quick-select-wrap">
-                  <span class="qm-topic-quick-select-label">Bộ đề:</span>
-                  <select class="qm-topic-quick-select" id="quickTopicSelect">
+              <div class="qm-tbn-right-actions">
+                <div class="qm-tbn-select-wrap">
+                  <span class="qm-tbn-select-label">Bộ đề đang chọn:</span>
+                  <select class="qm-tbn-select" id="quickTopicSelect">
                     ${allTopicsOfSubj.map(t => `
-                      <option value="${t.id}" ${String(t.id) === String(filterTopic.value) ? 'selected' : ''}>${t.index_code ? t.index_code + ' - ' : ''}${t.title}</option>
+                      <option value="${t.id}" ${String(t.id) === String(filterTopic.value) ? 'selected' : ''}>
+                        ${t.index_code ? t.index_code + ' - ' : ''}${t.title}
+                      </option>
                     `).join('')}
-                    <option value="all">-- Xem tất cả bộ đề gộp lại --</option>
+                    <option value="all">-- Quay lại danh sách bộ đề --</option>
                   </select>
+                  <svg class="qm-tbn-select-arrow" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
                 </div>
 
-                
+                <a href="${testPageUrl}" target="_blank" class="btn-qm-tbn-test" title="Mở làm thử đề này trên giao diện thi thật">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  <span>Thi thử đề này</span>
+                </a>
               </div>
             </div>
 
-            <!-- Tab lọc nhanh theo từng phần đề thi & Mở/Thu gọn tất cả -->
-            <div class="qm-parts-tabs-bar">
-              <div class="qm-parts-tabs-list">
-                <button type="button" class="qm-part-tab ${effectiveType === 'all' ? 'active' : ''}" onclick="window.switchPartFilter('all')">
-                  <span>Tất cả</span>
-                  <span class="qm-part-tab-count">${topicTotalCount}</span>
+            <!-- Scale Pill Badge -->
+            <div class="qm-tbn-scale-pill">
+              <span>Quy mô ${topicTotalCount} câu hỏi chuẩn</span>
+            </div>
+
+            <!-- Big Title -->
+            <h1 class="qm-tbn-title">${currentTopic.title}</h1>
+
+            <!-- Description / Subtitle -->
+            <p class="qm-tbn-desc">
+              ${currentTopic.description || 'Mã đề 655 • Đề kiểm tra chính thức THPT Trịnh Hoài Đức - TP.HCM gồm 3 phần: Trắc nghiệm (12 câu), Đúng/Sai (4 câu), Trả lời ngắn (6 câu) kèm lời giải chi tiết chuẩn cấu trúc Bộ GD&ĐT.'}
+            </p>
+
+            <!-- Bottom Tabs Row -->
+            <div class="qm-tbn-tabs-row">
+              <div class="qm-tbn-tabs-list">
+                <button type="button" class="qm-tbn-tab ${effectiveType === 'all' ? 'active' : ''}" onclick="window.switchPartFilter('all')">
+                  <span>Tất cả các phần</span>
+                  <span class="qm-tbn-tab-count">${topicTotalCount}</span>
                 </button>
-                <button type="button" class="qm-part-tab ${effectiveType === 'mc' ? 'active' : ''}" onclick="window.switchPartFilter('mc')">
-                  <span>Phần I: Trắc nghiệm</span>
-                  <span class="qm-part-tab-count">${topicMcCount}</span>
+
+                <button type="button" class="qm-tbn-tab ${effectiveType === 'mc' ? 'active' : ''}" onclick="window.switchPartFilter('mc')">
+                  <span>Phần I: Trắc nghiệm 4 lựa chọn</span>
+                  <span class="qm-tbn-tab-count">${topicMcCount} câu</span>
                 </button>
-                <button type="button" class="qm-part-tab ${effectiveType === 'tf' ? 'active' : ''}" onclick="window.switchPartFilter('tf')">
-                  <span>Phần II: Đúng/Sai</span>
-                  <span class="qm-part-tab-count">${topicTfCount}</span>
+
+                <button type="button" class="qm-tbn-tab ${effectiveType === 'tf' ? 'active' : ''}" onclick="window.switchPartFilter('tf')">
+                  <span>Phần II: Đúng / Sai</span>
+                  <span class="qm-tbn-tab-count">${topicTfCount} câu</span>
                 </button>
-                <button type="button" class="qm-part-tab ${effectiveType === 'sa' ? 'active' : ''}" onclick="window.switchPartFilter('sa')">
+
+                <button type="button" class="qm-tbn-tab ${effectiveType === 'sa' ? 'active' : ''}" onclick="window.switchPartFilter('sa')">
                   <span>Phần III: Trả lời ngắn</span>
-                  <span class="qm-part-tab-count">${topicSaCount}</span>
+                  <span class="qm-tbn-tab-count">${topicSaCount} câu</span>
                 </button>
               </div>
 
-              <div class="qm-global-drawer-toggles">
-                <button type="button" class="btn-qm-global-toggle" onclick="window.expandAllQuestions()" title="Mở rộng đáp án tất cả các câu">
+              <div class="qm-tbn-drawer-toggles">
+                <button type="button" class="btn-qm-tbn-toggle" onclick="window.expandAllQuestions()" title="Mở rộng tất cả các câu">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg>
                   <span>Mở tất cả</span>
                 </button>
-                <button type="button" class="btn-qm-global-toggle" onclick="window.collapseAllQuestions()" title="Thu gọn đáp án tất cả các câu">
+                <button type="button" class="btn-qm-tbn-toggle" onclick="window.collapseAllQuestions()" title="Thu gọn tất cả các câu">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>
                   <span>Thu gọn</span>
                 </button>
@@ -2169,9 +2099,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         const quickSelect = document.getElementById("quickTopicSelect");
         if (quickSelect) {
           quickSelect.addEventListener("change", (e) => {
-            filterTopic.value = e.target.value;
-            syncUrl();
-            renderQuestionList();
+            if (e.target.value === 'all') {
+              window.backToTopicsList();
+            } else {
+              filterTopic.value = e.target.value;
+              syncUrl();
+              renderQuestionList();
+            }
           });
         }
       } else {
@@ -2179,8 +2113,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     }
 
-    // NẾU CHƯA CHỌN BỘ ĐỀ CỤ THỂ (ĐANG Ở CHẾ ĐỘ DANH SÁCH BỘ ĐỀ):
-    // Hiển thị danh sách các bộ đề để người dùng chọn bộ đề cần chỉnh sửa!
+    // NẾU CHƯA CHỌN BỘ ĐỀ CỤ THỂ (HIỂN THỊ DANH SÁCH BỘ ĐỀ ĐỂ CHỌN)
     if (!isSingleTopic) {
       const subjObj = manager.getSubjects().find(s => s.id === filterSubject.value);
       const subjName = subjObj ? subjObj.name : 'Môn học';
@@ -2240,9 +2173,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 ${modCount > 0 ? `<span class="qm-set-stat-item mod">Đã sửa: ${modCount}</span>` : ''}
               </div>
 
-              <button type="button" class="btn-qm-select-set" onclick="event.stopPropagation(); window.selectTopicSet('${t.id}')">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                <span>Vào xem & Chỉnh sửa đáp án →</span>
+              <button type="button" class="btn-qm-set-enter">
+                <span>Vào xem & Chỉnh sửa đáp án</span>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
               </button>
             </div>
           </div>
@@ -2258,12 +2191,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
+    // NẾU ĐÃ CHỌN BỘ ĐỀ CỤ THỂ: HIỂN THỊ DANH SÁCH 22 CÂU HỎI
     if (questions.length === 0) {
       questionsContainer.innerHTML = `
-        <div style="background:#ffffff; border:1.5px dashed #cbd5e1; border-radius:16px; padding:48px 24px; text-align:center; color:#64748b;">
+        <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:16px; padding:48px 24px; text-align:center; color:#64748b; margin-top:14px;">
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:12px; color:#94a3b8;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <div style="font-weight:700; font-size:16px; color:#334155; margin-bottom:6px;">Không tìm thấy câu hỏi phù hợp trong bộ đề này</div>
-          <p style="font-size:13.5px; margin:0;">Hãy thử điều chỉnh dạng câu hỏi hoặc từ khóa tìm kiếm.</p>
+          <div style="font-weight:700; font-size:16px; color:#334155; margin-bottom:6px;">Không tìm thấy câu hỏi nào phù hợp với bộ lọc</div>
+          <p style="font-size:13.5px; margin:0;">Hãy thử đổi từ khóa tìm kiếm hoặc bấm nút 'Tất cả các phần' ở thanh trên.</p>
         </div>
       `;
       return;
@@ -2271,66 +2205,62 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     let html = "";
 
-    // NẾU ĐÃ CHỌN BỘ ĐỀ: Hiển thị các câu hỏi theo chuẩn cấu trúc từng phần (như ảnh Shub/Azota!)
-    if (isSingleTopic) {
+    // Phân nhóm câu hỏi nếu đang xem 'all'
+    if (effectiveType === 'all') {
       const mcList = questions.filter(q => q.type === 'mc');
       const tfList = questions.filter(q => q.type === 'tf');
       const saList = questions.filter(q => q.type === 'sa');
 
-      // PHẦN I: TRẮC NGHIỆM MC
       if (mcList.length > 0) {
         html += `
           <div class="qm-section-divider">
             <div class="qm-section-title-wrap">
-              <div class="qm-section-badge-code">PHẦN I • TRẮC NGHIỆM NHIỀU PHƯƠNG ÁN LỰA CHỌN</div>
-              <h3 class="qm-section-title">PHẦN I. CÂU HỎI TRẮC NGHIỆM 4 LỰA CHỌN (12 CÂU)</h3>
-              <p class="qm-section-desc">Thí sinh trả lời từ câu 1 đến câu 12. Mỗi câu hỏi chỉ chọn một phương án đúng duy nhất.</p>
+              <div class="qm-section-badge-code">PHẦN I</div>
+              <h3 class="qm-section-title">Câu trắc nghiệm nhiều phương án lựa chọn</h3>
+              <p class="qm-section-desc">Mỗi câu hỏi chỉ chọn 01 phương án đúng duy nhất (0,25 điểm / câu)</p>
             </div>
             <span class="qm-section-count-pill">${mcList.length} câu hỏi</span>
           </div>
         `;
         mcList.forEach((q, idx) => {
-          html += renderSingleQuestionCard(q, idx, idx + 1, `Phần I • Câu ${idx + 1}`);
+          html += renderSingleQuestionCard(q, idx, idx + 1, "Phần I");
         });
       }
 
-      // PHẦN II: ĐÚNG / SAI TF
       if (tfList.length > 0) {
         html += `
           <div class="qm-section-divider part-tf">
             <div class="qm-section-title-wrap">
-              <div class="qm-section-badge-code">PHẦN II • CÂU HỎI TRẮC NGHIỆM ĐÚNG / SAI</div>
-              <h3 class="qm-section-title">PHẦN II. CÂU HỎI TRẮC NGHIỆM ĐÚNG / SAI (4 CÂU)</h3>
-              <p class="qm-section-desc">Thí sinh trả lời từ câu 1 đến câu 4. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn Đúng hoặc Sai.</p>
+              <div class="qm-section-badge-code">PHẦN II</div>
+              <h3 class="qm-section-title">Câu trắc nghiệm Đúng / Sai</h3>
+              <p class="qm-section-desc">Trong mỗi ý a), b), c), d) hãy chọn Đúng hoặc Sai (Tối đa 1,00 điểm / câu)</p>
             </div>
             <span class="qm-section-count-pill">${tfList.length} câu hỏi</span>
           </div>
         `;
         tfList.forEach((q, idx) => {
-          html += renderSingleQuestionCard(q, idx, idx + 1, `Phần II • Câu ${idx + 1}`);
+          html += renderSingleQuestionCard(q, idx, idx + 1, "Phần II");
         });
       }
 
-      // PHẦN III: TRẢ LỜI NGẮN SA
       if (saList.length > 0) {
         html += `
           <div class="qm-section-divider part-sa">
             <div class="qm-section-title-wrap">
-              <div class="qm-section-badge-code">PHẦN III • CÂU HỎI TRẢ LỜI NGẮN</div>
-              <h3 class="qm-section-title">PHẦN III. CÂU HỎI TRẢ LỜI NGẮN (6 CÂU)</h3>
-              <p class="qm-section-desc">Thí sinh trả lời từ câu 1 đến câu 6. Thí sinh điền kết quả vào ô tương ứng.</p>
+              <div class="qm-section-badge-code">PHẦN III</div>
+              <h3 class="qm-section-title">Câu trắc nghiệm trả lời ngắn</h3>
+              <p class="qm-section-desc">Nhập giá trị số hoặc kết quả chính xác vào ô trống (0,50 điểm / câu)</p>
             </div>
             <span class="qm-section-count-pill">${saList.length} câu hỏi</span>
           </div>
         `;
         saList.forEach((q, idx) => {
-          html += renderSingleQuestionCard(q, idx, idx + 1, `Phần III • Câu ${idx + 1}`);
+          html += renderSingleQuestionCard(q, idx, idx + 1, "Phần III");
         });
       }
     } else {
-      // Khi xem tất cả bộ đề gộp lại
       questions.forEach((q, idx) => {
-        html += renderSingleQuestionCard(q, idx, idx + 1, null);
+        html += renderSingleQuestionCard(q, idx, idx + 1);
       });
     }
 
@@ -2349,9 +2279,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
     }
   }
-
-  
-  
   // 1. Quick Set MC Correct Answer directly from clicking an option card
   window.quickSetMcCorrectAnswer = async function(qId, newCorrectIdx) {
     const letters = ['A', 'B', 'C', 'D'];
