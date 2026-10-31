@@ -3010,40 +3010,39 @@
             </div>
 
             <ul class="user-dropdown-list">
+              <li>
+                <button type="button" class="user-dropdown-item-btn" id="btnUserOpenQuizHistory" title="Xem lịch sử các lần làm bài thi của bạn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  <span>Lịch sử làm bài</span>
+                </button>
+              </li>
               ${userIsAdmin ? `
                 <li>
-                  <button type="button" class="user-dropdown-item-btn item-admin" id="btnAdminOpenPanel" title="Mở Bảng quản trị hệ thống">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  <a href="${isSubPage ? 'admin.html' : 'pages/admin.html'}" class="user-dropdown-item-btn item-admin" id="btnAdminOpenPanel" title="Mở Bảng quản trị hệ thống" style="text-decoration:none;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
                     <span>Bảng Quản Trị</span>
-                  </button>
+                  </a>
                 </li>
                 <li>
-                  <button type="button" class="user-dropdown-item-btn item-admin" id="btnAdminOpenKeys" title="Mở công cụ Tạo Key bản quyền">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m21 3-9.5 9.5"/><path d="m15.5 7.5 3 3"/><path d="M14 3h7v7"/></svg>
-                    <span>Tạo Key</span>
-                  </button>
-                </li>
-                <li>
-                  <a href="${isSubPage ? 'quan-ly-de.html' : 'pages/quan-ly-de.html'}" class="user-dropdown-item-btn item-admin" id="btnAdminOpenExamManager" title="Quản lý ngân hàng đề thi & đáp án chuẩn" style="text-decoration:none;">
+                  <a href="${isSubPage ? 'quan-ly-de.html' : 'pages/quan-ly-de.html'}" class="user-dropdown-item-btn item-admin" id="btnAdminOpenExamManager" title="Quản lý ngân hàng đề & đáp án" style="text-decoration:none;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10M6 14h6"/></svg>
                     <span>Quản Lý Đề & Đáp Án</span>
                   </a>
                 </li>
-              ` : ''}
-              ${!userIsAdmin ? `
                 <li>
-                  <button type="button" class="user-dropdown-item-btn" id="btnUserOpenQuizHistory" title="Xem lịch sử các lần làm bài thi của bạn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    <span>Lịch sử làm bài</span>
+                  <button type="button" class="user-dropdown-item-btn item-admin" id="btnAdminOpenKeys" title="Mở công cụ Tạo Key bản quyền">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m21 3-9.5 9.5"/><path d="m15.5 7.5 3 3"/><path d="M14 3h7v7"/></svg>
+                    <span>Tạo Key Bản Quyền</span>
                   </button>
                 </li>
+              ` : `
                 <li>
                   <button type="button" class="user-dropdown-item-btn" id="btnUserOpenActivateKey" title="Kích hoạt mã môn học">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-1.5 1.5L14 9l-1.5-1.5L11 9l-1.5-1.5L8 9l-4.5 4.5a3 3 0 1 0 4.24 4.24L12 13.5l1.5 1.5 1.5-1.5 1.5 1.5 3.5-3.5a3 3 0 0 0-4.24-4.24z"/></svg>
-                    <span>Kích hoạt môn học</span>
+                    <span>Kích hoạt mã Key</span>
                   </button>
                 </li>
-              ` : ''}
+              `}
               <li>
                 <button type="button" class="user-dropdown-item-btn" id="btnUserChangePassword">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -3086,10 +3085,18 @@
         }
       });
 
-      document.getElementById("btnAdminOpenPanel")?.addEventListener("click", () => {
+      document.getElementById("btnAdminOpenPanel")?.addEventListener("click", (e) => {
         dropdownPanel.classList.remove("show");
         profileBtn.classList.remove("active");
-        openAdminPanel("users");
+        if (window.location.pathname.endsWith("admin.html")) {
+          e.preventDefault();
+          openAdminPanel("users");
+        }
+      });
+
+      document.getElementById("btnAdminOpenExamManager")?.addEventListener("click", () => {
+        dropdownPanel.classList.remove("show");
+        profileBtn.classList.remove("active");
       });
 
       document.getElementById("btnAdminOpenKeys")?.addEventListener("click", () => {
