@@ -2755,8 +2755,6 @@ body.tv-mode .btn-h-action {
    ======================================================== */
 body.dol-main-theme {
   background-color: #F8FAFC;
-  background-image: radial-gradient(#E2E8F0 1.2px, transparent 1.2px);
-  background-size: 28px 28px;
   color: var(--dol-text-primary);
 }
 

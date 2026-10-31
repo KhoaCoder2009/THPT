@@ -109,32 +109,8 @@ document.addEventListener('DOMContentLoaded', checkSupabasePortal);
   <!-- PERSONALIZED STUDENT DASHBOARD STRIP (DYNAMIC LIVE WIDGET) -->
   <div id="keduUserDashboardStrip" class="user-progress-strip" style="display:none;"></div>
 
-  <!-- SECTION BAR & CATEGORY FILTER -->
-  <div class="portal-section-bar" id="subjectsSection">
-    <div class="portal-section-heading">
-      <h2 class="portal-section-title">Chọn môn học ôn luyện</h2>
-      <span class="portal-section-subtitle">Chương trình Giáo dục phổ thông 2018</span>
-    </div>
-
-    <!-- FILTER TABS (KHỐI THI) -->
-    <div class="subject-filter-tabs">
-      <button type="button" class="filter-tab-btn active" data-category="all">
-        <span>Tất cả môn</span>
-        <span class="tab-count" id="totalSubjectsLabel">6</span>
-      </button>
-      <button type="button" class="filter-tab-btn" data-category="khtn">
-        <span>Khối Khoa Học Tự Nhiên</span>
-        <span class="tab-count">4</span>
-      </button>
-      <button type="button" class="filter-tab-btn" data-category="khxh">
-        <span>Khối Xã Hội & Tin Học</span>
-        <span class="tab-count">2</span>
-      </button>
-    </div>
-  </div>
-
   <!-- 6 SUBJECT CARDS (CHỌN THEO MÔN HỌC) -->
-  <div class="clean-subjects-grid">
+  <div class="clean-subjects-grid" id="subjectsSection">
     <!-- 1. MÔN TOÁN -->
     <a href="pages/toan-hoc.html" class="clean-subject-card" data-category="khtn" title="Vào ôn tập môn Toán học">
       <div class="subj-card-header">
@@ -261,33 +237,7 @@ document.addEventListener('DOMContentLoaded', checkSupabasePortal);
 <!-- CLIENT SCRIPT -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  // 1. Tự động đếm số lượng môn học
-  const subjCards = document.querySelectorAll(".clean-subject-card");
-  const totalSubjEl = document.getElementById("totalSubjectsLabel");
-  if (totalSubjEl && subjCards.length > 0) {
-    totalSubjEl.textContent = subjCards.length;
-  }
-
-  // 2. Lọc môn học theo khối thi
-  const filterTabs = document.querySelectorAll(".filter-tab-btn");
-  filterTabs.forEach(tab => {
-    tab.addEventListener("click", () => {
-      filterTabs.forEach(t => t.classList.remove("active"));
-      tab.classList.add("active");
-      const cat = tab.getAttribute("data-category");
-
-      subjCards.forEach(card => {
-        const cardCat = card.getAttribute("data-category");
-        if (cat === "all" || cardCat === cat) {
-          card.style.display = "flex";
-        } else {
-          card.style.display = "none";
-        }
-      });
-    });
-  });
-
-  // 3. Render User Progress Strip (Clean & Compact)
+  // Render User Progress Strip (Clean & Compact)
   const userDashStrip = document.getElementById("keduUserDashboardStrip");
   const headerBadge = document.getElementById("headerHistoryCountBadge");
 
