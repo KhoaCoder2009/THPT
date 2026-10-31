@@ -1145,18 +1145,18 @@ function renderQuizQuestion() {
         <div id="supabaseSaveNotice" style="font-size:12.5px; color:var(--dol-green); font-weight:600; margin:4px 0 14px;"></div>
 
         <div class="footer-actions" style="justify-content:center; margin-bottom: 24px;">
-          <button class="btn-secondary-action" onclick="window.KeduQuizHistory ? window.KeduQuizHistory.openModal() : window.openQuizHistoryModal()" style="display:inline-flex; align-items:center; gap:6px; background:#eff6ff; color:#1d4ed8; border-color:#bfdbfe;">
+          <button class="btn-secondary-action" onclick="window.KeduQuizHistory ? window.KeduQuizHistory.openModal() : window.openQuizHistoryModal()" style="display:inline-flex; align-items:center; gap:6px;">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            <span>📜 Xem Lịch Sử Làm Bài</span>
+            <span>Xem lịch sử làm bài</span>
           </button>
           ${wrongAnswersList.length > 0 ? `
-            <button class="btn-primary-action" style="background: linear-gradient(135deg, #EA580C 0%, #D42525 100%);" onclick="retryWrongQuestions()">
-              🔥 Ôn lại ngay ${wrongAnswersList.length} câu vừa sai
+            <button class="btn-primary-action" onclick="retryWrongQuestions()">
+              Ôn lại ${wrongAnswersList.length} câu vừa sai
             </button>
           ` : ''}
           ${currentMode !== 'full' && activeFormatsCount > 1 ? `
-            <button class="btn-primary-action" style="background: linear-gradient(135deg, #0F2657 0%, #1E40AF 100%);" onclick="startQuiz('${currentSetId}', 'full')">
-              🎯 Làm trọn bộ (${bd.totalCount} câu • 10đ)
+            <button class="btn-primary-action" onclick="startQuiz('${currentSetId}', 'full')">
+              Làm trọn bộ (${bd.totalCount} câu • 10đ)
             </button>
           ` : ''}
           <button class="btn-primary-action" onclick="startQuiz('${currentSetId}', '${currentMode}')">
