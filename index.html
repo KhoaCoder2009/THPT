@@ -3,55 +3,57 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>KEdu</title>
+<title>KEdu • Hệ Thống Ôn Luyện Đề Thi Tốt Nghiệp THPT 2026</title>
+<meta name="description" content="Nền tảng ôn luyện thi tốt nghiệp THPT 2026 chuẩn cấu trúc mới Bộ GD&ĐT gồm 6 môn học trọng tâm: Toán, Lí, Hóa, Sinh, Tin, Sử kèm lời giải chi tiết.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
 <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/auth.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-config.js"></script>
-  <script>
-  // Supabase Live Status Checker
-  async function checkSupabasePortal() {
-    const statusPill = document.getElementById("supabaseStatusPill");
-    if (!statusPill) return;
-    const client = window.getSupabaseClient ? window.getSupabaseClient() : null;
-    if (!client) {
-      statusPill.innerHTML = '<span class="sb-dot-warning"></span> Supabase: Sẵn sàng kết nối';
-      statusPill.title = "Đang kiểm tra kết nối Supabase...";
-      return;
-    }
-    try {
-      const { count, error } = await client.from('questions').select('*', { count: 'exact', head: true });
-      if (!error) {
-        if (statusPill) {
-          const qCount = (count !== null && count !== undefined) ? count : 0;
-          statusPill.innerHTML = '<span class="sb-dot-success"></span> Supabase Live: ' + (qCount > 0 ? (qCount + ' câu hỏi trực tuyến') : '0 câu hỏi (Đang chờ nạp)');
-          statusPill.classList.add("connected");
-        }
-      } else {
-        if (statusPill) {
-          statusPill.innerHTML = '<span class="sb-dot-warning"></span> Supabase: Chưa tạo bảng (' + error.code + ')';
-        }
-      }
-    } catch(e) {
+<link rel="stylesheet" href="css/auth.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+<script>
+// Supabase Live Status Checker
+async function checkSupabasePortal() {
+  const statusPill = document.getElementById("supabaseStatusPill");
+  if (!statusPill) return;
+  const client = window.getSupabaseClient ? window.getSupabaseClient() : null;
+  if (!client) {
+    statusPill.innerHTML = '<span class="sb-dot-warning"></span> Supabase: Sẵn sàng kết nối';
+    statusPill.title = "Đang kiểm tra kết nối Supabase...";
+    return;
+  }
+  try {
+    const { count, error } = await client.from('questions').select('*', { count: 'exact', head: true });
+    if (!error) {
       if (statusPill) {
-        statusPill.innerHTML = '<span class="sb-dot-warning"></span> Supabase: Sẵn sàng kết nối';
+        const qCount = (count !== null && count !== undefined) ? count : 0;
+        statusPill.innerHTML = '<span class="sb-dot-success"></span> Supabase Live: ' + (qCount > 0 ? (qCount + ' câu hỏi trực tuyến') : '0 câu hỏi (Đang chờ nạp)');
+        statusPill.classList.add("connected");
       }
+    } else {
+      if (statusPill) {
+        statusPill.innerHTML = '<span class="sb-dot-warning"></span> Supabase: Chưa tạo bảng (' + error.code + ')';
+      }
+    }
+  } catch(e) {
+    if (statusPill) {
+      statusPill.innerHTML = '<span class="sb-dot-warning"></span> Supabase: Sẵn sàng kết nối';
     }
   }
-  document.addEventListener('DOMContentLoaded', checkSupabasePortal);
-  </script>
+}
+document.addEventListener('DOMContentLoaded', checkSupabasePortal);
+</script>
 </head>
 <body class="dol-main-theme">
 
-<!-- KEdu HEADER -->
+<!-- SITE HEADER -->
 <header class="sh">
   <div class="sh-inner">
     <div class="sh-left-nav">
-      <a href="index.html" class="sh-logo-group" title="KEdu">
+      <a href="index.html" class="sh-logo-group" title="KEdu - Về trang chủ">
         <img src="assets/images/logo_kedu_horizontal.png" alt="KEdu Logo" class="bp-logo-img">
         <div class="bp-brand-text-block">
           <span class="bp-brand-short">KEdu</span>
@@ -63,12 +65,18 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         <span>Trang chủ</span>
       </a>
+
       <button type="button" class="sh-nav-item btn-open-quiz-history" title="Xem lịch sử các lần làm bài thi của bạn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         <span>Lịch sử làm bài</span>
+        <span class="history-count-badge" id="headerHistoryCountBadge" style="display:none; background:#ef4444; color:#fff; font-size:10.5px; font-weight:800; padding:1px 6px; border-radius:9999px;">0</span>
       </button>
 
-      <a href="pages/admin.html" class="sh-nav-item admin-only-nav" data-admin-only="true" title="Bảng quản trị hệ thống, cấp Key và phân quyền">Bảng Quản Trị</a>
+      <a href="pages/admin.html" class="sh-nav-item admin-only-nav" data-admin-only="true" title="Bảng quản trị hệ thống, cấp Key và phân quyền">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>Bảng Quản Trị</span>
+      </a>
+
       <a href="pages/quan-ly-de.html" class="sh-nav-item admin-only-nav" data-admin-only="true" title="Quản lý ngân hàng đề & Chỉnh sửa đáp án (Dành cho Quản trị viên)">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10M6 14h6"/></svg>
         <span>Quản lý đề & Đáp án</span>
@@ -81,65 +89,137 @@
 
 <!-- MAIN APP BODY -->
 <main class="app-main">
-  <!-- HERO BANNER -->
-  <div class="hero-wrapper">
-    <div class="landing-title">
-      <div class="hero-lt">
-        <h1 class="hero-lt-text">Hệ Thống Ôn Luyện <span class="hero-title-accent">Lớp 12</span></h1>
-        <div class="hero-corner"><span>6 MÔN HỌC</span></div>
-      </div>
+  <!-- ELEVATED HERO SECTION -->
+  <section class="hero-wrapper-elevated">
+    <div class="hero-super-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      <span>KỲ THI TỐT NGHIỆP THPT 2026 • CHUẨN MA TRẬN BỘ GD&ĐT MỚI</span>
     </div>
 
-    <p class="hero-desc">
-      Hệ thống ngân hàng câu hỏi ôn luyện chuẩn cấu trúc đề thi Tốt nghiệp THPT mới với 3 dạng thức chính thức: Trắc nghiệm 4 lựa chọn, Trắc nghiệm Đúng / Sai và Trắc nghiệm Trả lời ngắn, tích hợp lời giải chi tiết.
+    <h1 class="hero-main-title">
+      Hệ Thống Ôn Luyện Đề Thi <span class="hero-title-gradient">Trực Tuyến Lớp 12</span>
+    </h1>
+
+    <p class="hero-main-desc">
+      Ngân hàng đề thi bám sát chuẩn cấu trúc mới nhất của Bộ GD&ĐT với 3 phần thi phân hóa: Trắc nghiệm 4 lựa chọn (Phần I), Đúng / Sai (Phần II) và Trả lời ngắn (Phần III). Tích hợp chấm điểm tự động theo thang 10.0, phân tích lỗi sai và 100% lời giải chi tiết KaTeX.
     </p>
 
-    <div class="hero-hl">
-      <div class="hero-hl-spec">
-        <div class="hero-spec-icon-box">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
+    <!-- QUICK ACTIONS -->
+    <div class="hero-cta-group">
+      <a href="#subjectsSection" class="btn-hero-cta primary" title="Cuộn nhanh xuống danh sách môn học">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <span>Bắt đầu ôn luyện ngay</span>
+      </a>
+
+      <button type="button" class="btn-hero-cta secondary btn-open-quiz-history" title="Xem lại các lần làm bài thi trước đây">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span>Xem lịch sử bài thi</span>
+      </button>
+
+      <button type="button" class="btn-hero-cta accent" onclick="if(window.KeduAuth && window.KeduAuth.openAuthModal) window.KeduAuth.openAuthModal();" title="Mở hộp thoại kích hoạt mã bản quyền">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m21 2-2 2m-6 6 7 7-3 3-7-7m-2-5a5 5 0 1 0-7 7 5 5 0 0 0 7-7z"/></svg>
+        <span>Kích hoạt mã Key</span>
+      </button>
+    </div>
+
+    <!-- STAT CHIPS ROW -->
+    <div class="hero-stat-chips-grid">
+      <div class="hero-stat-chip">
+        <div class="hero-stat-icon-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10M6 14h6"/></svg>
         </div>
-        <div class="hero-spec-content">
-          <span class="hero-hl-label">Môn Học Trọng Tâm</span>
-          <div class="hero-hl-value" id="totalSubjectsLabel">6 Môn Lớp 12</div>
+        <div class="hero-stat-chip-text">
+          <span class="hero-stat-chip-title" id="totalSubjectsLabel">6 Môn Trọng Tâm</span>
+          <span class="hero-stat-chip-sub">Toán • Lí • Hóa • Sinh • Tin • Sử</span>
         </div>
       </div>
-      <div class="hero-hl-div"></div>
-      <div class="hero-hl-spec">
-        <div class="hero-spec-icon-box">
+
+      <div class="hero-stat-chip">
+        <div class="hero-stat-icon-wrap" style="color:#2563eb;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
         </div>
-        <div class="hero-spec-content">
-          <span class="hero-hl-label">Cấu trúc đề chuẩn</span>
-          <div class="hero-hl-value">Trắc nghiệm • Đúng sai • Trả lời ngắn</div>
+        <div class="hero-stat-chip-text">
+          <span class="hero-stat-chip-title">Cấu Trúc 3 Phần Thi</span>
+          <span class="hero-stat-chip-sub">12 TN • 4 Đ/S • 6 Trả lời ngắn</span>
+        </div>
+      </div>
+
+      <div class="hero-stat-chip">
+        <div class="hero-stat-icon-wrap" style="color:#059669;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        </div>
+        <div class="hero-stat-chip-text">
+          <span class="hero-stat-chip-title">100% Lời Giải KaTeX</span>
+          <span class="hero-stat-chip-sub">Công thức & đồ thị chuẩn xác</span>
+        </div>
+      </div>
+
+      <div class="hero-stat-chip">
+        <div class="hero-stat-icon-wrap" style="color:#ea580c;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+        </div>
+        <div class="hero-stat-chip-text">
+          <span class="hero-stat-chip-title">Chấm Điểm & Lưu Lịch Sử</span>
+          <span class="hero-stat-chip-sub">Thang điểm 10.0 chuẩn xác</span>
         </div>
       </div>
     </div>
+  </section>
+
+  <!-- PERSONALIZED STUDENT DASHBOARD STRIP (DYNAMIC LIVE WIDGET) -->
+  <div id="keduUserDashboardStrip" class="kedu-user-dashboard-strip" style="display:none;">
+    <!-- Populated by JS -->
   </div>
 
-  <!-- SECTION BAR -->
-  <div class="section-bar">
+  <!-- SECTION BAR & CATEGORY FILTER -->
+  <div class="section-bar" id="subjectsSection">
     <div class="section-title">
       <span class="section-dot"></span>
       <span>Chọn bộ môn để bắt đầu ôn luyện</span>
     </div>
     <div class="section-badge-count">
-      <span>6 Môn thi tốt nghiệp</span>
+      <span>6 Môn thi tốt nghiệp THPT</span>
     </div>
+  </div>
+
+  <!-- SUBJECT FILTER CHIPS (KHỐI THI) -->
+  <div class="subject-category-filter">
+    <button type="button" class="category-chip active" data-category="all">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span>Tất cả 6 môn</span>
+      <span class="chip-count">6</span>
+    </button>
+    <button type="button" class="category-chip" data-category="khtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+      <span>Khối Khoa Học Tự Nhiên (Toán - Lí - Hóa - Sinh)</span>
+      <span class="chip-count">4</span>
+    </button>
+    <button type="button" class="category-chip" data-category="khxh">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/></svg>
+      <span>Khối Xã Hội & Công Nghệ (Lịch Sử - Tin Học)</span>
+      <span class="chip-count">2</span>
+    </button>
   </div>
 
   <!-- 6 SUBJECT CARDS (CHỌN THEO MÔN HỌC) -->
   <div class="square-subjects-grid">
     <!-- 1. MÔN TOÁN -->
-    <a href="pages/toan-hoc.html" class="square-subject-card card-toan" title="Vào ôn tập môn Toán học">
+    <a href="pages/toan-hoc.html" class="square-subject-card card-toan" data-category="khtn" title="Vào ôn tập môn Toán học">
       <div class="sq-card-top">
         <span class="sq-subj-grade">LỚP 12</span>
+        <span class="sq-subj-status-tag" style="font-size:11px; font-weight:700; color:#2563eb; background:#eff6ff; border:1px solid #bfdbfe; padding:2px 8px; border-radius:9999px;">Đề chuẩn 2026</span>
       </div>
 
       <div class="sq-card-center">
         <div class="sq-subj-name-box">
           <div class="sq-name-ambient-glow"></div>
+          <div class="sq-subj-icon-box">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+          </div>
           <h3 class="sq-subj-name">Toán học</h3>
+          <div class="sq-subj-meta-row">
+            <span>22 câu hỏi • Cấu trúc 3 phần</span>
+          </div>
         </div>
       </div>
 
@@ -152,15 +232,22 @@
     </a>
 
     <!-- 2. MÔN VẬT LÍ -->
-    <a href="pages/vat-li.html" class="square-subject-card card-vat-li" title="Vào ôn tập môn Vật lí">
+    <a href="pages/vat-li.html" class="square-subject-card card-vat-li" data-category="khtn" title="Vào ôn tập môn Vật lí">
       <div class="sq-card-top">
         <span class="sq-subj-grade">LỚP 12</span>
+        <span class="sq-subj-status-tag" style="font-size:11px; font-weight:700; color:#0284c7; background:#f0f9ff; border:1px solid #bae6fd; padding:2px 8px; border-radius:9999px;">Đề chuẩn 2026</span>
       </div>
 
       <div class="sq-card-center">
         <div class="sq-subj-name-box">
           <div class="sq-name-ambient-glow"></div>
+          <div class="sq-subj-icon-box">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(45 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-45 12 12)"/><circle cx="12" cy="12" r="2"/></svg>
+          </div>
           <h3 class="sq-subj-name">Vật lí</h3>
+          <div class="sq-subj-meta-row">
+            <span>22 câu hỏi • Cấu trúc 3 phần</span>
+          </div>
         </div>
       </div>
 
@@ -173,15 +260,22 @@
     </a>
 
     <!-- 3. MÔN HÓA HỌC -->
-    <a href="pages/hoa-hoc.html" class="square-subject-card card-hoa-hoc" title="Vào ôn tập môn Hóa học">
+    <a href="pages/hoa-hoc.html" class="square-subject-card card-hoa-hoc" data-category="khtn" title="Vào ôn tập môn Hóa học">
       <div class="sq-card-top">
         <span class="sq-subj-grade">LỚP 12</span>
+        <span class="sq-subj-status-tag" style="font-size:11px; font-weight:700; color:#059669; background:#ecfdf5; border:1px solid #a7f3d0; padding:2px 8px; border-radius:9999px;">Đề chuẩn 2026</span>
       </div>
 
       <div class="sq-card-center">
         <div class="sq-subj-name-box">
           <div class="sq-name-ambient-glow"></div>
+          <div class="sq-subj-icon-box">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><line x1="8.5" y1="2" x2="15.5" y2="2"/><line x1="7" y1="16" x2="17" y2="16"/></svg>
+          </div>
           <h3 class="sq-subj-name">Hóa học</h3>
+          <div class="sq-subj-meta-row">
+            <span>22 câu hỏi • Cấu trúc 3 phần</span>
+          </div>
         </div>
       </div>
 
@@ -194,15 +288,22 @@
     </a>
 
     <!-- 4. MÔN SINH HỌC -->
-    <a href="pages/sinh-hoc.html" class="square-subject-card card-sinh-hoc" title="Vào ôn tập môn Sinh học">
+    <a href="pages/sinh-hoc.html" class="square-subject-card card-sinh-hoc" data-category="khtn" title="Vào ôn tập môn Sinh học">
       <div class="sq-card-top">
         <span class="sq-subj-grade">LỚP 12</span>
+        <span class="sq-subj-status-tag" style="font-size:11px; font-weight:700; color:#16a34a; background:#f0fdf4; border:1px solid #bbf7d0; padding:2px 8px; border-radius:9999px;">Đề chuẩn 2026</span>
       </div>
 
       <div class="sq-card-center">
         <div class="sq-subj-name-box">
           <div class="sq-name-ambient-glow"></div>
+          <div class="sq-subj-icon-box">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2 15c6.667-6 13.333 0 20-6"/><path d="M9 22c1.798-1.998 2.518-3.995 2.807-5.993"/><path d="M15 2c-1.798 1.998-2.518 3.995-2.807 5.993"/><path d="m17 6-2.5-2.5"/><path d="m14 8-1-1"/><path d="m7 18 2.5 2.5"/><path d="m3.5 14.5.5.5"/><path d="m20 9 .5.5"/><path d="m6.5 12.5 1 1"/><path d="m16.5 10.5 1 1"/><path d="m10 16 1 1"/></svg>
+          </div>
           <h3 class="sq-subj-name">Sinh học</h3>
+          <div class="sq-subj-meta-row">
+            <span>22 câu hỏi • Cấu trúc 3 phần</span>
+          </div>
         </div>
       </div>
 
@@ -215,15 +316,22 @@
     </a>
 
     <!-- 5. MÔN TIN HỌC -->
-    <a href="pages/tin-hoc.html" class="square-subject-card card-tin-hoc" title="Vào ôn tập môn Tin học">
+    <a href="pages/tin-hoc.html" class="square-subject-card card-tin-hoc" data-category="khxh" title="Vào ôn tập môn Tin học">
       <div class="sq-card-top">
         <span class="sq-subj-grade">LỚP 12</span>
+        <span class="sq-subj-status-tag" style="font-size:11px; font-weight:700; color:#7c3aed; background:#f5f3ff; border:1px solid #ddd6fe; padding:2px 8px; border-radius:9999px;">Đề chuẩn 2026</span>
       </div>
 
       <div class="sq-card-center">
         <div class="sq-subj-name-box">
           <div class="sq-name-ambient-glow"></div>
+          <div class="sq-subj-icon-box">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+          </div>
           <h3 class="sq-subj-name">Tin học</h3>
+          <div class="sq-subj-meta-row">
+            <span>22 câu hỏi • Cấu trúc 3 phần</span>
+          </div>
         </div>
       </div>
 
@@ -236,15 +344,22 @@
     </a>
 
     <!-- 6. MÔN LỊCH SỬ -->
-    <a href="pages/lich-su.html" class="square-subject-card card-lich-su" title="Vào ôn tập môn Lịch Sử">
+    <a href="pages/lich-su.html" class="square-subject-card card-lich-su" data-category="khxh" title="Vào ôn tập môn Lịch Sử">
       <div class="sq-card-top">
         <span class="sq-subj-grade">LỚP 12</span>
+        <span class="sq-subj-status-tag" style="font-size:11px; font-weight:700; color:#d97706; background:#fffbeb; border:1px solid #fde68a; padding:2px 8px; border-radius:9999px;">Đề chuẩn 2026</span>
       </div>
 
       <div class="sq-card-center">
         <div class="sq-subj-name-box">
           <div class="sq-name-ambient-glow"></div>
+          <div class="sq-subj-icon-box">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="12" y2="15"/></svg>
+          </div>
           <h3 class="sq-subj-name">Lịch sử</h3>
+          <div class="sq-subj-meta-row">
+            <span>22 câu hỏi • Cấu trúc 3 phần</span>
+          </div>
         </div>
       </div>
 
@@ -256,28 +371,155 @@
       </div>
     </a>
   </div>
+
+  <!-- WHY CHOOSE KEDU FEATURES SECTION -->
+  <section class="kedu-features-section">
+    <div class="kedu-features-header">
+      <h2 class="kedu-features-title">Tại Sao Nên Luyện Đề Cùng KEdu?</h2>
+      <p class="kedu-features-sub">Được xây dựng chuyên biệt cho học sinh lớp 12 với mục tiêu bứt phá điểm số trong kỳ thi Tốt nghiệp THPT 2026.</p>
+    </div>
+
+    <div class="kedu-features-grid">
+      <div class="kedu-feature-card">
+        <div class="kedu-fc-icon red">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <h3 class="kedu-fc-title">Cấu Trúc Ma Trận Chuẩn 2026</h3>
+        <p class="kedu-fc-desc">Đầy đủ 3 phần thi phân hóa theo đúng chỉ đạo chuyên môn của Bộ GD&ĐT: Trắc nghiệm 4 lựa chọn (3.0đ), Đúng / Sai (4.0đ) và Trả lời ngắn (3.0đ).</p>
+      </div>
+
+      <div class="kedu-feature-card">
+        <div class="kedu-fc-icon blue">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </div>
+        <h3 class="kedu-fc-title">Phân Tích Lỗi Sai & Lời Giải KaTeX</h3>
+        <p class="kedu-fc-desc">Hệ thống tự động ghi nhận các lỗi sai, phân tích điểm còn hổng và cung cấp lời giải chi tiết từng bước với công thức toán - lý - hóa trực quan sắc nét.</p>
+      </div>
+
+      <div class="kedu-feature-card">
+        <div class="kedu-fc-icon green">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <h3 class="kedu-fc-title">Quản Lý & Phân Quyền Thông Minh</h3>
+        <p class="kedu-fc-desc">Quản trị viên có toàn quyền cấp mã bản quyền theo cá nhân, nhóm học sinh hoặc cả lớp; học sinh lưu giữ hồ sơ lịch sử thi an toàn, không lo mất dữ liệu.</p>
+      </div>
+    </div>
+  </section>
 </main>
 
 <!-- SITE FOOTER -->
 <footer class="site-footer">
-  <div class="site-footer-inner">
-    <div class="footer-meta">
+  <div class="site-footer-inner" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <img src="assets/images/logo_kedu_horizontal.png" alt="Logo KEdu" style="height:26px;">
+      <span style="font-size:13px; color:#64748b;">• Hệ Thống Ôn Luyện Đề Thi Tốt Nghiệp THPT</span>
+    </div>
+    <div class="footer-meta" style="font-size:13px; color:#475569;">
       Developer by <strong>TDKA</strong>
     </div>
   </div>
 </footer>
 
+<!-- SMART CLIENT SCRIPT FOR HOMEPAGE INTERACTIVITY -->
 <script>
-// Tự động đếm số lượng môn học đang có
-const subjCardsCount = document.querySelectorAll(".square-subject-card").length;
-const totalSubjEl = document.getElementById("totalSubjectsLabel");
-if (totalSubjEl && subjCardsCount > 0) {
-  totalSubjEl.textContent = subjCardsCount + " Môn";
-}
+document.addEventListener("DOMContentLoaded", () => {
+  // 1. Tự động đếm số lượng môn học
+  const subjCards = document.querySelectorAll(".square-subject-card");
+  const totalSubjEl = document.getElementById("totalSubjectsLabel");
+  if (totalSubjEl && subjCards.length > 0) {
+    totalSubjEl.textContent = subjCards.length + " Môn Trọng Tâm";
+  }
 
-// Xóa bỏ chế độ TV mode
-localStorage.removeItem("bp_tv_mode");
-document.body.classList.remove("tv-mode");
+  // 2. Lọc môn học theo khối thi (Category Filter)
+  const filterChips = document.querySelectorAll(".category-chip");
+  filterChips.forEach(chip => {
+    chip.addEventListener("click", () => {
+      filterChips.forEach(c => c.classList.remove("active"));
+      chip.classList.add("active");
+      const cat = chip.getAttribute("data-category");
+
+      subjCards.forEach(card => {
+        const cardCat = card.getAttribute("data-category");
+        if (cat === "all" || cardCat === cat) {
+          card.style.display = "flex";
+        } else {
+          card.style.display = "none";
+        }
+      });
+    });
+  });
+
+  // 3. Render Personalized Student Dashboard Strip
+  const userDashStrip = document.getElementById("keduUserDashboardStrip");
+  const headerBadge = document.getElementById("headerHistoryCountBadge");
+
+  function refreshUserDashboard() {
+    let history = [];
+    try {
+      const raw = localStorage.getItem("kedu_quiz_history_attempts");
+      if (raw) history = JSON.parse(raw);
+    } catch(e) {}
+
+    const totalAttempts = Array.isArray(history) ? history.length : 0;
+
+    // Header count badge
+    if (headerBadge) {
+      if (totalAttempts > 0) {
+        headerBadge.textContent = totalAttempts;
+        headerBadge.style.display = "inline-block";
+      } else {
+        headerBadge.style.display = "none";
+      }
+    }
+
+    if (!userDashStrip) return;
+
+    if (totalAttempts > 0) {
+      const totalScore = history.reduce((sum, it) => sum + (Number(it.score) || 0), 0);
+      const avgScore = (totalScore / totalAttempts).toFixed(2);
+      const maxScore = Math.max(...history.map(it => Number(it.score) || 0)).toFixed(2);
+      const latest = history[0];
+
+      userDashStrip.style.display = "flex";
+      userDashStrip.innerHTML = `
+        <div class="kedu-uds-left">
+          <div class="kedu-uds-avatar">📊</div>
+          <div class="kedu-uds-content">
+            <div class="kedu-uds-title">
+              <span>Tiến độ ôn tập của bạn</span>
+              <span class="kedu-uds-role-badge">Đã nộp ${totalAttempts} bài thi</span>
+            </div>
+            <div class="kedu-uds-metrics">
+              <span>Điểm trung bình: <strong>${avgScore} / 10.0</strong></span>
+              <span>•</span>
+              <span>Điểm cao nhất: <strong style="color:#16a34a;">${maxScore} / 10.0</strong></span>
+              ${latest ? `<span>• Bài gần nhất: <strong>${latest.subjectName || ''} (${Number(latest.score).toFixed(2)}đ)</strong></span>` : ''}
+            </div>
+          </div>
+        </div>
+        <button type="button" class="btn-kedu-uds-action btn-open-quiz-history" title="Mở danh sách bài thi đã làm">
+          <span>Xem chi tiết lịch sử</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      `;
+
+      userDashStrip.querySelector(".btn-open-quiz-history")?.addEventListener("click", () => {
+        if (window.KeduQuizHistory && window.KeduQuizHistory.openHistoryModal) {
+          window.KeduQuizHistory.openHistoryModal();
+        }
+      });
+    } else {
+      userDashStrip.style.display = "none";
+    }
+  }
+
+  refreshUserDashboard();
+  window.addEventListener("storage", refreshUserDashboard);
+
+  // Clear legacy TV mode
+  localStorage.removeItem("bp_tv_mode");
+  document.body.classList.remove("tv-mode");
+});
 </script>
 <script src="js/quiz-history.js"></script>
 <script src="js/auth.js"></script>

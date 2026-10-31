@@ -22,6 +22,49 @@ let currentAttemptAnswers = [];
 let dashboardView, quizView, setsGridContainer, totalMCLabel, totalTFLabel, totalSALabel, totalFBLabel;
 let backToMenuBtn, quizModeBadge, progressCountEl, progressBarEl, scoreCountEl, quizBox;
 let supabaseStatusPill;
+let quizTimerInterval = null;
+let quizRemainingSeconds = 3000;
+
+function startQuizTimer(totalSeconds = 3000) {
+  if (quizTimerInterval) clearInterval(quizTimerInterval);
+  quizRemainingSeconds = totalSeconds;
+  const pill = document.getElementById("quizTimerPill");
+  const digits = document.getElementById("quizTimerDigits");
+  if (pill) pill.style.display = "inline-flex";
+
+  function tick() {
+    const m = Math.floor(quizRemainingSeconds / 60);
+    const s = quizRemainingSeconds % 60;
+    if (digits) digits.textContent = `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
+    if (pill) {
+      if (quizRemainingSeconds <= 300) {
+        pill.classList.add("warning");
+      } else {
+        pill.classList.remove("warning");
+      }
+    }
+    if (quizRemainingSeconds <= 0) {
+      clearInterval(quizTimerInterval);
+      quizTimerInterval = null;
+      alert("Hết thời gian làm bài thi! Hệ thống sẽ tiến hành nộp bài và chấm điểm.");
+      currentIndex = activeQuestions.length;
+      renderQuizQuestion();
+      return;
+    }
+    quizRemainingSeconds--;
+  }
+
+  tick();
+  quizTimerInterval = setInterval(tick, 1000);
+}
+
+function stopQuizTimer() {
+  if (quizTimerInterval) {
+    clearInterval(quizTimerInterval);
+    quizTimerInterval = null;
+  }
+}
+
 
 /* Định dạng điểm số thang 10 gọn đẹp (tối đa 2 chữ số thập phân) */
 function formatPoints(val, fixedTwo = false) {
@@ -862,7 +905,41 @@ function buildMistakeReviewHtml() {
 }
 
 /* Tracker Header */
+function renderQuestionPalette() {
+  const total = activeQuestions.length;
+  let paletteEl = document.getElementById("quizQuestionsPalette");
+  if (!paletteEl) {
+    const card = document.querySelector(".dol-progress-card");
+    if (card) {
+      paletteEl = document.createElement("div");
+      paletteEl.id = "quizQuestionsPalette";
+      paletteEl.className = "quiz-questions-palette";
+      card.parentNode.insertBefore(paletteEl, card.nextSibling);
+    }
+  }
+  if (!paletteEl) return;
+  if (total <= 1 || currentIndex >= total) {
+    paletteEl.style.display = "none";
+    return;
+  }
+  paletteEl.style.display = "flex";
+
+  let pillsHtml = "";
+  for (let i = 0; i < total; i++) {
+    let stateClass = "";
+    if (i === currentIndex) {
+      stateClass = "is-current";
+    } else if (i < currentAttemptAnswers.length) {
+      stateClass = currentAttemptAnswers[i]?.isCorrect ? "is-correct-pill" : "is-wrong-pill";
+    }
+    pillsHtml += `<div class="qq-pill ${stateClass}" title="Câu ${i + 1}">${i + 1}</div>`;
+  }
+  paletteEl.innerHTML = pillsHtml;
+}
+
 function updateProgress() {
+  renderQuestionPalette();
+
   const total = activeQuestions.length;
   if (total === 0) {
     if (progressCountEl) progressCountEl.textContent = "0/0";
@@ -927,6 +1004,10 @@ function renderQuizQuestion() {
 
   // Finished Review Screen
   if (currentIndex >= activeQuestions.length) {
+    stopQuizTimer();
+    const qTimerPill = document.getElementById("quizTimerPill");
+    if (qTimerPill) qTimerPill.style.display = "none";
+
     const total = activeQuestions.length;
     const finalTenScore = Math.min(10.0, Math.round(currentEarnedPoints * 100) / 100);
     const pct = Math.round((finalTenScore / 10.0) * 100);
@@ -1610,6 +1691,44 @@ async function syncFromSupabase() {
 
 // Global Initialization
 function initApp() {
+  // Global Keyboard Navigation for Quiz Taking (A, B, C, D to pick choice, Enter/Space to advance)
+  document.addEventListener("keydown", (e) => {
+    if (!quizView || !quizView.classList.contains("active")) return;
+    if (currentIndex >= activeQuestions.length) return;
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+      if (e.key === 'Enter') {
+        const btnCheck = document.getElementById("btnCheckFillBlank");
+        if (btnCheck && !btnCheck.disabled) btnCheck.click();
+      }
+      return;
+    }
+
+    const key = e.key.toUpperCase();
+    if (!hasAnswered) {
+      if (key === 'A' || key === '1') {
+        const b = document.querySelector('.option-row[data-idx="0"]');
+        if (b && !b.disabled) b.click();
+      } else if (key === 'B' || key === '2') {
+        const b = document.querySelector('.option-row[data-idx="1"]');
+        if (b && !b.disabled) b.click();
+      } else if (key === 'C' || key === '3') {
+        const b = document.querySelector('.option-row[data-idx="2"]');
+        if (b && !b.disabled) b.click();
+      } else if (key === 'D' || key === '4') {
+        const b = document.querySelector('.option-row[data-idx="3"]');
+        if (b && !b.disabled) b.click();
+      }
+    } else {
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowRight') {
+        const nextBtn = document.getElementById("nextQuestionBtn") || document.querySelector(".btn-next-action");
+        if (nextBtn) {
+          e.preventDefault();
+          nextBtn.click();
+        }
+      }
+    }
+  });
+
   dashboardView = document.getElementById("dashboardView");
   quizView = document.getElementById("quizView");
   setsGridContainer = document.getElementById("setsGridContainer");
@@ -1626,6 +1745,13 @@ function initApp() {
 
   if (backToMenuBtn) {
     backToMenuBtn.onclick = () => {
+      if (currentIndex < activeQuestions.length && !hasAnswered && currentAttemptAnswers.length > 0) {
+        if (!confirm("Bạn có chắc chắn muốn rời khỏi bài thi đang làm dở không? Lượt thi này sẽ không được lưu điểm.")) return;
+      }
+      stopQuizTimer();
+      const qTimerPill = document.getElementById("quizTimerPill");
+      if (qTimerPill) qTimerPill.style.display = "none";
+
       if (quizView) quizView.classList.remove("active");
       if (dashboardView) dashboardView.classList.add("active");
       renderDashboard();
