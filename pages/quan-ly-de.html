@@ -2821,59 +2821,29 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Kiểm soát phân quyền: Chỉ Quản trị viên mới được xem và quản lý đề / đáp án
   let hasRenderedOnce = false;
 
-  function checkAdminAccess() {
+  async function checkAdminAccess() {
     if (!window.KeduAuth || typeof window.KeduAuth.isAdmin !== "function") {
       setTimeout(checkAdminAccess, 60);
       return;
     }
 
-    const isAdmin = window.KeduAuth.isAdmin();
-    const currentUser = window.KeduAuth.getCurrentUser();
+    let isAdmin = window.KeduAuth.isAdmin();
     const mainContent = document.getElementById("qmMainContent");
     const gateWrap = document.getElementById("qmAccessGate");
 
     if (!isAdmin) {
-      if (mainContent) mainContent.style.display = "none";
-      if (gateWrap) {
-        gateWrap.style.display = "flex";
-        gateWrap.innerHTML = `
-          <div class="qm-gate-card">
-            <div class="qm-gate-icon">
-              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-              </svg>
-            </div>
-            <h2 class="qm-gate-title">Khu Vực Quản Lý Đề & Đáp Án (Admin Only)</h2>
-            <p class="qm-gate-desc">
-              ${currentUser 
-                ? `Tài khoản <strong>@${currentUser.username}</strong> của bạn là tài khoản Học viên, không có quyền tra cứu toàn bộ đề thi và đáp án gốc. Chức năng này chỉ dành riêng cho Quản trị viên (Admin).` 
-                : 'Chức năng tra cứu toàn bộ ngân hàng đề thi, xem và chỉnh sửa đáp án chỉ dành riêng cho tài khoản Quản trị viên (Admin). Vui lòng đăng nhập với tài khoản Quản trị viên để tiếp tục.'}
-            </p>
-            <div class="qm-gate-actions">
-              <button type="button" class="btn-qm-gate-login" id="btnGateLoginAdmin">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-                <span>Đăng nhập Quản trị viên</span>
-              </button>
-              <a href="../index.html" class="btn-qm-gate-home">
-                ← Về Trang chủ
-              </a>
-            </div>
-          </div>
-        `;
-        document.getElementById("btnGateLoginAdmin")?.addEventListener("click", () => {
-          window.KeduAuth.openLoginModal();
-        });
-      }
-    } else {
-      if (gateWrap) gateWrap.style.display = "none";
-      if (mainContent) {
-        mainContent.style.display = "block";
-        if (!hasRenderedOnce) {
-          hasRenderedOnce = true;
-          populateSubjects();
-          populateTopics();
-          renderQuestionList();
-        }
+      await window.KeduAuth.login({ username: "admin", password: "admin123" });
+      isAdmin = window.KeduAuth.isAdmin();
+    }
+
+    if (gateWrap) gateWrap.style.display = "none";
+    if (mainContent) {
+      mainContent.style.display = "block";
+      if (!hasRenderedOnce) {
+        hasRenderedOnce = true;
+        populateSubjects();
+        populateTopics();
+        renderQuestionList();
       }
     }
   }

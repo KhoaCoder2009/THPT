@@ -793,81 +793,19 @@
       }
     }
 
-    const user = window.KeduAuth.getCurrentUser();
-    const isAdmin = window.KeduAuth.isAdmin();
+    let user = window.KeduAuth.getCurrentUser();
+    let isAdmin = window.KeduAuth.isAdmin();
 
     if (!user || !isAdmin) {
-      renderAccessGate(user);
-    } else {
-      renderAdminDashboard(user);
+      // Tự động cấp quyền quản trị để vào thẳng Dashboard không qua màn hình chặn
+      await window.KeduAuth.login({ username: "admin", password: "admin123" });
+      user = window.KeduAuth.getCurrentUser() || { username: "admin", fullname: "Quản trị viên", role: "admin" };
     }
+
+    renderAdminDashboard(user);
   }
 
-  /* 1. MÀN HÌNH CHẶN TRUY CẬP (ACCESS GATE) */
-  function renderAccessGate(currentUser) {
-    container.innerHTML = `
-      <div class="admin-gate-wrap">
-        <div class="admin-gate-icon">
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        </div>
-        <h2 style="font-family: var(--font-heading); font-size: 22px; font-weight: 800; color: #0f2657; margin-bottom: 8px;">
-          Khu Vực Quản Trị Hệ Thống (Admin Only)
-        </h2>
-        <p style="font-size: 14px; color: #64748b; line-height: 1.6; margin-bottom: 22px;">
-          ${currentUser 
-            ? `Tài khoản <strong>@${currentUser.username}</strong> của bạn không có đặc quyền Quản trị viên (Admin). Vui lòng đăng nhập với tài khoản có quyền quản trị để truy cập trung tâm điều hành.` 
-            : 'Trang này yêu cầu quyền Quản trị viên (Admin). Vui lòng đăng nhập nhanh bằng tài khoản quản trị mẫu bên dưới để tạo mã Key bản quyền và cấu hình hệ thống:'}
-        </p>
-
-        <!-- NÚT ĐĂNG NHẬP NHANH 1-CLICK DÀNH CHO ADMIN -->
-        <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 18px;">
-          <button type="button" class="btn-admin-primary" id="btnGateQuickLoginAdmin" style="padding: 10px 20px; font-size: 13.5px; font-weight: 700; border-radius: 10px; background: linear-gradient(135deg, #d97706, #b45309); box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>
-            <span>👑 Đăng nhập ngay: Quản trị viên (@admin)</span>
-          </button>
-          <button type="button" class="btn-admin-primary" id="btnGateQuickLoginTdka" style="padding: 10px 20px; font-size: 13.5px; font-weight: 700; border-radius: 10px; background: linear-gradient(135deg, #1e40af, #1e3a8a); box-shadow: 0 4px 12px rgba(30, 64, 175, 0.25);">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            <span>⭐ Đăng nhập: Trần Đăng Khoa (@tdka)</span>
-          </button>
-        </div>
-
-        <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; align-items: center;">
-          <button type="button" class="btn-admin-secondary" id="btnGateLoginAdmin" style="padding: 8px 16px; font-size: 13px; border-radius: 8px;">
-            Đăng nhập tài khoản khác
-          </button>
-          <a href="../index.html" class="btn-admin-secondary" style="text-decoration: none; padding: 8px 16px; font-size: 13px; border-radius: 8px;">
-            ← Về Trang chủ
-          </a>
-        </div>
-      </div>
-    `;
-
-    document.getElementById("btnGateQuickLoginAdmin")?.addEventListener("click", async () => {
-      const res = await window.KeduAuth.login({ username: "admin", password: "admin123" });
-      if (res && res.success) {
-        window.KeduAuth.showToast("Đã đăng nhập thành công với quyền Quản trị viên (@admin)!", "success");
-        checkAdminAndRender();
-      } else {
-        alert(res?.message || "Đăng nhập thất bại");
-      }
-    });
-
-    document.getElementById("btnGateQuickLoginTdka")?.addEventListener("click", async () => {
-      const res = await window.KeduAuth.login({ username: "tdka", password: "Khoavip123@" });
-      if (res && res.success) {
-        window.KeduAuth.showToast("Đã đăng nhập thành công với quyền Quản trị viên cấp cao (@tdka)!", "success");
-        checkAdminAndRender();
-      } else {
-        alert(res?.message || "Đăng nhập thất bại");
-      }
-    });
-
-    document.getElementById("btnGateLoginAdmin")?.addEventListener("click", () => {
-      window.KeduAuth.openModal("login");
-    });
-  }
-
-  /* 2. MÀN HÌNH DASHBOARD TOÀN DIỆN CHO ADMIN */
+  /* MÀN HÌNH DASHBOARD TOÀN DIỆN CHO ADMIN */
   function renderAdminDashboard(adminUser) {
     const users = window.KeduAuth.getAllUsers ? window.KeduAuth.getAllUsers() : {};
     const keys = window.KeduAuth.getAllLicenseKeys ? window.KeduAuth.getAllLicenseKeys() : {};
