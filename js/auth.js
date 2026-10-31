@@ -3023,18 +3023,6 @@
                     <span>Bảng Quản Trị</span>
                   </a>
                 </li>
-                <li>
-                  <a href="${isSubPage ? 'quan-ly-de.html' : 'pages/quan-ly-de.html'}" class="user-dropdown-item-btn item-admin" id="btnAdminOpenExamManager" title="Quản lý ngân hàng đề & đáp án" style="text-decoration:none;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10M6 14h6"/></svg>
-                    <span>Quản Lý Đề & Đáp Án</span>
-                  </a>
-                </li>
-                <li>
-                  <button type="button" class="user-dropdown-item-btn item-admin" id="btnAdminOpenKeys" title="Mở công cụ Tạo Key bản quyền">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m21 3-9.5 9.5"/><path d="m15.5 7.5 3 3"/><path d="M14 3h7v7"/></svg>
-                    <span>Tạo Key Bản Quyền</span>
-                  </button>
-                </li>
               ` : `
                 <li>
                   <button type="button" class="user-dropdown-item-btn" id="btnUserOpenActivateKey" title="Kích hoạt mã môn học">
@@ -3092,17 +3080,6 @@
           e.preventDefault();
           openAdminPanel("users");
         }
-      });
-
-      document.getElementById("btnAdminOpenExamManager")?.addEventListener("click", () => {
-        dropdownPanel.classList.remove("show");
-        profileBtn.classList.remove("active");
-      });
-
-      document.getElementById("btnAdminOpenKeys")?.addEventListener("click", () => {
-        dropdownPanel.classList.remove("show");
-        profileBtn.classList.remove("active");
-        openAdminPanel("keys");
       });
 
       document.getElementById("btnUserOpenQuizHistory")?.addEventListener("click", () => {
