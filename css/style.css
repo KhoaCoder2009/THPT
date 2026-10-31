@@ -3343,7 +3343,19 @@ body.tv-mode .fb-text-field {
   transform: translateY(-2px);
 }
 
-/* Removed AI ambient glow */
+.sq-name-ambient-glow {
+  position: absolute;
+  inset: -10px;
+  background: radial-gradient(circle, var(--subj-color, #2563EB) 0%, transparent 70%);
+  opacity: 0.12;
+  filter: blur(12px);
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.square-subject-card:hover .sq-name-ambient-glow {
+  opacity: 0.24;
+}
 
 .sq-subj-name {
   font-family: var(--font-heading);
