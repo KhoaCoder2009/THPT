@@ -383,9 +383,6 @@
     if (updatedKeys) {
       saveAllLicenseKeys(keys);
     }
-
-    // Kích hoạt đồng bộ với Supabase Cloud
-    syncWithSupabase();
   }
 
   /**
@@ -653,8 +650,6 @@
     saveAllUsers(users);
 
     setSession(user, remember);
-    // Kích hoạt đồng bộ ngầm toàn bộ dữ liệu mới nhất
-    syncWithSupabase();
 
     const roleTitle = user.role === "admin" ? "Quản trị viên" : "Học viên";
     return {
@@ -2525,20 +2520,13 @@
       hideAlert();
       const submitBtn = document.getElementById("btnLoginSubmit");
       const card = formLogin.closest(".auth-modal-card");
-      setBtnLoading(submitBtn, true, "Đang xác thực thông tin...", "loginProgressBar", formLogin);
+      setBtnLoading(submitBtn, true, "Đang đăng nhập...", "loginProgressBar", formLogin);
 
       const username = document.getElementById("loginUsername").value;
       const password = document.getElementById("loginPassword").value;
       const remember = document.getElementById("loginRemember").checked;
 
-      const startTime = Date.now();
       const res = await login({ username, password, remember });
-
-      // Perceived performance threshold: minimum 600ms to eliminate instant flash
-      const elapsed = Date.now() - startTime;
-      if (elapsed < 600) {
-        await new Promise(r => setTimeout(r, 600 - elapsed));
-      }
 
       if (!res.success) {
         setBtnLoading(submitBtn, false, "", "loginProgressBar", formLogin);
@@ -2550,17 +2538,15 @@
         showToast(res.message, "success");
         setTimeout(() => {
           closeAllAuthModals();
-          setTimeout(() => {
-            if (submitBtn) {
-              submitBtn.classList.remove("is-success");
-              if (submitBtn.dataset.originalHtml) {
-                submitBtn.innerHTML = submitBtn.dataset.originalHtml;
-              }
-              submitBtn.disabled = false;
-              submitBtn.setAttribute("aria-busy", "false");
+          if (submitBtn) {
+            submitBtn.classList.remove("is-success");
+            if (submitBtn.dataset.originalHtml) {
+              submitBtn.innerHTML = submitBtn.dataset.originalHtml;
             }
-          }, 300);
-        }, 700);
+            submitBtn.disabled = false;
+            submitBtn.setAttribute("aria-busy", "false");
+          }
+        }, 250);
       }
     });
 
@@ -2570,20 +2556,13 @@
       hideAlert();
       const submitBtn = document.getElementById("btnRegisterSubmit");
       const card = formRegister.closest(".auth-modal-card");
-      setBtnLoading(submitBtn, true, "Đang khởi tạo tài khoản...", "registerProgressBar", formRegister);
+      setBtnLoading(submitBtn, true, "Đang đăng ký...", "registerProgressBar", formRegister);
 
       const username = document.getElementById("regUsername").value;
       const password = document.getElementById("regPassword").value;
       const confirmPassword = document.getElementById("regConfirmPassword").value;
 
-      const startTime = Date.now();
       const res = await register({ username, password, confirmPassword });
-
-      // Perceived performance threshold: minimum 650ms to eliminate instant flash
-      const elapsed = Date.now() - startTime;
-      if (elapsed < 650) {
-        await new Promise(r => setTimeout(r, 650 - elapsed));
-      }
 
       if (!res.success) {
         setBtnLoading(submitBtn, false, "", "registerProgressBar", formRegister);
@@ -2595,17 +2574,15 @@
         showToast(res.message, "success");
         setTimeout(() => {
           closeAllAuthModals();
-          setTimeout(() => {
-            if (submitBtn) {
-              submitBtn.classList.remove("is-success");
-              if (submitBtn.dataset.originalHtml) {
-                submitBtn.innerHTML = submitBtn.dataset.originalHtml;
-              }
-              submitBtn.disabled = false;
-              submitBtn.setAttribute("aria-busy", "false");
+          if (submitBtn) {
+            submitBtn.classList.remove("is-success");
+            if (submitBtn.dataset.originalHtml) {
+              submitBtn.innerHTML = submitBtn.dataset.originalHtml;
             }
-          }, 300);
-        }, 800);
+            submitBtn.disabled = false;
+            submitBtn.setAttribute("aria-busy", "false");
+          }
+        }, 250);
       }
     });
 
@@ -2615,18 +2592,13 @@
       hideAlert();
       const submitBtn = document.getElementById("btnChangePasswordSubmit");
       const card = formChangePassword.closest(".auth-modal-card");
-      setBtnLoading(submitBtn, true, "Đang cập nhật mật khẩu...", "changePasswordProgressBar", formChangePassword);
+      setBtnLoading(submitBtn, true, "Đang cập nhật...", "changePasswordProgressBar", formChangePassword);
 
       const currentPassword = document.getElementById("changeOldPassword").value;
       const newPassword = document.getElementById("changeNewPassword").value;
       const confirmNewPassword = document.getElementById("changeConfirmNewPassword").value;
 
-      const startTime = Date.now();
       const res = await changePassword({ currentPassword, newPassword, confirmNewPassword });
-      const elapsed = Date.now() - startTime;
-      if (elapsed < 600) {
-        await new Promise(r => setTimeout(r, 600 - elapsed));
-      }
 
       if (!res.success) {
         setBtnLoading(submitBtn, false, "", "changePasswordProgressBar", formChangePassword);
@@ -2638,17 +2610,15 @@
         showToast("Đổi mật khẩu thành công!", "success");
         setTimeout(() => {
           closeAllAuthModals();
-          setTimeout(() => {
-            if (submitBtn) {
-              submitBtn.classList.remove("is-success");
-              if (submitBtn.dataset.originalHtml) {
-                submitBtn.innerHTML = submitBtn.dataset.originalHtml;
-              }
-              submitBtn.disabled = false;
-              submitBtn.setAttribute("aria-busy", "false");
+          if (submitBtn) {
+            submitBtn.classList.remove("is-success");
+            if (submitBtn.dataset.originalHtml) {
+              submitBtn.innerHTML = submitBtn.dataset.originalHtml;
             }
-          }, 300);
-        }, 800);
+            submitBtn.disabled = false;
+            submitBtn.setAttribute("aria-busy", "false");
+          }
+        }, 250);
       }
     });
 
@@ -2657,17 +2627,12 @@
       e.preventDefault();
       const submitBtn = document.getElementById("btnSubmitActivateKey");
       const card = formActivateKey.closest(".auth-modal-card");
-      setBtnLoading(submitBtn, true, "Đang kích hoạt key...", "activateKeyProgressBar", formActivateKey);
+      setBtnLoading(submitBtn, true, "Đang kích hoạt...", "activateKeyProgressBar", formActivateKey);
 
       const input = document.getElementById("inputLicenseKey");
       const code = input ? input.value : "";
       
-      const startTime = Date.now();
       const res = await activateLicenseKey(code);
-      const elapsed = Date.now() - startTime;
-      if (elapsed < 600) {
-        await new Promise(r => setTimeout(r, 600 - elapsed));
-      }
 
       if (!res.success) {
         setBtnLoading(submitBtn, false, "", "activateKeyProgressBar", formActivateKey);
@@ -2678,17 +2643,15 @@
         showToast(res.message, "success");
         setTimeout(() => {
           closeActivateKeyModal();
-          setTimeout(() => {
-            if (submitBtn) {
-              submitBtn.classList.remove("is-success");
-              if (submitBtn.dataset.originalHtml) {
-                submitBtn.innerHTML = submitBtn.dataset.originalHtml;
-              }
-              submitBtn.disabled = false;
-              submitBtn.setAttribute("aria-busy", "false");
+          if (submitBtn) {
+            submitBtn.classList.remove("is-success");
+            if (submitBtn.dataset.originalHtml) {
+              submitBtn.innerHTML = submitBtn.dataset.originalHtml;
             }
-          }, 300);
-        }, 700);
+            submitBtn.disabled = false;
+            submitBtn.setAttribute("aria-busy", "false");
+          }
+        }, 250);
       }
     });
   }
@@ -3580,20 +3543,12 @@
     injectAuthModal();
     renderHeaderAuthUI();
     checkSubjectAccessOnPage();
-    // Đồng bộ đám mây Supabase
-    setTimeout(syncWithSupabase, 150);
   }
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
   } else {
     init();
-  }
-
-  // Tự động đồng bộ lại khi người dùng quay lại tab hoặc kết nối mạng phục hồi
-  if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
-    window.addEventListener("online", () => syncWithSupabase());
-    window.addEventListener("focus", () => syncWithSupabase());
   }
 
   // Xuất API toàn cục
