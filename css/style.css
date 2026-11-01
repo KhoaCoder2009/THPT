@@ -921,6 +921,55 @@ body.tv-mode .bp-logo-img {
   border-color: #ef4444;
 }
 
+.qq-part-tag {
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 4px 10px;
+  border-radius: 6px;
+  margin: 0 4px 0 8px;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+}
+.qq-part-tag.mc { background: #eff6ff; color: #1e40af; border-color: #bfdbfe; }
+.qq-part-tag.tf { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
+.qq-part-tag.sa { background: #faf5ff; color: #6b21a8; border-color: #e9d5ff; }
+
+.q-number-tag {
+  display: inline-block;
+  color: var(--dol-red, #D42525);
+  font-weight: 800;
+  margin-right: 6px;
+}
+
+.btn-h-action.btn-start-full {
+  background: linear-gradient(135deg, var(--dol-red, #D42525) 0%, #b91c1c 100%);
+  color: #ffffff !important;
+  padding: 0 20px;
+  height: 40px;
+  font-size: 13.5px;
+  font-weight: 700;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(212, 37, 37, 0.25);
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+.btn-h-action.btn-start-full:hover {
+  background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 14px rgba(212, 37, 37, 0.35);
+  color: #ffffff !important;
+}
+
 .question-pane {
   background: #ffffff;
   border: 1px solid var(--dol-border);
