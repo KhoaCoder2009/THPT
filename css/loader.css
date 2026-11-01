@@ -1,0 +1,298 @@
+/* ========================================================
+   KEDU GLOBAL PAGE & NETWORK LOADER
+   Logo centered with orbiting rotating rings
+   ======================================================== */
+.kedu-page-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  z-index: 99999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s ease;
+  user-select: none;
+}
+
+.kedu-page-loader.is-active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.kedu-loader-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 32px 28px;
+  max-width: 420px;
+  width: 90%;
+  position: relative;
+  animation: keduCardEnter 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes keduCardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes keduCardShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+/* Logo & Orbit Wrapper */
+.kedu-loader-orbit-wrap {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 22px;
+}
+
+/* Centered circular logo badge */
+.kedu-loader-logo-badge {
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgba(220, 38, 38, 0.18), 0 3px 10px rgba(15, 23, 42, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  border: 1.5px solid rgba(220, 38, 38, 0.12);
+}
+
+.kedu-loader-logo-img {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  animation: keduLogoPulse 2.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes keduLogoPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+/* SVG Rotating Rings */
+.kedu-loader-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 120px;
+  height: 120px;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.kedu-ring-track {
+  stroke: rgba(220, 38, 38, 0.12);
+  transition: stroke 0.3s ease;
+}
+
+.kedu-ring-spinner {
+  stroke: url(#keduRingGrad);
+  transform-origin: 60px 60px;
+  animation: keduRingSpin 1.1s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  transition: stroke 0.3s ease;
+}
+
+.kedu-ring-counter {
+  stroke: rgba(220, 38, 38, 0.22);
+  transform-origin: 60px 60px;
+  animation: keduRingCounterSpin 4.5s linear infinite;
+  transition: stroke 0.3s ease;
+}
+
+@keyframes keduRingSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes keduRingCounterSpin {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+/* Status Info */
+.kedu-loader-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.kedu-loader-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(220, 38, 38, 0.08);
+  color: #dc2626;
+  border: 1px solid rgba(220, 38, 38, 0.18);
+  margin-bottom: 12px;
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  transition: all 0.25s ease;
+}
+
+.kedu-loader-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #dc2626;
+  animation: keduDotPulse 1.4s ease-in-out infinite;
+  transition: background-color 0.25s ease;
+}
+
+@keyframes keduDotPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+}
+
+.kedu-loader-title {
+  font-size: 17.5px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 6px 0;
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+  transition: color 0.25s ease;
+}
+
+.kedu-loader-desc {
+  font-size: 13.5px;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.5;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  max-width: 340px;
+}
+
+/* Retry button for network mode */
+.kedu-loader-retry-btn {
+  margin-top: 18px;
+  padding: 10px 22px;
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.28);
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+}
+
+.kedu-loader-retry-btn:hover {
+  background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 18px rgba(220, 38, 38, 0.38);
+}
+
+.kedu-loader-retry-btn:active {
+  transform: translateY(1px);
+}
+
+/* --- MODES --- */
+
+/* Network Offline / Unstable Mode */
+.kedu-page-loader.is-offline .kedu-loader-logo-badge {
+  box-shadow: 0 10px 28px rgba(217, 119, 6, 0.22), 0 3px 10px rgba(15, 23, 42, 0.08);
+  border-color: rgba(217, 119, 6, 0.25);
+}
+
+.kedu-page-loader.is-offline .kedu-ring-track {
+  stroke: rgba(217, 119, 6, 0.15);
+}
+
+.kedu-page-loader.is-offline .kedu-ring-spinner {
+  stroke: url(#keduWarnGrad);
+}
+
+.kedu-page-loader.is-offline .kedu-ring-counter {
+  stroke: rgba(217, 119, 6, 0.25);
+}
+
+.kedu-page-loader.is-offline .kedu-loader-status-badge {
+  background: rgba(217, 119, 6, 0.1);
+  color: #b45309;
+  border-color: rgba(217, 119, 6, 0.24);
+}
+
+.kedu-page-loader.is-offline .kedu-loader-dot {
+  background: #d97706;
+}
+
+/* Network Recovered Mode */
+.kedu-page-loader.is-recovered .kedu-loader-logo-badge {
+  box-shadow: 0 10px 28px rgba(16, 185, 129, 0.22), 0 3px 10px rgba(15, 23, 42, 0.08);
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+.kedu-page-loader.is-recovered .kedu-ring-track {
+  stroke: rgba(16, 185, 129, 0.15);
+}
+
+.kedu-page-loader.is-recovered .kedu-ring-spinner {
+  stroke: url(#keduSuccessGrad);
+}
+
+.kedu-page-loader.is-recovered .kedu-loader-status-badge {
+  background: rgba(16, 185, 129, 0.1);
+  color: #047857;
+  border-color: rgba(16, 185, 129, 0.24);
+}
+
+.kedu-page-loader.is-recovered .kedu-loader-dot {
+  background: #10b981;
+}
