@@ -618,12 +618,29 @@
     }
 
     if (!user) {
-      return { success: false, message: "Tài khoản không tồn tại. Vui lòng kiểm tra lại hoặc Đăng ký mới!" };
+      return { 
+        success: false, 
+        message: "Tài khoản không tồn tại trên thiết bị này! Nếu bạn vừa tạo tài khoản trên máy tính, hãy đảm bảo Cloud Database đã đồng bộ hoặc Đăng ký mới." 
+      };
     }
 
-    const passwordHash = await hashPassword(password);
+    let passwordHash = await hashPassword(password);
     if (user.passwordHash !== passwordHash) {
-      return { success: false, message: "Mật khẩu không chính xác. Vui lòng thử lại!" };
+      // Thử fallback loại bỏ khoảng trắng vô tình bị bàn phím ảo điện thoại thêm vào
+      const trimmedPwd = (password || "").trim();
+      if (trimmedPwd !== password) {
+        const trimmedHash = await hashPassword(trimmedPwd);
+        if (user.passwordHash === trimmedHash) {
+          passwordHash = trimmedHash;
+        }
+      }
+    }
+
+    if (user.passwordHash !== passwordHash) {
+      return { 
+        success: false, 
+        message: "Mật khẩu không chính xác! Vui lòng kiểm tra lại (chú ý chữ hoa/thường, khoảng trắng và bộ gõ tiếng Việt Telex/VNI trên điện thoại)." 
+      };
     }
 
     if (!user.role || normalizedKey === "admin" || normalizedKey === "tdka") {
@@ -1327,7 +1344,7 @@
                   <span class="auth-input-icon">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                   </span>
-                  <input type="text" id="loginUsername" class="auth-input" placeholder="Nhập tên tài khoản của bạn" autocomplete="username" spellcheck="false" required>
+                  <input type="text" id="loginUsername" class="auth-input" placeholder="Nhập tên tài khoản của bạn" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required>
                 </div>
               </div>
 
@@ -1339,7 +1356,7 @@
                   <span class="auth-input-icon">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                   </span>
-                  <input type="password" id="loginPassword" class="auth-input" placeholder="Nhập mật khẩu" autocomplete="current-password" required>
+                  <input type="password" id="loginPassword" class="auth-input" placeholder="Nhập mật khẩu" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" required>
                   <button type="button" class="auth-toggle-pwd" data-target="loginPassword" title="Ẩn/Hiện mật khẩu" aria-label="Ẩn/Hiện mật khẩu">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                   </button>
@@ -1397,7 +1414,7 @@
                   <span class="auth-input-icon">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                   </span>
-                  <input type="text" id="regUsername" class="auth-input" placeholder="Nhập tên tài khoản (viết liền không dấu)" autocomplete="username" spellcheck="false" required>
+                  <input type="text" id="regUsername" class="auth-input" placeholder="Nhập tên tài khoản (viết liền không dấu)" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required>
                 </div>
               </div>
 
@@ -1409,7 +1426,7 @@
                   <span class="auth-input-icon">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                   </span>
-                  <input type="password" id="regPassword" class="auth-input" placeholder="Nhập mật khẩu (tối thiểu 6 ký tự)" autocomplete="new-password" required>
+                  <input type="password" id="regPassword" class="auth-input" placeholder="Nhập mật khẩu (tối thiểu 6 ký tự)" autocomplete="new-password" autocapitalize="none" autocorrect="off" spellcheck="false" required>
                   <button type="button" class="auth-toggle-pwd" data-target="regPassword" title="Ẩn/Hiện mật khẩu" aria-label="Ẩn/Hiện mật khẩu">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                   </button>
@@ -1437,7 +1454,7 @@
                   <span class="auth-input-icon">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
                   </span>
-                  <input type="password" id="regConfirmPassword" class="auth-input" placeholder="Nhập lại chính xác mật khẩu" autocomplete="new-password" required>
+                  <input type="password" id="regConfirmPassword" class="auth-input" placeholder="Nhập lại chính xác mật khẩu" autocomplete="new-password" autocapitalize="none" autocorrect="off" spellcheck="false" required>
                   <button type="button" class="auth-toggle-pwd" data-target="regConfirmPassword" title="Ẩn/Hiện mật khẩu" aria-label="Ẩn/Hiện mật khẩu">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                   </button>
@@ -1489,7 +1506,7 @@
                   <span class="auth-input-icon">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                   </span>
-                  <input type="password" id="changeOldPassword" class="auth-input" placeholder="Nhập mật khẩu hiện tại" autocomplete="current-password" required>
+                  <input type="password" id="changeOldPassword" class="auth-input" placeholder="Nhập mật khẩu hiện tại" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" required>
                   <button type="button" class="auth-toggle-pwd" data-target="changeOldPassword" title="Ẩn/Hiện mật khẩu" aria-label="Ẩn/Hiện mật khẩu">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                   </button>
@@ -1504,7 +1521,7 @@
                   <span class="auth-input-icon">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                   </span>
-                  <input type="password" id="changeNewPassword" class="auth-input" placeholder="Mật khẩu mới (ít nhất 6 ký tự)" autocomplete="new-password" required>
+                  <input type="password" id="changeNewPassword" class="auth-input" placeholder="Mật khẩu mới (ít nhất 6 ký tự)" autocomplete="new-password" autocapitalize="none" autocorrect="off" spellcheck="false" required>
                   <button type="button" class="auth-toggle-pwd" data-target="changeNewPassword" title="Ẩn/Hiện mật khẩu" aria-label="Ẩn/Hiện mật khẩu">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                   </button>
@@ -1519,7 +1536,7 @@
                   <span class="auth-input-icon">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
                   </span>
-                  <input type="password" id="changeConfirmNewPassword" class="auth-input" placeholder="Nhập lại mật khẩu mới" autocomplete="new-password" required>
+                  <input type="password" id="changeConfirmNewPassword" class="auth-input" placeholder="Nhập lại mật khẩu mới" autocomplete="new-password" autocapitalize="none" autocorrect="off" spellcheck="false" required>
                   <button type="button" class="auth-toggle-pwd" data-target="changeConfirmNewPassword" title="Ẩn/Hiện mật khẩu" aria-label="Ẩn/Hiện mật khẩu">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                   </button>
@@ -1566,7 +1583,7 @@
                   <span class="auth-input-icon">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-1.5 1.5L14 9l-1.5-1.5L11 9l-1.5-1.5L8 9l-4.5 4.5a3 3 0 1 0 4.24 4.24L12 13.5l1.5 1.5 1.5-1.5 1.5 1.5 3.5-3.5a3 3 0 0 0-4.24-4.24z"/></svg>
                   </span>
-                  <input type="text" id="inputLicenseKey" class="auth-input" placeholder="Ví dụ: TOAN-XXXX-XXXX" style="font-family: monospace; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;" required>
+                  <input type="text" id="inputLicenseKey" class="auth-input" placeholder="Ví dụ: TOAN-XXXX-XXXX" style="font-family: monospace; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" required>
                 </div>
                 <span class="auth-field-hint">Mỗi mã key chỉ kích hoạt được cho 01 tài khoản học viên duy nhất.</span>
               </div>
