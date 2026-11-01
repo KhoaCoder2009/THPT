@@ -3359,6 +3359,15 @@ body.tv-mode .fb-text-field {
   opacity: 0.24;
 }
 
+.sq-subj-swap-wrap {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+}
+
 .sq-subj-name {
   font-family: var(--font-heading);
   font-size: 27px;
@@ -3369,11 +3378,50 @@ body.tv-mode .fb-text-field {
   letter-spacing: -0.02em;
   position: relative;
   z-index: 1;
-  transition: transform 0.25s ease;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.26s ease;
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  white-space: nowrap;
 }
 
+.sq-subj-count-box {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--subj-color, #0F2657);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  z-index: 2;
+  opacity: 0;
+  transform: translateY(16px) scale(0.92);
+  pointer-events: none;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.26s ease;
+  white-space: nowrap;
+}
+
+.sq-count-icon {
+  flex-shrink: 0;
+  color: var(--subj-color, #0F2657);
+  opacity: 0.85;
+}
+
+/* Hover swap: subject name slides up & fades out, exam count slides in */
 .square-subject-card:hover .sq-subj-name {
-  transform: scale(1.05);
+  opacity: 0;
+  transform: translateY(-16px) scale(0.92);
+}
+
+.square-subject-card:hover .sq-subj-count-box {
+  opacity: 1;
+  transform: translateY(0) scale(1);
 }
 
 /* Card Bottom Action */

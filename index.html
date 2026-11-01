@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', checkSupabasePortal);
   <!-- 6 SUBJECT CARDS (CHỌN THEO MÔN HỌC) -->
   <div class="square-subjects-grid" id="subjectsSection">
     <!-- 1. MÔN TOÁN -->
-    <a href="pages/toan-hoc.html" class="square-subject-card card-toan" title="Vào ôn tập môn Toán học">
+    <a href="pages/toan-hoc.html" class="square-subject-card card-toan" data-subject="toan" title="Vào ôn tập môn Toán học">
       <div class="sq-card-top">
         <span class="sq-subj-grade">LỚP 12</span>
       </div>
@@ -100,7 +100,13 @@ document.addEventListener('DOMContentLoaded', checkSupabasePortal);
       <div class="sq-card-center">
         <div class="sq-subj-name-box">
           <div class="sq-name-ambient-glow"></div>
-          <h3 class="sq-subj-name">Toán học</h3>
+          <div class="sq-subj-swap-wrap">
+            <h3 class="sq-subj-name">Toán học</h3>
+            <div class="sq-subj-count-box">
+              <svg class="sq-count-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              <span class="sq-count-text">1 Đề thi</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -113,7 +119,7 @@ document.addEventListener('DOMContentLoaded', checkSupabasePortal);
     </a>
 
     <!-- 2. MÔN VẬT LÍ -->
-    <a href="pages/vat-li.html" class="square-subject-card card-vat-li" title="Vào ôn tập môn Vật lí">
+    <a href="pages/vat-li.html" class="square-subject-card card-vat-li" data-subject="vatli" title="Vào ôn tập môn Vật lí">
       <div class="sq-card-top">
         <span class="sq-subj-grade">LỚP 12</span>
       </div>
@@ -121,7 +127,13 @@ document.addEventListener('DOMContentLoaded', checkSupabasePortal);
       <div class="sq-card-center">
         <div class="sq-subj-name-box">
           <div class="sq-name-ambient-glow"></div>
-          <h3 class="sq-subj-name">Vật lí</h3>
+          <div class="sq-subj-swap-wrap">
+            <h3 class="sq-subj-name">Vật lí</h3>
+            <div class="sq-subj-count-box">
+              <svg class="sq-count-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              <span class="sq-count-text">1 Đề thi</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -134,7 +146,7 @@ document.addEventListener('DOMContentLoaded', checkSupabasePortal);
     </a>
 
     <!-- 3. MÔN HÓA HỌC -->
-    <a href="pages/hoa-hoc.html" class="square-subject-card card-hoa-hoc" title="Vào ôn tập môn Hóa học">
+    <a href="pages/hoa-hoc.html" class="square-subject-card card-hoa-hoc" data-subject="hoa" title="Vào ôn tập môn Hóa học">
       <div class="sq-card-top">
         <span class="sq-subj-grade">LỚP 12</span>
       </div>
@@ -142,7 +154,13 @@ document.addEventListener('DOMContentLoaded', checkSupabasePortal);
       <div class="sq-card-center">
         <div class="sq-subj-name-box">
           <div class="sq-name-ambient-glow"></div>
-          <h3 class="sq-subj-name">Hóa học</h3>
+          <div class="sq-subj-swap-wrap">
+            <h3 class="sq-subj-name">Hóa học</h3>
+            <div class="sq-subj-count-box">
+              <svg class="sq-count-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              <span class="sq-count-text">1 Đề thi</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -155,7 +173,7 @@ document.addEventListener('DOMContentLoaded', checkSupabasePortal);
     </a>
 
     <!-- 4. MÔN SINH HỌC -->
-    <a href="pages/sinh-hoc.html" class="square-subject-card card-sinh-hoc" title="Vào ôn tập môn Sinh học">
+    <a href="pages/sinh-hoc.html" class="square-subject-card card-sinh-hoc" data-subject="sinh" title="Vào ôn tập môn Sinh học">
       <div class="sq-card-top">
         <span class="sq-subj-grade">LỚP 12</span>
       </div>
@@ -163,7 +181,13 @@ document.addEventListener('DOMContentLoaded', checkSupabasePortal);
       <div class="sq-card-center">
         <div class="sq-subj-name-box">
           <div class="sq-name-ambient-glow"></div>
-          <h3 class="sq-subj-name">Sinh học</h3>
+          <div class="sq-subj-swap-wrap">
+            <h3 class="sq-subj-name">Sinh học</h3>
+            <div class="sq-subj-count-box">
+              <svg class="sq-count-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              <span class="sq-count-text">1 Đề thi</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -176,7 +200,7 @@ document.addEventListener('DOMContentLoaded', checkSupabasePortal);
     </a>
 
     <!-- 5. MÔN TIN HỌC -->
-    <a href="pages/tin-hoc.html" class="square-subject-card card-tin-hoc" title="Vào ôn tập môn Tin học">
+    <a href="pages/tin-hoc.html" class="square-subject-card card-tin-hoc" data-subject="tinhoc" title="Vào ôn tập môn Tin học">
       <div class="sq-card-top">
         <span class="sq-subj-grade">LỚP 12</span>
       </div>
@@ -184,7 +208,13 @@ document.addEventListener('DOMContentLoaded', checkSupabasePortal);
       <div class="sq-card-center">
         <div class="sq-subj-name-box">
           <div class="sq-name-ambient-glow"></div>
-          <h3 class="sq-subj-name">Tin học</h3>
+          <div class="sq-subj-swap-wrap">
+            <h3 class="sq-subj-name">Tin học</h3>
+            <div class="sq-subj-count-box">
+              <svg class="sq-count-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              <span class="sq-count-text">1 Đề thi</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -197,7 +227,7 @@ document.addEventListener('DOMContentLoaded', checkSupabasePortal);
     </a>
 
     <!-- 6. MÔN LỊCH SỬ -->
-    <a href="pages/lich-su.html" class="square-subject-card card-lich-su" title="Vào ôn tập môn Lịch Sử">
+    <a href="pages/lich-su.html" class="square-subject-card card-lich-su" data-subject="lichsu" title="Vào ôn tập môn Lịch Sử">
       <div class="sq-card-top">
         <span class="sq-subj-grade">LỚP 12</span>
       </div>
@@ -205,7 +235,13 @@ document.addEventListener('DOMContentLoaded', checkSupabasePortal);
       <div class="sq-card-center">
         <div class="sq-subj-name-box">
           <div class="sq-name-ambient-glow"></div>
-          <h3 class="sq-subj-name">Lịch sử</h3>
+          <div class="sq-subj-swap-wrap">
+            <h3 class="sq-subj-name">Lịch sử</h3>
+            <div class="sq-subj-count-box">
+              <svg class="sq-count-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              <span class="sq-count-text">1 Đề thi</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -294,6 +330,59 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  
+  // Cập nhật số lượng đề thi động cho 6 môn học khi hover hoặc tải trang
+  function updateSubjectExamCounts() {
+    const data = window.KEDU_DATABASE_DATA;
+    const topics = (data && Array.isArray(data.topics)) ? data.topics : [];
+
+    const counts = {
+      toan: 1,
+      vatli: 1,
+      hoa: 1,
+      sinh: 1,
+      tinhoc: 1,
+      lichsu: 1
+    };
+
+    topics.forEach(t => {
+      if (t.subject_id) {
+        counts[t.subject_id] = (counts[t.subject_id] || 0) + 1;
+      }
+    });
+
+    const client = window.getSupabaseClient ? window.getSupabaseClient() : null;
+    if (client) {
+      client.from('topics').select('subject_id').then(({ data: sbTopics, error }) => {
+        if (!error && Array.isArray(sbTopics) && sbTopics.length > 0) {
+          const sbCounts = {};
+          sbTopics.forEach(t => {
+            if (t.subject_id) sbCounts[t.subject_id] = (sbCounts[t.subject_id] || 0) + 1;
+          });
+          Object.keys(sbCounts).forEach(s => {
+            counts[s] = sbCounts[s];
+          });
+          applyCounts(counts);
+        }
+      }).catch(() => {});
+    }
+
+    applyCounts(counts);
+  }
+
+  function applyCounts(counts) {
+    document.querySelectorAll('.square-subject-card[data-subject]').forEach(card => {
+      const subj = card.getAttribute('data-subject');
+      const count = counts[subj] !== undefined ? counts[subj] : 1;
+      const countEl = card.querySelector('.sq-count-text');
+      if (countEl) {
+        countEl.textContent = `${count} Đề thi`;
+      }
+    });
+  }
+
+  updateSubjectExamCounts();
+
   refreshUserDashboard();
   window.addEventListener("storage", refreshUserDashboard);
 
@@ -303,6 +392,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 <script src="js/quiz-history.js"></script>
+<script src="database/bundled-data.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/page-loader.js"></script>
 </body>
