@@ -1017,6 +1017,9 @@
       <!-- 1. MODAL ĐĂNG NHẬP RIÊNG BIỆT -->
       <div class="auth-modal-overlay" id="loginModal" aria-hidden="true">
         <div class="auth-modal-card" role="dialog" aria-modal="true" aria-labelledby="loginModalTitle">
+          <div class="auth-card-progressbar" id="loginProgressBar" aria-hidden="true">
+            <div class="auth-progressbar-indicator"></div>
+          </div>
           <button class="auth-modal-close" id="loginModalCloseBtn" type="button" title="Đóng cửa sổ" aria-label="Đóng cửa sổ">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
@@ -1026,7 +1029,7 @@
               <img src="${AUTH_BADGE_LOGO_PATH}" alt="KEdu Logo" class="auth-modal-logo">
             </div>
             <h3 class="auth-modal-title" id="loginModalTitle">Đăng Nhập Tài Khoản</h3>
-            <p class="auth-modal-subtitle">Truy cập ngân hàng ôn luyện và làm bài thi THPT 2026</p>
+            <p class="auth-modal-subtitle">Truy cập ngân hàng ôn luyện và làm bài thi trực tuyến</p>
           </div>
 
           <div class="auth-modal-body">
@@ -1084,6 +1087,9 @@
       <!-- 2. MODAL ĐĂNG KÝ RIÊNG BIỆT -->
       <div class="auth-modal-overlay" id="registerModal" aria-hidden="true">
         <div class="auth-modal-card" role="dialog" aria-modal="true" aria-labelledby="registerModalTitle">
+          <div class="auth-card-progressbar" id="registerProgressBar" aria-hidden="true">
+            <div class="auth-progressbar-indicator"></div>
+          </div>
           <button class="auth-modal-close" id="registerModalCloseBtn" type="button" title="Đóng cửa sổ" aria-label="Đóng cửa sổ">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
@@ -1093,7 +1099,7 @@
               <img src="${AUTH_BADGE_LOGO_PATH}" alt="KEdu Logo" class="auth-modal-logo">
             </div>
             <h3 class="auth-modal-title" id="registerModalTitle">Tạo Tài Khoản Học Viên</h3>
-            <p class="auth-modal-subtitle">Khởi tạo tài khoản ôn luyện và làm bài thi THPT 2026 miễn phí</p>
+            <p class="auth-modal-subtitle">Khởi tạo tài khoản ôn luyện và làm bài thi trực tuyến miễn phí</p>
           </div>
 
           <div class="auth-modal-body">
@@ -1173,6 +1179,9 @@
       <!-- 3. MODAL ĐỔI MẬT KHẨU RIÊNG BIỆT -->
       <div class="auth-modal-overlay" id="changePasswordModal" aria-hidden="true">
         <div class="auth-modal-card" role="dialog" aria-modal="true" aria-labelledby="changePasswordModalTitle">
+          <div class="auth-card-progressbar" id="changePasswordProgressBar" aria-hidden="true">
+            <div class="auth-progressbar-indicator"></div>
+          </div>
           <button class="auth-modal-close" id="changePasswordModalCloseBtn" type="button" title="Đóng cửa sổ" aria-label="Đóng cửa sổ">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
@@ -1249,6 +1258,9 @@
       <!-- MODAL KÍCH HOẠT MÔN HỌC BẰNG KEY DÀNH CHO USER -->
       <div class="auth-modal-overlay" id="activateKeyModal" aria-hidden="true">
         <div class="auth-modal-card" role="dialog" aria-modal="true" style="max-width: 440px;">
+          <div class="auth-card-progressbar" id="activateKeyProgressBar" aria-hidden="true">
+            <div class="auth-progressbar-indicator"></div>
+          </div>
           <button class="auth-modal-close" id="activateKeyModalCloseBtn" type="button" title="Đóng cửa sổ" aria-label="Đóng cửa sổ">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
@@ -1301,7 +1313,7 @@
                   <span>Bảng Quản Trị Hệ Thống</span>
                   <span class="admin-header-badge">Admin Center</span>
                 </h2>
-                <p class="admin-header-desc">Quản lý người dùng, bản quyền ôn luyện & ngân hàng đề thi THPT 2026</p>
+                <p class="admin-header-desc">Quản lý người dùng, bản quyền ôn luyện & ngân hàng đề thi trực tuyến</p>
               </div>
             </div>
 
@@ -1762,20 +1774,64 @@
       });
     }
 
-    function setBtnLoading(btn, isLoading, loadingText = "Đang xử lý...") {
+    function setBtnLoading(btn, isLoading, loadingText = "Đang xử lý...", progressBarId = null, formElement = null) {
       if (!btn) return;
+      const pBar = progressBarId ? document.getElementById(progressBarId) : null;
+
       if (isLoading) {
-        btn.dataset.originalHtml = btn.innerHTML;
+        if (!btn.dataset.originalHtml) {
+          btn.dataset.originalHtml = btn.innerHTML;
+        }
         btn.disabled = true;
+        btn.setAttribute("aria-busy", "true");
+        btn.classList.remove("is-success");
         btn.classList.add("is-loading");
-        btn.innerHTML = `<span class="auth-btn-spinner" aria-hidden="true"></span><span>${escapeHTML(loadingText)}</span>`;
+        btn.innerHTML = `
+          <svg class="auth-btn-spinner-svg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle class="spinner-track" cx="12" cy="12" r="10" stroke-width="3"/>
+            <path class="spinner-head" d="M12 2a10 10 0 0 1 10 10" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+          <span class="auth-btn-label">${escapeHTML(loadingText)}</span>
+        `;
+        if (pBar) pBar.classList.add("is-active");
+        if (formElement) formElement.classList.add("is-submitting");
       } else {
         btn.disabled = false;
+        btn.setAttribute("aria-busy", "false");
         btn.classList.remove("is-loading");
-        if (btn.dataset.originalHtml) {
+        if (pBar) pBar.classList.remove("is-active");
+        if (formElement) formElement.classList.remove("is-submitting");
+        if (btn.dataset.originalHtml && !btn.classList.contains("is-success")) {
           btn.innerHTML = btn.dataset.originalHtml;
         }
       }
+    }
+
+    function setBtnSuccess(btn, successText = "Thành công!", progressBarId = null) {
+      if (!btn) return;
+      const pBar = progressBarId ? document.getElementById(progressBarId) : null;
+      if (pBar) pBar.classList.remove("is-active");
+
+      btn.disabled = true;
+      btn.setAttribute("aria-busy", "false");
+      btn.classList.remove("is-loading");
+      btn.classList.add("is-success");
+      btn.innerHTML = `
+        <svg class="auth-btn-check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span class="auth-btn-label">${escapeHTML(successText)}</span>
+      `;
+    }
+
+    function triggerCardShake(cardElement) {
+      if (!cardElement) return;
+      cardElement.classList.remove("shake");
+      void cardElement.offsetWidth;
+      cardElement.classList.add("shake");
+      setTimeout(() => {
+        cardElement.classList.remove("shake");
+      }, 500);
     }
 
     // Dynamic Password Strength & Match Checking
@@ -2168,21 +2224,43 @@
       e.preventDefault();
       hideAlert();
       const submitBtn = document.getElementById("btnLoginSubmit");
-      setBtnLoading(submitBtn, true, "Đang đăng nhập...");
+      const card = formLogin.closest(".auth-modal-card");
+      setBtnLoading(submitBtn, true, "Đang xác thực thông tin...", "loginProgressBar", formLogin);
 
       const username = document.getElementById("loginUsername").value;
       const password = document.getElementById("loginPassword").value;
       const remember = document.getElementById("loginRemember").checked;
 
+      const startTime = Date.now();
       const res = await login({ username, password, remember });
-      setBtnLoading(submitBtn, false);
+
+      // Perceived performance threshold: minimum 600ms to eliminate instant flash
+      const elapsed = Date.now() - startTime;
+      if (elapsed < 600) {
+        await new Promise(r => setTimeout(r, 600 - elapsed));
+      }
 
       if (!res.success) {
+        setBtnLoading(submitBtn, false, "", "loginProgressBar", formLogin);
         showAlert(res.message, "error", "loginAlertBox");
+        triggerCardShake(card);
       } else {
+        setBtnSuccess(submitBtn, "Đăng nhập thành công!", "loginProgressBar");
         showAlert(res.message, "success", "loginAlertBox");
         showToast(res.message, "success");
-        setTimeout(() => closeAllAuthModals(), 600);
+        setTimeout(() => {
+          closeAllAuthModals();
+          setTimeout(() => {
+            if (submitBtn) {
+              submitBtn.classList.remove("is-success");
+              if (submitBtn.dataset.originalHtml) {
+                submitBtn.innerHTML = submitBtn.dataset.originalHtml;
+              }
+              submitBtn.disabled = false;
+              submitBtn.setAttribute("aria-busy", "false");
+            }
+          }, 300);
+        }, 700);
       }
     });
 
@@ -2191,21 +2269,43 @@
       e.preventDefault();
       hideAlert();
       const submitBtn = document.getElementById("btnRegisterSubmit");
-      setBtnLoading(submitBtn, true, "Đang tạo tài khoản...");
+      const card = formRegister.closest(".auth-modal-card");
+      setBtnLoading(submitBtn, true, "Đang khởi tạo tài khoản...", "registerProgressBar", formRegister);
 
       const username = document.getElementById("regUsername").value;
       const password = document.getElementById("regPassword").value;
       const confirmPassword = document.getElementById("regConfirmPassword").value;
 
+      const startTime = Date.now();
       const res = await register({ username, password, confirmPassword });
-      setBtnLoading(submitBtn, false);
+
+      // Perceived performance threshold: minimum 650ms to eliminate instant flash
+      const elapsed = Date.now() - startTime;
+      if (elapsed < 650) {
+        await new Promise(r => setTimeout(r, 650 - elapsed));
+      }
 
       if (!res.success) {
+        setBtnLoading(submitBtn, false, "", "registerProgressBar", formRegister);
         showAlert(res.message, "error", "registerAlertBox");
+        triggerCardShake(card);
       } else {
+        setBtnSuccess(submitBtn, "Tạo tài khoản thành công!", "registerProgressBar");
         showAlert(res.message, "success", "registerAlertBox");
         showToast(res.message, "success");
-        setTimeout(() => closeAllAuthModals(), 800);
+        setTimeout(() => {
+          closeAllAuthModals();
+          setTimeout(() => {
+            if (submitBtn) {
+              submitBtn.classList.remove("is-success");
+              if (submitBtn.dataset.originalHtml) {
+                submitBtn.innerHTML = submitBtn.dataset.originalHtml;
+              }
+              submitBtn.disabled = false;
+              submitBtn.setAttribute("aria-busy", "false");
+            }
+          }, 300);
+        }, 800);
       }
     });
 
@@ -2214,21 +2314,41 @@
       e.preventDefault();
       hideAlert();
       const submitBtn = document.getElementById("btnChangePasswordSubmit");
-      setBtnLoading(submitBtn, true, "Đang cập nhật...");
+      const card = formChangePassword.closest(".auth-modal-card");
+      setBtnLoading(submitBtn, true, "Đang cập nhật mật khẩu...", "changePasswordProgressBar", formChangePassword);
 
       const currentPassword = document.getElementById("changeOldPassword").value;
       const newPassword = document.getElementById("changeNewPassword").value;
       const confirmNewPassword = document.getElementById("changeConfirmNewPassword").value;
 
+      const startTime = Date.now();
       const res = await changePassword({ currentPassword, newPassword, confirmNewPassword });
-      setBtnLoading(submitBtn, false);
+      const elapsed = Date.now() - startTime;
+      if (elapsed < 600) {
+        await new Promise(r => setTimeout(r, 600 - elapsed));
+      }
 
       if (!res.success) {
+        setBtnLoading(submitBtn, false, "", "changePasswordProgressBar", formChangePassword);
         showAlert(res.message, "error", "changePasswordAlertBox");
+        triggerCardShake(card);
       } else {
+        setBtnSuccess(submitBtn, "Cập nhật thành công!", "changePasswordProgressBar");
         showAlert(res.message, "success", "changePasswordAlertBox");
         showToast("Đổi mật khẩu thành công!", "success");
-        setTimeout(() => closeAllAuthModals(), 800);
+        setTimeout(() => {
+          closeAllAuthModals();
+          setTimeout(() => {
+            if (submitBtn) {
+              submitBtn.classList.remove("is-success");
+              if (submitBtn.dataset.originalHtml) {
+                submitBtn.innerHTML = submitBtn.dataset.originalHtml;
+              }
+              submitBtn.disabled = false;
+              submitBtn.setAttribute("aria-busy", "false");
+            }
+          }, 300);
+        }, 800);
       }
     });
 
@@ -2236,18 +2356,39 @@
     formActivateKey?.addEventListener("submit", async (e) => {
       e.preventDefault();
       const submitBtn = document.getElementById("btnSubmitActivateKey");
-      setBtnLoading(submitBtn, true, "Đang kích hoạt...");
+      const card = formActivateKey.closest(".auth-modal-card");
+      setBtnLoading(submitBtn, true, "Đang kích hoạt key...", "activateKeyProgressBar", formActivateKey);
 
       const input = document.getElementById("inputLicenseKey");
       const code = input ? input.value : "";
+      
+      const startTime = Date.now();
       const res = await activateLicenseKey(code);
-      setBtnLoading(submitBtn, false);
+      const elapsed = Date.now() - startTime;
+      if (elapsed < 600) {
+        await new Promise(r => setTimeout(r, 600 - elapsed));
+      }
 
       if (!res.success) {
+        setBtnLoading(submitBtn, false, "", "activateKeyProgressBar", formActivateKey);
+        triggerCardShake(card);
         alert(res.message);
       } else {
+        setBtnSuccess(submitBtn, "Kích hoạt thành công!", "activateKeyProgressBar");
         showToast(res.message, "success");
-        closeActivateKeyModal();
+        setTimeout(() => {
+          closeActivateKeyModal();
+          setTimeout(() => {
+            if (submitBtn) {
+              submitBtn.classList.remove("is-success");
+              if (submitBtn.dataset.originalHtml) {
+                submitBtn.innerHTML = submitBtn.dataset.originalHtml;
+              }
+              submitBtn.disabled = false;
+              submitBtn.setAttribute("aria-busy", "false");
+            }
+          }, 300);
+        }, 700);
       }
     });
   }
@@ -2283,6 +2424,17 @@
       alertBox.className = "auth-alert";
       alertBox.innerHTML = "";
     }
+    const btn = document.getElementById("btnLoginSubmit");
+    if (btn && btn.dataset.originalHtml) {
+      btn.innerHTML = btn.dataset.originalHtml;
+      btn.disabled = false;
+      btn.classList.remove("is-loading", "is-success");
+      btn.setAttribute("aria-busy", "false");
+    }
+    const form = document.getElementById("formLogin");
+    if (form) form.classList.remove("is-submitting");
+    const pBar = document.getElementById("loginProgressBar");
+    if (pBar) pBar.classList.remove("is-active");
     setTimeout(() => document.getElementById("loginUsername")?.focus(), 150);
   }
 
@@ -2298,6 +2450,17 @@
       alertBox.className = "auth-alert";
       alertBox.innerHTML = "";
     }
+    const btn = document.getElementById("btnRegisterSubmit");
+    if (btn && btn.dataset.originalHtml) {
+      btn.innerHTML = btn.dataset.originalHtml;
+      btn.disabled = false;
+      btn.classList.remove("is-loading", "is-success");
+      btn.setAttribute("aria-busy", "false");
+    }
+    const form = document.getElementById("formRegister");
+    if (form) form.classList.remove("is-submitting");
+    const pBar = document.getElementById("registerProgressBar");
+    if (pBar) pBar.classList.remove("is-active");
 
     // Reset password strength bars
     const bars = [document.getElementById("pwdBar1"), document.getElementById("pwdBar2"), document.getElementById("pwdBar3"), document.getElementById("pwdBar4")];
