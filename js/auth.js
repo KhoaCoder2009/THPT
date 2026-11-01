@@ -462,6 +462,13 @@
     dispatchAuthEvent("login", sessionData);
     renderHeaderAuthUI();
     checkSubjectAccessOnPage();
+
+    // Tự động kéo và đồng bộ lịch sử bài làm từ Cloud Supabase theo tài khoản
+    if (window.KeduQuizHistory && typeof window.KeduQuizHistory.syncWithCloud === "function") {
+      setTimeout(() => {
+        window.KeduQuizHistory.syncWithCloud(false).catch(() => {});
+      }, 300);
+    }
   }
 
   function clearSession() {
@@ -3601,6 +3608,14 @@
     injectAuthModal();
     renderHeaderAuthUI();
     checkSubjectAccessOnPage();
+
+    // Tự động đồng bộ lịch sử bài làm từ Cloud Supabase nếu đã đăng nhập tài khoản
+    const cur = getCurrentUser();
+    if (cur && cur.username && window.KeduQuizHistory && typeof window.KeduQuizHistory.syncWithCloud === "function") {
+      setTimeout(() => {
+        window.KeduQuizHistory.syncWithCloud(false).catch(() => {});
+      }, 500);
+    }
   }
 
   if (document.readyState === "loading") {

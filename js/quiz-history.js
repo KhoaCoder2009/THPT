@@ -122,23 +122,10 @@
       list.unshift(attempt);
       saveRawHistory(list);
 
-      // 2. Đồng bộ tùy chọn lên Supabase (chạy ngầm không ảnh hưởng UI)
-      try {
-        const client = window.getSupabaseClient ? window.getSupabaseClient() : null;
-        if (client) {
-          client.from("quiz_results").insert([{
-            subject_id: attempt.subjectId,
-            topic_id: attempt.topicId,
-            mode: attempt.mode,
-            score: attempt.score,
-            total: attempt.totalCount,
-            percentage: attempt.percentage,
-            student_name: attempt.username
-          }]).then(({ error }) => {
-            if (error) console.log("Ghi nhận Supabase:", error.message);
-          }).catch(() => {});
-        }
-      } catch (_) {}
+      // 2. Kích hoạt đồng bộ đám mây 2 chiều (Cloud <-> Local) ngầm trong nền
+      setTimeout(() => {
+        KeduQuizHistory.syncWithCloud(false).catch(() => {});
+      }, 100);
 
       // 3. Dispatch sự kiện thông báo cho toàn hệ thống
       if (typeof window !== "undefined" && typeof window.dispatchEvent === "function") {
@@ -148,6 +135,197 @@
       }
 
       return attempt;
+    },
+
+    /**
+     * Đồng bộ lịch sử bài làm 2 chiều giữa LocalStorage và Supabase Cloud
+     * Đảm bảo học sinh dùng trên máy tính hay điện thoại đều có cùng lịch sử
+     */
+    syncWithCloud: async function (manualTrigger = false) {
+      const client = window.getSupabaseClient ? window.getSupabaseClient() : null;
+      const statusEl = document.getElementById("qhSyncStatus");
+      const setStatus = (msg) => {
+        if (statusEl) statusEl.innerHTML = msg;
+      };
+
+      if (!client) {
+        if (manualTrigger) setStatus("⚠️ Chưa kết nối Supabase (chạy ngoại tuyến)");
+        return { success: false, reason: "no_client" };
+      }
+
+      const currentUser = window.KeduAuth && typeof window.KeduAuth.getCurrentUser === "function"
+        ? window.KeduAuth.getCurrentUser()
+        : null;
+
+      if (!currentUser || !currentUser.username) {
+        if (manualTrigger) setStatus("ℹ️ Đăng nhập để đồng bộ lịch sử");
+        return { success: false, reason: "not_logged_in" };
+      }
+
+      setStatus("🔄 Đang đồng bộ với Cloud...");
+
+      try {
+        let localList = getRawHistory();
+        let cloudAttempts = [];
+        let useTableQuizResults = false;
+
+        // 1. Thử kéo từ bảng quiz_results trước
+        try {
+          const { data, error } = await client
+            .from("quiz_results")
+            .select("*")
+            .eq("username", currentUser.username)
+            .order("created_at", { ascending: false })
+            .limit(100);
+
+          if (!error && Array.isArray(data)) {
+            useTableQuizResults = true;
+            cloudAttempts = data.map(row => ({
+              id: row.id || ("att_cloud_" + new Date(row.created_at).getTime()),
+              createdAt: row.created_at,
+              displayTime: formatDateTime(new Date(row.created_at)),
+              username: row.username,
+              userFullName: row.student_name || row.username,
+              subjectId: row.subject_id,
+              subjectName: row.subject_name || row.subject_id,
+              topicId: (row.topic_id || "1").toString(),
+              topicTitle: row.topic_title || "Bộ đề ôn tập",
+              mode: row.mode || "full",
+              modeLabel: row.mode === "full" ? "Trọn bộ 3 phần" : (row.mode === "mc" ? "Phần I • Trắc nghiệm" : (row.mode === "tf" ? "Phần II • Đúng/Sai" : "Phần III • Trả lời ngắn")),
+              score: Number(row.score) || 0,
+              maxScore: Number(row.max_score) || 10.0,
+              correctCount: row.correct_count || 0,
+              totalCount: row.total_count || row.total || 0,
+              wrongCount: row.wrong_count || 0,
+              percentage: row.percentage || 0,
+              durationSeconds: row.duration_seconds || 0,
+              durationFormatted: formatDuration(row.duration_seconds || 0),
+              partBreakdown: row.part_breakdown || { mc: { earned: 0, max: 0 }, tf: { earned: 0, max: 0 }, sa: { earned: 0, max: 0 } },
+              questionsDetail: Array.isArray(row.questions_detail) ? row.questions_detail : []
+            }));
+          }
+        } catch (_) {}
+
+        // 2. Nếu bảng quiz_results chưa có, dự phòng đồng bộ qua bảng users
+        if (!useTableQuizResults) {
+          try {
+            const { data: userData, error: userErr } = await client
+              .from("users")
+              .select("email")
+              .eq("username", currentUser.username)
+              .maybeSingle();
+
+            if (!userErr && userData && userData.email && typeof userData.email === "string" && userData.email.startsWith("kedu_h:")) {
+              const rawJson = userData.email.substring(7);
+              const parsed = JSON.parse(rawJson);
+              if (Array.isArray(parsed)) {
+                cloudAttempts = parsed;
+              }
+            }
+          } catch (_) {}
+        }
+
+        // 3. Hợp nhất (Merge) 2 chiều không trùng lặp
+        const localMap = new Map();
+        localList.forEach(item => {
+          const key = item.id || `${item.subjectId}_${item.topicId}_${item.score}_${Math.floor(new Date(item.createdAt).getTime() / 60000)}`;
+          localMap.set(key, item);
+        });
+
+        let newFromCloudCount = 0;
+        cloudAttempts.forEach(cItem => {
+          const key = cItem.id || `${cItem.subjectId}_${cItem.topicId}_${cItem.score}_${Math.floor(new Date(cItem.createdAt).getTime() / 60000)}`;
+          if (!localMap.has(key)) {
+            localMap.set(key, cItem);
+            newFromCloudCount++;
+          }
+        });
+
+        const mergedList = Array.from(localMap.values());
+        mergedList.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        saveRawHistory(mergedList);
+
+        // 4. Đẩy (Push) ngược lại lên Cloud để các thiết bị khác cũng có
+        const toSyncUp = mergedList.slice(0, 50).map(it => ({
+          id: it.id,
+          createdAt: it.createdAt,
+          displayTime: it.displayTime,
+          username: currentUser.username,
+          userFullName: it.userFullName || currentUser.fullName || currentUser.username,
+          subjectId: it.subjectId,
+          subjectName: it.subjectName,
+          topicId: it.topicId,
+          topicTitle: it.topicTitle,
+          mode: it.mode,
+          modeLabel: it.modeLabel,
+          score: it.score,
+          maxScore: it.maxScore,
+          correctCount: it.correctCount,
+          totalCount: it.totalCount,
+          wrongCount: it.wrongCount,
+          percentage: it.percentage,
+          durationSeconds: it.durationSeconds,
+          durationFormatted: it.durationFormatted,
+          partBreakdown: it.partBreakdown
+        }));
+
+        if (useTableQuizResults) {
+          const existingIds = new Set(cloudAttempts.map(c => c.id));
+          const rowsToInsert = mergedList
+            .filter(it => !existingIds.has(it.id))
+            .map(it => ({
+              id: it.id,
+              username: currentUser.username,
+              student_name: it.userFullName,
+              subject_id: it.subjectId,
+              subject_name: it.subjectName,
+              topic_id: it.topicId,
+              topic_title: it.topicTitle,
+              mode: it.mode,
+              score: it.score,
+              max_score: it.maxScore || 10.0,
+              correct_count: it.correctCount,
+              total_count: it.totalCount,
+              wrong_count: it.wrongCount,
+              percentage: it.percentage,
+              duration_seconds: it.durationSeconds || 0,
+              part_breakdown: it.partBreakdown || {},
+              questions_detail: it.questionsDetail || [],
+              created_at: it.createdAt
+            }));
+
+          if (rowsToInsert.length > 0) {
+            client.from("quiz_results").insert(rowsToInsert).catch(() => {});
+          }
+        }
+
+        // Luôn cập nhật bản sao backup vào bảng users
+        const cloudPayload = "kedu_h:" + JSON.stringify(toSyncUp);
+        await client
+          .from("users")
+          .update({ email: cloudPayload, updated_at: new Date().toISOString() })
+          .eq("username", currentUser.username);
+
+        setStatus(`🟢 Đã đồng bộ Cloud (${mergedList.length} bài)`);
+
+        // Tự động render lại modal nếu đang mở
+        const overlay = document.getElementById("quizHistoryModalOverlay");
+        if (overlay && overlay.classList.contains("active")) {
+          renderHistoryList();
+        }
+
+        if (typeof window !== "undefined" && typeof window.dispatchEvent === "function") {
+          try {
+            window.dispatchEvent(new CustomEvent("kedu:quiz-history-synced", { detail: { count: mergedList.length } }));
+          } catch (_) {}
+        }
+
+        return { success: true, count: mergedList.length, newFromCloud: newFromCloudCount };
+      } catch (err) {
+        console.warn("Lỗi đồng bộ lịch sử Cloud:", err);
+        setStatus("⚠️ Đồng bộ Cloud tạm thời gián đoạn");
+        return { success: false, error: err.message };
+      }
     },
 
     /**
@@ -412,6 +590,11 @@
       renderHistoryList();
       overlay.classList.add("active");
       document.body.style.overflow = "hidden";
+
+      // Tự động kiểm tra và đồng bộ hai chiều với Cloud Supabase ngầm
+      setTimeout(() => {
+        KeduQuizHistory.syncWithCloud(false).catch(() => {});
+      }, 50);
     },
 
     openHistoryModal: function (defaultSubjectId = null, defaultTopicId = null) {
@@ -969,6 +1152,41 @@
         font-size: 11.5px;
       }
 
+      /* CLOUD SYNC BAR */
+      .qh-sync-badge-wrap {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 12px;
+      }
+      .qh-sync-status {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: #475569;
+      }
+      .btn-qh-sync {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        color: #1d4ed8;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 11.5px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.15s ease;
+      }
+      .btn-qh-sync:hover {
+        background: #dbeafe;
+        border-color: #93c5fd;
+      }
+
       /* LIST BODY */
       .qh-body {
         padding: 20px 24px;
@@ -1293,7 +1511,16 @@
               <div class="qh-header-sub">Hệ thống tự động lưu giữ chi tiết kết quả, thời gian và đáp án từng bài thi</div>
             </div>
           </div>
-          <button type="button" class="qh-btn-close" id="btnQhClose" title="Đóng">✕</button>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div class="qh-sync-badge-wrap">
+              <span class="qh-sync-status" id="qhSyncStatus">🟢 Sẵn sàng</span>
+              <button type="button" class="btn-qh-sync" id="btnQhSyncCloud" title="Nhấn để kiểm tra và đồng bộ bài thi mới nhất giữa các thiết bị qua Cloud Supabase">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                <span>Đồng bộ Cloud</span>
+              </button>
+            </div>
+            <button type="button" class="qh-btn-close" id="btnQhClose" title="Đóng">✕</button>
+          </div>
         </div>
 
         <!-- STATS BAR -->
@@ -1415,6 +1642,9 @@
     document.body.appendChild(detailWrap);
 
     // Wire Event Listeners
+    document.getElementById("btnQhSyncCloud")?.addEventListener("click", () => {
+      KeduQuizHistory.syncWithCloud(true);
+    });
     document.getElementById("btnQhClose")?.addEventListener("click", KeduQuizHistory.closeModal);
     document.getElementById("btnQhCloseFooter")?.addEventListener("click", KeduQuizHistory.closeModal);
     modalWrap.addEventListener("click", (e) => {
