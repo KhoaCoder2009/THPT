@@ -545,7 +545,13 @@ function renderDashboard() {
               ${partsSummary ? `<span class="h-count-sub">${partsSummary}</span>` : ''}
             </div>
 
-            ${historyBadgeHtml}
+            <div class="h-card-meta-row" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:6px;">
+              ${historyBadgeHtml}
+              <button type="button" class="btn-card-leaderboard" onclick="event.stopPropagation(); if(window.openLeaderboardModal) window.openLeaderboardModal(window.CURRENT_SUBJECT_ID, '${set.id}');" title="Xem bảng xếp hạng thí sinh điểm cao &amp; nhanh nhất của bộ đề này">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                <span>Bảng xếp hạng đề</span>
+              </button>
+            </div>
           </div>
 
           <!-- 3. Nút hành động: Admin quản lý đề VS Học viên luyện thi (Làm trọn bộ hoặc tách riêng từng phần) -->
@@ -1070,10 +1076,14 @@ function updateProgress() {
   if (progressBarEl) progressBarEl.style.width = `${pct}%`;
 }
 
-/* Save Result to Supabase */
-async function recordQuizResultToSupabase(score, total, pct) {
+/* Save Result to Supabase (Bao gồm điểm số và thời gian làm bài để xếp hạng) */
+async function recordQuizResultToSupabase(score, total, pct, durationSec = 0) {
   const client = window.getSupabaseClient ? window.getSupabaseClient() : null;
   if (!client) return;
+
+  const currentUser = window.KeduAuth && typeof window.KeduAuth.getCurrentUser === "function"
+    ? window.KeduAuth.getCurrentUser()
+    : null;
 
   try {
     const record = {
@@ -1081,9 +1091,14 @@ async function recordQuizResultToSupabase(score, total, pct) {
       topic_id: (currentSetId || 'all').toString(),
       mode: currentMode,
       score: score,
+      max_score: 10.0,
       total: total,
+      total_count: total,
+      correct_count: currentScore,
       percentage: pct,
-      student_name: 'Học sinh KEdu'
+      duration_seconds: durationSec,
+      username: currentUser?.username || 'khach',
+      student_name: currentUser?.fullName || currentUser?.username || 'Học viên KEdu'
     };
 
     const { data, error } = await client.from('quiz_results').insert([record]);
@@ -1148,11 +1163,12 @@ function renderQuizQuestion() {
     const topicSets = window.TOPIC_SETS || [];
     const currentSetObj = topicSets.find(s => s.id.toString() === currentSetId.toString()) || topicSets[0] || { title: "Chuyên đề" };
 
-    // Record result to Supabase
-    recordQuizResultToSupabase(currentScore, total, pct);
+    const durationSec = quizStartTime ? Math.round((Date.now() - quizStartTime) / 1000) : 0;
+
+    // Record result to Supabase (kèm thời lượng làm bài để xếp hạng)
+    recordQuizResultToSupabase(finalTenScore, total, pct, durationSec);
 
     // Lưu bài làm chi tiết vào KeduQuizHistory
-    const durationSec = quizStartTime ? Math.round((Date.now() - quizStartTime) / 1000) : 0;
     if (window.KeduQuizHistory && typeof window.KeduQuizHistory.saveAttempt === "function") {
       const subjName = (window.KeduQuestionManager ? (window.KeduQuestionManager.getSubjects().find(s => s.id === window.CURRENT_SUBJECT_ID)?.name) : null) || (window.CURRENT_SUBJECT_NAME || "Môn học 12");
       window.KeduQuizHistory.saveAttempt({
@@ -1261,6 +1277,10 @@ function renderQuizQuestion() {
         <div id="supabaseSaveNotice" style="font-size:12.5px; color:var(--dol-green); font-weight:600; margin:4px 0 14px;"></div>
 
         <div class="footer-actions" style="justify-content:center; margin-bottom: 24px; flex-wrap:wrap; gap:10px;">
+          <button class="btn-secondary-action" onclick="if(window.openLeaderboardModal) window.openLeaderboardModal(window.CURRENT_SUBJECT_ID, '${currentSetId}'); else if(window.KeduLeaderboard) window.KeduLeaderboard.openModal(window.CURRENT_SUBJECT_ID, '${currentSetId}');" style="display:inline-flex; align-items:center; gap:6px; color:#b45309; background:#fef3c7; border-color:#fde68a; font-weight:700;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.45 1-1 1H7.5c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h9c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1H15c-.55 0-1-.45-1-1v-2.34"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+            <span>Bảng xếp hạng đề này</span>
+          </button>
           <button class="btn-secondary-action" onclick="if(window.openQuizHistoryModal) window.openQuizHistoryModal(window.CURRENT_SUBJECT_ID, '${currentSetId}'); else if(window.KeduQuizHistory) window.KeduQuizHistory.openModal(window.CURRENT_SUBJECT_ID, '${currentSetId}');" style="display:inline-flex; align-items:center; gap:6px;">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             <span>Xem lịch sử bài thi đề này</span>
