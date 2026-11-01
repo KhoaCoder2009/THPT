@@ -3179,21 +3179,18 @@
                   <span>Lịch sử làm bài</span>
                 </button>
               </li>
-              ${userIsAdmin ? `
-                <li>
-                  <a href="${isSubPage ? 'admin.html' : 'pages/admin.html'}" class="user-dropdown-item-btn item-admin" id="btnAdminOpenPanel" title="Mở Bảng quản trị hệ thống" style="text-decoration:none;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                    <span>Bảng Quản Trị</span>
-                  </a>
-                </li>
-              ` : `
-                <li>
-                  <button type="button" class="user-dropdown-item-btn" id="btnUserOpenActivateKey" title="Kích hoạt mã môn học">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-1.5 1.5L14 9l-1.5-1.5L11 9l-1.5-1.5L8 9l-4.5 4.5a3 3 0 1 0 4.24 4.24L12 13.5l1.5 1.5 1.5-1.5 1.5 1.5 3.5-3.5a3 3 0 0 0-4.24-4.24z"/></svg>
-                    <span>Kích hoạt mã Key</span>
-                  </button>
-                </li>
-              `}
+              <li>
+                <a href="${isSubPage ? 'admin.html' : 'pages/admin.html'}" class="user-dropdown-item-btn item-admin" id="btnAdminOpenPanel" title="Mở Bảng quản trị hệ thống" style="text-decoration:none;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                  <span>Bảng Quản Trị</span>
+                </a>
+              </li>
+              <li>
+                <button type="button" class="user-dropdown-item-btn" id="btnUserOpenActivateKey" title="Kích hoạt mã môn học">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-1.5 1.5L14 9l-1.5-1.5L11 9l-1.5-1.5L8 9l-4.5 4.5a3 3 0 1 0 4.24 4.24L12 13.5l1.5 1.5 1.5-1.5 1.5 1.5 3.5-3.5a3 3 0 0 0-4.24-4.24z"/></svg>
+                  <span>Kích hoạt mã Key</span>
+                </button>
+              </li>
               <li>
                 <button type="button" class="user-dropdown-item-btn" id="btnUserChangePassword">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
