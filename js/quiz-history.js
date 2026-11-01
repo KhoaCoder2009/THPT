@@ -9,6 +9,14 @@
 
   const STORAGE_KEY = "kedu_quiz_history_v1";
   const MAX_HISTORY_ITEMS = 100;
+  let currentViewMode = "grouped"; // "grouped" (Theo bộ đề) | "list" (Từng lượt làm)
+
+  /* Helper: Escape HTML */
+  function escapeHTML(str) {
+    return String(str || "").replace(/[&<>'"]/g, 
+      tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+    );
+  }
 
   /* Helper: Định dạng thời gian Việt Nam */
   function formatDateTime(date) {
@@ -133,7 +141,11 @@
       } catch (_) {}
 
       // 3. Dispatch sự kiện thông báo cho toàn hệ thống
-      window.dispatchEvent(new CustomEvent("kedu:quiz-history-saved", { detail: attempt }));
+      if (typeof window !== "undefined" && typeof window.dispatchEvent === "function") {
+        try {
+          window.dispatchEvent(new CustomEvent("kedu:quiz-history-saved", { detail: attempt }));
+        } catch (_) {}
+      }
 
       return attempt;
     },
@@ -214,16 +226,20 @@
     },
 
     /**
-     * Thống kê tổng quan
+     * Thống kê tổng quan hoặc theo từng bộ đề
+     * Tính toán: Số lượt làm, Điểm cao nhất, Điểm trung bình, Lần gần nhất
      */
-    getStats: function (subjectId = null) {
-      const list = this.getHistory({ subjectId });
+    getStats: function (subjectId = null, topicId = null) {
+      const list = this.getHistory({ subjectId, topicId });
       const totalAttempts = list.length;
       if (totalAttempts === 0) {
         return {
           totalAttempts: 0,
           averageScore: "0.00",
           highestScore: "0.00",
+          lowestScore: "0.00",
+          latestScore: "0.00",
+          latestTime: "",
           totalQuestionsAnswered: 0,
           accuracyRate: 0,
           totalDurationSeconds: 0
@@ -232,6 +248,7 @@
 
       let sumScore = 0;
       let highest = 0;
+      let lowest = 10;
       let totalQ = 0;
       let totalCorrect = 0;
       let totalDuration = 0;
@@ -240,15 +257,21 @@
         const s = Number(a.score) || 0;
         sumScore += s;
         if (s > highest) highest = s;
+        if (s < lowest) lowest = s;
         totalQ += (a.totalCount || 0);
         totalCorrect += (a.correctCount || 0);
         totalDuration += (a.durationSeconds || 0);
       });
 
+      const latest = list[0];
+
       return {
         totalAttempts,
         averageScore: (sumScore / totalAttempts).toFixed(2),
         highestScore: highest.toFixed(2),
+        lowestScore: lowest.toFixed(2),
+        latestScore: (Number(latest?.score) || 0).toFixed(2),
+        latestTime: latest?.displayTime || "",
         totalQuestionsAnswered: totalQ,
         accuracyRate: totalQ > 0 ? Math.round((totalCorrect / totalQ) * 100) : 0,
         totalDurationSeconds: totalDuration
@@ -256,9 +279,122 @@
     },
 
     /**
-     * Mở Modal Lịch sử làm bài
+     * Thống kê gom nhóm theo từng bộ đề (tính điểm cao nhất & điểm trung bình của từng đề)
      */
-    openModal: function (defaultSubjectId = null) {
+    getTopicSummaries: function (subjectId = null, search = "") {
+      const list = this.getHistory({ subjectId, search });
+      const groups = {};
+
+      list.forEach(item => {
+        const sId = item.subjectId || "toan";
+        const tId = String(item.topicId || "1");
+        const key = `${sId}___${tId}`;
+
+        if (!groups[key]) {
+          groups[key] = {
+            key: key,
+            subjectId: sId,
+            subjectName: item.subjectName || sId,
+            topicId: tId,
+            topicTitle: item.topicTitle || "Bộ đề ôn tập",
+            attempts: []
+          };
+        }
+        groups[key].attempts.push(item);
+      });
+
+      const summaries = Object.values(groups).map(g => {
+        const attempts = g.attempts;
+        const count = attempts.length;
+        let sumScore = 0;
+        let highest = 0;
+        let lowest = 10;
+        let totalQ = 0;
+        let totalCorrect = 0;
+        let totalDuration = 0;
+
+        attempts.forEach(a => {
+          const s = Number(a.score) || 0;
+          sumScore += s;
+          if (s > highest) highest = s;
+          if (s < lowest) lowest = s;
+          totalQ += (a.totalCount || 0);
+          totalCorrect += (a.correctCount || 0);
+          totalDuration += (a.durationSeconds || 0);
+        });
+
+        const latest = attempts[0];
+
+        return {
+          key: g.key,
+          subjectId: g.subjectId,
+          subjectName: g.subjectName,
+          topicId: g.topicId,
+          topicTitle: g.topicTitle,
+          totalAttempts: count,
+          averageScore: (sumScore / count).toFixed(2),
+          highestScore: highest.toFixed(2),
+          lowestScore: lowest.toFixed(2),
+          latestScore: (Number(latest?.score) || 0).toFixed(2),
+          latestTime: latest?.displayTime || "",
+          accuracyRate: totalQ > 0 ? Math.round((totalCorrect / totalQ) * 100) : 0,
+          totalDurationSeconds: totalDuration,
+          attempts: attempts
+        };
+      });
+
+      return summaries;
+    },
+
+    /**
+     * Lấy danh sách các bộ đề khả dụng (từ lịch sử hoặc từ trang hiện tại)
+     */
+    getAllTopicsForSubject: function (subjectId = null) {
+      const historyList = getRawHistory();
+      const topicMap = new Map();
+
+      // 1. Quét từ lịch sử làm bài
+      historyList.forEach(item => {
+        if (!subjectId || subjectId === "all" || item.subjectId === subjectId) {
+          const key = `${item.subjectId}___${item.topicId}`;
+          if (!topicMap.has(key)) {
+            topicMap.set(key, {
+              key: key,
+              subjectId: item.subjectId,
+              subjectName: item.subjectName || item.subjectId,
+              topicId: String(item.topicId),
+              topicTitle: item.topicTitle || `Bộ đề #${item.topicId}`
+            });
+          }
+        }
+      });
+
+      // 2. Bổ sung từ TOPIC_SETS nếu có
+      if (typeof window !== "undefined" && Array.isArray(window.TOPIC_SETS)) {
+        const curSubj = window.CURRENT_SUBJECT_ID || subjectId;
+        window.TOPIC_SETS.forEach(ts => {
+          if (!subjectId || subjectId === "all" || curSubj === subjectId) {
+            const key = `${curSubj}___${ts.id}`;
+            if (!topicMap.has(key)) {
+              topicMap.set(key, {
+                key: key,
+                subjectId: curSubj,
+                subjectName: window.CURRENT_SUBJECT_NAME || curSubj,
+                topicId: String(ts.id),
+                topicTitle: ts.title || `Bộ đề #${ts.id}`
+              });
+            }
+          }
+        });
+      }
+
+      return Array.from(topicMap.values());
+    },
+
+    /**
+     * Mở Modal Lịch sử làm bài (hỗ trợ mở trực tiếp theo môn và bộ đề)
+     */
+    openModal: function (defaultSubjectId = null, defaultTopicId = null) {
       injectStyles();
       injectModalDOM();
 
@@ -266,15 +402,20 @@
       if (!overlay) return;
 
       const subjFilter = document.getElementById("qhFilterSubject");
-      if (subjFilter && defaultSubjectId) {
-        subjFilter.value = defaultSubjectId;
-      } else if (subjFilter && window.CURRENT_SUBJECT_ID) {
-        subjFilter.value = window.CURRENT_SUBJECT_ID;
+      const targetSubj = defaultSubjectId || (subjFilter && subjFilter.value !== "all" ? subjFilter.value : (window.CURRENT_SUBJECT_ID || "all"));
+      if (subjFilter && targetSubj) {
+        subjFilter.value = targetSubj;
       }
+
+      populateTopicFilter(targetSubj, defaultTopicId || "all");
 
       renderHistoryList();
       overlay.classList.add("active");
       document.body.style.overflow = "hidden";
+    },
+
+    openHistoryModal: function (defaultSubjectId = null, defaultTopicId = null) {
+      this.openModal(defaultSubjectId, defaultTopicId);
     },
 
     /**
@@ -516,6 +657,316 @@
       }
       .qh-search-input:focus {
         border-color: #2563eb;
+      }
+
+      /* VIEW SWITCHER TABS */
+      .qh-controls-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .qh-view-switcher {
+        display: inline-flex;
+        background: #f1f5f9;
+        padding: 3px;
+        border-radius: 9px;
+        border: 1px solid #e2e8f0;
+      }
+      .qh-view-btn {
+        padding: 6px 12px;
+        border-radius: 7px;
+        border: none;
+        background: transparent;
+        color: #64748b;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.15s ease;
+      }
+      .qh-view-btn:hover {
+        color: #0f2657;
+      }
+      .qh-view-btn.active {
+        background: #ffffff;
+        color: #2563eb;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      }
+
+      /* CONTEXT NOTICE BANNER */
+      .qh-context-notice {
+        grid-column: 1 / -1;
+        padding: 9px 14px;
+        border-radius: 10px;
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        color: #1e40af;
+        font-size: 13px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        animation: qhFadeIn 0.2s ease;
+      }
+      @keyframes qhFadeIn {
+        from { opacity: 0; transform: translateY(-4px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* TOPIC GROUP CARD (CHẾ ĐỘ XEM THEO BỘ ĐỀ) */
+      .qh-topic-group-card {
+        background: #ffffff;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 18px 20px;
+        transition: all 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+      }
+      .qh-topic-group-card:hover {
+        border-color: #93c5fd;
+        box-shadow: 0 8px 24px -6px rgba(37, 99, 235, 0.12);
+      }
+      .qh-tg-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+      .qh-tg-title-wrap {
+        flex: 1;
+        min-width: 250px;
+      }
+      .qh-tg-title {
+        font-family: var(--font-heading, "Plus Jakarta Sans", sans-serif);
+        font-size: 16.5px;
+        font-weight: 800;
+        color: #0f2657;
+        margin: 0;
+        line-height: 1.35;
+      }
+      .qh-tg-meta-badge {
+        background: #f1f5f9;
+        color: #475569;
+        font-size: 11.5px;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        border: 1px solid #e2e8f0;
+      }
+      .qh-tg-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+      @media (max-width: 640px) {
+        .qh-tg-kpi-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .qh-tg-kpi-item {
+        border-radius: 10px;
+        padding: 10px 14px;
+        border: 1px solid #e2e8f0;
+        background: #f8fafc;
+      }
+      .qh-tg-kpi-item.high {
+        background: #f0fdf4;
+        border-color: #bbf7d0;
+      }
+      .qh-tg-kpi-item.avg {
+        background: #eff6ff;
+        border-color: #bfdbfe;
+      }
+      .qh-tg-kpi-item.latest {
+        background: #faf5ff;
+        border-color: #e9d5ff;
+      }
+      .qh-tg-kpi-lbl {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin-bottom: 4px;
+      }
+      .qh-tg-kpi-item.high .qh-tg-kpi-lbl { color: #15803d; }
+      .qh-tg-kpi-item.avg .qh-tg-kpi-lbl { color: #1d4ed8; }
+      .qh-tg-kpi-item.latest .qh-tg-kpi-lbl { color: #7e22ce; }
+      .qh-tg-kpi-val {
+        font-family: var(--font-heading, "Plus Jakarta Sans", sans-serif);
+        font-size: 21px;
+        font-weight: 800;
+        line-height: 1.1;
+      }
+      .qh-tg-kpi-item.high .qh-tg-kpi-val { color: #16a34a; }
+      .qh-tg-kpi-item.avg .qh-tg-kpi-val { color: #2563eb; }
+      .qh-tg-kpi-item.latest .qh-tg-kpi-val { color: #9333ea; font-size: 18px; }
+      .qh-tg-kpi-unit {
+        font-size: 12.5px;
+        font-weight: 600;
+        opacity: 0.75;
+      }
+      .qh-tg-kpi-time {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: #7e22ce;
+        display: block;
+        margin-top: 2px;
+      }
+      .qh-tg-accordion-btn {
+        width: 100%;
+        padding: 9px 14px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 9px;
+        font-size: 12.5px;
+        font-weight: 700;
+        color: #334155;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: all 0.15s ease;
+      }
+      .qh-tg-accordion-btn:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+      }
+      .qh-accordion-arrow {
+        transition: transform 0.2s ease;
+      }
+      .qh-tg-accordion-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 8px;
+        padding: 10px;
+        background: #f8fafc;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+      }
+      .qh-tg-nested-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 8px 12px;
+        background: #ffffff;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        font-size: 13px;
+        flex-wrap: wrap;
+      }
+      .qh-tg-nested-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .qh-nested-order {
+        font-size: 11.5px;
+        font-weight: 800;
+        background: #eff6ff;
+        color: #2563eb;
+        padding: 2px 7px;
+        border-radius: 5px;
+      }
+      .qh-nested-time, .qh-nested-dur {
+        color: #64748b;
+        font-size: 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .qh-nested-mode {
+        font-size: 11px;
+        font-weight: 700;
+        background: #fef3c7;
+        color: #92400e;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+      .qh-tg-nested-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .qh-nested-score {
+        font-size: 14px;
+        font-weight: 800;
+      }
+      .qh-nested-score.high { color: #16a34a; }
+      .qh-nested-score.med { color: #2563eb; }
+      .qh-nested-score.low { color: #dc2626; }
+      .qh-nested-pct {
+        font-size: 11.5px;
+        font-weight: 500;
+        color: #64748b;
+        margin-left: 4px;
+      }
+      .btn-mini {
+        padding: 4px 10px;
+        font-size: 11.5px;
+        border-radius: 6px;
+      }
+
+      /* TOPIC RECORD PILL ON ITEM CARD */
+      .qh-topic-record-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11.5px;
+        font-weight: 700;
+        background: #f0fdf4;
+        color: #15803d;
+        border: 1px solid #bbf7d0;
+        padding: 3px 8px;
+        border-radius: 6px;
+        margin-top: 4px;
+      }
+
+      /* SUBJECT CARD HISTORY BADGE */
+      .h-card-history-stats {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 6px;
+        padding: 4px 10px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .h-card-history-stats:hover {
+        background: #eff6ff;
+        border-color: #bfdbfe;
+        transform: translateY(-1px);
+      }
+      .h-stat-pill.high {
+        color: #16a34a;
+        font-weight: 700;
+      }
+      .h-stat-pill.avg {
+        color: #2563eb;
+        font-weight: 700;
+      }
+      .h-stat-pill.count {
+        color: #64748b;
+        font-size: 11.5px;
       }
 
       /* LIST BODY */
@@ -865,6 +1316,8 @@
           </div>
         </div>
 
+        <div id="qhStatsContextNotice" class="qh-context-notice" style="display:none;"></div>
+
         <!-- CONTROLS BAR -->
         <div class="qh-controls-bar">
           <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
@@ -878,11 +1331,26 @@
               <option value="lichsu">Lịch sử 12</option>
             </select>
 
+            <select class="qh-filter-select" id="qhFilterTopic">
+              <option value="all">-- Tất cả bộ đề --</option>
+            </select>
+
             <select class="qh-filter-select" id="qhSortBy">
               <option value="newest">Thời gian: Mới nhất trước</option>
               <option value="highest">Điểm số: Cao xuống thấp</option>
               <option value="lowest">Điểm số: Thấp lên cao</option>
             </select>
+          </div>
+
+          <div class="qh-view-switcher">
+            <button type="button" class="qh-view-tab-btn active" id="btnQhViewByTopic" title="Gom nhóm lịch sử theo từng bộ đề thi">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              <span>Theo bộ đề</span>
+            </button>
+            <button type="button" class="qh-view-tab-btn" id="btnQhViewByList" title="Xem danh sách chi tiết tất cả các lượt làm">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>Từng lượt làm</span>
+            </button>
           </div>
 
           <input type="text" class="qh-search-input" id="qhSearchInput" placeholder="Tìm tên đề thi, bài học...">
@@ -959,8 +1427,30 @@
       if (e.target === detailWrap) KeduQuizHistory.closeDetailModal();
     });
 
-    document.getElementById("qhFilterSubject")?.addEventListener("change", renderHistoryList);
+    document.getElementById("qhFilterSubject")?.addEventListener("change", (e) => {
+      populateTopicFilter(e.target.value, "all");
+      renderHistoryList();
+    });
+    document.getElementById("qhFilterTopic")?.addEventListener("change", renderHistoryList);
     document.getElementById("qhSortBy")?.addEventListener("change", renderHistoryList);
+
+    // Switch View Mode buttons
+    const btnViewTopic = document.getElementById("btnQhViewByTopic");
+    const btnViewList = document.getElementById("btnQhViewByList");
+
+    btnViewTopic?.addEventListener("click", () => {
+      currentViewMode = "grouped";
+      btnViewTopic.classList.add("active");
+      btnViewList?.classList.remove("active");
+      renderHistoryList();
+    });
+
+    btnViewList?.addEventListener("click", () => {
+      currentViewMode = "list";
+      btnViewList.classList.add("active");
+      btnViewTopic?.classList.remove("active");
+      renderHistoryList();
+    });
 
     let searchDebounce = null;
     document.getElementById("qhSearchInput")?.addEventListener("input", () => {
@@ -989,36 +1479,249 @@
     });
   }
 
-  /* Render Danh Sách Lịch Sử */
+  /**
+   * Cập nhật danh sách bộ đề trong dropdown #qhFilterTopic
+   */
+  function populateTopicFilter(selectedSubj = "all", keepSelectedTopic = "all") {
+    const topicSelect = document.getElementById("qhFilterTopic");
+    if (!topicSelect) return;
+
+    const topics = KeduQuizHistory.getAllTopicsForSubject(selectedSubj);
+    let optionsHtml = '<option value="all">-- Tất cả bộ đề thi --</option>';
+
+    topics.forEach(t => {
+      const isSel = (String(t.topicId) === String(keepSelectedTopic)) ? 'selected' : '';
+      optionsHtml += `<option value="${escapeHTML(t.topicId)}" ${isSel}>${escapeHTML(t.topicTitle)}</option>`;
+    });
+
+    topicSelect.innerHTML = optionsHtml;
+  }
+
+  /* Render Danh Sách Lịch Sử (Điều phối Chế độ xem: Theo bộ đề | Từng lượt làm) */
   function renderHistoryList() {
     const listContainer = document.getElementById("qhListContainer");
     if (!listContainer) return;
 
     const subj = document.getElementById("qhFilterSubject")?.value || "all";
+    const topicId = document.getElementById("qhFilterTopic")?.value || "all";
     const sortBy = document.getElementById("qhSortBy")?.value || "newest";
     const search = document.getElementById("qhSearchInput")?.value || "";
 
+    // 1. Cập nhật Thống kê KPIs (hỗ trợ lọc chuẩn theo từng bộ đề cụ thể)
+    const stats = KeduQuizHistory.getStats(subj, topicId);
+    const statAttemptsEl = document.getElementById("qhStatAttempts");
+    const statAvgEl = document.getElementById("qhStatAvg");
+    const statHighEl = document.getElementById("qhStatHigh");
+    const statAccEl = document.getElementById("qhStatAcc");
+
+    if (statAttemptsEl) statAttemptsEl.textContent = stats.totalAttempts + " lượt";
+    if (statAvgEl) statAvgEl.textContent = stats.averageScore + "đ";
+    if (statHighEl) statHighEl.textContent = stats.highestScore + "đ";
+    if (statAccEl) statAccEl.textContent = stats.accuracyRate + "%";
+
+    // 2. Thông báo ngữ cảnh khi đang lọc theo 1 bộ đề riêng biệt
+    const noticeEl = document.getElementById("qhStatsContextNotice");
+    if (noticeEl) {
+      if (topicId !== "all" && stats.totalAttempts > 0) {
+        const topicSelect = document.getElementById("qhFilterTopic");
+        const topicText = topicSelect?.options[topicSelect.selectedIndex]?.text || "Bộ đề đã chọn";
+        noticeEl.style.display = "flex";
+        noticeEl.innerHTML = `
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          <div class="qh-context-notice-text">
+            Đang lọc dữ liệu bài thi: <strong>${escapeHTML(topicText)}</strong> • 
+            Điểm cao nhất: <span class="qh-highlight-score high">${stats.highestScore}đ</span> • 
+            Điểm trung bình: <span class="qh-highlight-score avg">${stats.averageScore}đ</span> • 
+            Lần thi gần nhất: <strong>${stats.latestScore}đ</strong> (${stats.latestTime || 'Chưa rõ'})
+          </div>
+        `;
+      } else {
+        noticeEl.style.display = "none";
+        noticeEl.innerHTML = "";
+      }
+    }
+
+    // 3. Phân nhánh hiển thị theo currentViewMode
+    if (currentViewMode === "grouped") {
+      renderGroupedByTopicView(listContainer, subj, topicId, sortBy, search);
+    } else {
+      renderFlatHistoryListView(listContainer, subj, topicId, sortBy, search);
+    }
+
+    const btnClearEl = document.getElementById("btnQhClear");
+    if (btnClearEl) btnClearEl.style.display = isCurrentUserAdmin() ? "" : "none";
+  }
+
+  /**
+   * CHẾ ĐỘ XEM 1: GOM NHÓM THEO TỪNG BỘ ĐỀ (TÍNH ĐIỂM CAO NHẤT & ĐIỂM TRUNG BÌNH CỦA BỘ ĐỀ ĐÓ)
+   */
+  function renderGroupedByTopicView(listContainer, subj, topicId, sortBy, search) {
+    let summaries = KeduQuizHistory.getTopicSummaries(subj, search);
+
+    if (topicId !== "all") {
+      summaries = summaries.filter(s => String(s.topicId) === String(topicId));
+    }
+
+    // Sắp xếp các bộ đề
+    if (sortBy === "highest") {
+      summaries.sort((a, b) => (Number(b.highestScore) || 0) - (Number(a.highestScore) || 0));
+    } else if (sortBy === "lowest") {
+      summaries.sort((a, b) => (Number(a.highestScore) || 0) - (Number(b.highestScore) || 0));
+    } else {
+      // Sắp xếp theo lần thi gần nhất
+      summaries.sort((a, b) => {
+        const timeA = a.attempts[0]?.createdAt ? new Date(a.attempts[0].createdAt).getTime() : 0;
+        const timeB = b.attempts[0]?.createdAt ? new Date(b.attempts[0].createdAt).getTime() : 0;
+        return timeB - timeA;
+      });
+    }
+
+    if (summaries.length === 0) {
+      listContainer.innerHTML = `
+        <div class="qh-empty-wrap">
+          <div class="qh-empty-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="qh-empty-title">Chưa có lịch sử làm bài</div>
+          <p class="qh-empty-desc">
+            ${subj !== "all" ? "Bạn chưa hoàn thành bài thi nào cho môn học này." : "Bạn chưa làm bài thi ôn tập nào. Hãy chọn một bộ đề và bắt đầu làm bài!"}
+          </p>
+          <button type="button" class="btn-qh-action btn-qh-view" onclick="KeduQuizHistory.closeModal();">
+            Làm bài thi ngay →
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    let html = "";
+    summaries.forEach((sum, idx) => {
+      const panelId = `qhTgPanel_${idx}_${sum.subjectId}_${sum.topicId}`;
+      const highestNum = Number(sum.highestScore) || 0;
+      const avgNum = Number(sum.averageScore) || 0;
+
+      // HTML cho các lượt làm chi tiết bên trong accordion
+      let nestedAttemptsHtml = "";
+      sum.attempts.forEach((att, attIdx) => {
+        const attScore = Number(att.score) || 0;
+        const scoreClass = attScore >= 8.0 ? "high" : (attScore >= 5.0 ? "med" : "low");
+
+        nestedAttemptsHtml += `
+          <div class="qh-tg-nested-row">
+            <div class="qh-tg-nested-left">
+              <span class="qh-nested-order">#${sum.attempts.length - attIdx}</span>
+              <span class="qh-nested-time">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                ${escapeHTML(att.displayTime)}
+              </span>
+              ${att.durationFormatted ? `
+                <span class="qh-nested-dur">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 10"/></svg>
+                  ${escapeHTML(att.durationFormatted)}
+                </span>
+              ` : ''}
+              <span class="qh-nested-mode">${escapeHTML(att.modeLabel || 'Trọn bộ')}</span>
+            </div>
+
+            <div class="qh-tg-nested-right">
+              <span class="qh-nested-score ${scoreClass}">
+                ${formatPoints(attScore)} <span style="font-size:11px; font-weight:600; opacity:0.75;">/ 10đ</span>
+                <span class="qh-nested-pct">(${att.percentage || 0}%)</span>
+              </span>
+              <button type="button" class="btn-qh-action btn-qh-view btn-mini" onclick="window.KeduQuizHistory.viewAttemptDetail('${att.id}')">
+                Chi tiết
+              </button>
+            </div>
+          </div>
+        `;
+      });
+
+      html += `
+        <div class="qh-topic-group-card" id="qhTopicCard_${sum.key}">
+          <div class="qh-tg-header">
+            <div>
+              <div class="qh-tg-subj-row">
+                <span class="qh-badge qh-badge-subj">${escapeHTML(sum.subjectName)}</span>
+                <span class="qh-tg-count-badge">${sum.totalAttempts} lượt làm bài</span>
+              </div>
+              <h3 class="qh-tg-title">${escapeHTML(sum.topicTitle)}</h3>
+            </div>
+
+            <button type="button" class="qh-tg-retry-btn" onclick="window.retryTopicFromHistory('${escapeHTML(sum.subjectId)}', '${escapeHTML(sum.topicId)}')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span>Làm bài thi đề này</span>
+            </button>
+          </div>
+
+          <!-- KHỐI KPI ĐIỂM CAO NHẤT & ĐIỂM TRUNG BÌNH CỦA RIÊNG BỘ ĐỀ ĐÓ -->
+          <div class="qh-tg-kpi-grid">
+            <div class="qh-tg-kpi-item high">
+              <div class="qh-tg-kpi-lbl">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.45 1-1 1H7.5c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h9c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1H15c-.55 0-1-.45-1-1v-2.34"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                <span>Điểm cao nhất</span>
+              </div>
+              <div class="qh-tg-kpi-val">
+                ${sum.highestScore} <span class="qh-tg-kpi-unit">/ 10đ</span>
+              </div>
+            </div>
+
+            <div class="qh-tg-kpi-item avg">
+              <div class="qh-tg-kpi-lbl">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                <span>Điểm trung bình</span>
+              </div>
+              <div class="qh-tg-kpi-val">
+                ${sum.averageScore} <span class="qh-tg-kpi-unit">/ 10đ</span>
+              </div>
+            </div>
+
+            <div class="qh-tg-kpi-item latest">
+              <div class="qh-tg-kpi-lbl">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>Lần gần nhất</span>
+              </div>
+              <div class="qh-tg-kpi-val">
+                ${sum.latestScore} <span class="qh-tg-kpi-unit">/ 10đ</span>
+              </div>
+              <span class="qh-tg-kpi-time">${escapeHTML(sum.latestTime || '')}</span>
+            </div>
+          </div>
+
+          <!-- ACCORDION XEM DANH SÁCH CÁC LẦN THI CỦA BỘ ĐỀ NÀY -->
+          <div class="qh-tg-accordion">
+            <button type="button" class="qh-tg-accordion-btn" onclick="window.toggleTopicAttemptsAccordion('${panelId}', this)">
+              <span>Lịch sử chi tiết (${sum.attempts.length} lượt làm)</span>
+              <span class="qh-accordion-arrow">▾</span>
+            </button>
+            <div class="qh-tg-accordion-panel" id="${panelId}" style="display:none;">
+              ${nestedAttemptsHtml}
+            </div>
+          </div>
+        </div>
+      `;
+    });
+
+    listContainer.innerHTML = html;
+  }
+
+  /**
+   * CHẾ ĐỘ XEM 2: DANH SÁCH TUẦN TỰ TỪNG LƯỢT LÀM
+   */
+  function renderFlatHistoryListView(listContainer, subj, topicId, sortBy, search) {
     let items = KeduQuizHistory.getHistory({
       subjectId: subj,
+      topicId: topicId,
       search: search
     });
 
     // Sắp xếp
     if (sortBy === "highest") {
-      items.sort((a, b) => (b.score || 0) - (a.score || 0));
+      items.sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0));
     } else if (sortBy === "lowest") {
-      items.sort((a, b) => (a.score || 0) - (b.score || 0));
+      items.sort((a, b) => (Number(a.score) || 0) - (Number(b.score) || 0));
     } else {
-      // newest
       items.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     }
-
-    // Cập nhật thống kê
-    const stats = KeduQuizHistory.getStats(subj);
-    document.getElementById("qhStatAttempts").textContent = stats.totalAttempts + " lượt";
-    document.getElementById("qhStatAvg").textContent = stats.averageScore + "đ";
-    document.getElementById("qhStatHigh").textContent = stats.highestScore + "đ";
-    document.getElementById("qhStatAcc").textContent = stats.accuracyRate + "%";
 
     if (items.length === 0) {
       listContainer.innerHTML = `
@@ -1038,10 +1741,22 @@
       return;
     }
 
+    // Tra cứu điểm cao nhất của từng bộ đề để gắn huy hiệu kỉ lục
+    const topicMaxScores = {};
+    items.forEach(it => {
+      const key = `${it.subjectId}_${it.topicId}`;
+      const sc = Number(it.score) || 0;
+      if (!topicMaxScores[key] || sc > topicMaxScores[key]) {
+        topicMaxScores[key] = sc;
+      }
+    });
+
     let html = "";
     items.forEach(it => {
       const score = Number(it.score) || 0;
       const scoreClass = score >= 8.0 ? "high" : (score >= 5.0 ? "med" : "low");
+      const key = `${it.subjectId}_${it.topicId}`;
+      const isRecord = score > 0 && score === topicMaxScores[key];
 
       let partPillsHtml = "";
       if (it.partBreakdown) {
@@ -1062,21 +1777,27 @@
           <div class="qh-item-top">
             <div class="qh-item-meta-left">
               <div class="qh-item-badges">
-                <span class="qh-badge qh-badge-subj">${it.subjectName || it.subjectId}</span>
-                <span class="qh-badge qh-badge-mode">${it.modeLabel}</span>
+                <span class="qh-badge qh-badge-subj">${escapeHTML(it.subjectName || it.subjectId)}</span>
+                <span class="qh-badge qh-badge-mode">${escapeHTML(it.modeLabel)}</span>
                 <span class="qh-badge-time">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                  ${it.displayTime}
+                  ${escapeHTML(it.displayTime)}
                 </span>
                 ${it.durationFormatted ? `
                   <span class="qh-badge-time" style="color:#2563eb;">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 10"/></svg>
-                    ${it.durationFormatted}
+                    ${escapeHTML(it.durationFormatted)}
                   </span>
                 ` : ''}
               </div>
 
-              <h3 class="qh-item-title">${it.topicTitle}</h3>
+              <h3 class="qh-item-title">${escapeHTML(it.topicTitle)}</h3>
+              ${isRecord ? `
+                <div class="qh-topic-record-pill">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.45 1-1 1H7.5c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h9c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1H15c-.55 0-1-.45-1-1v-2.34"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                  <span>Điểm cao nhất của bộ đề này</span>
+                </div>
+              ` : ''}
             </div>
 
             <div class="qh-score-box">
@@ -1107,9 +1828,39 @@
     });
 
     listContainer.innerHTML = html;
-    const btnClearEl = document.getElementById("btnQhClear");
-    if (btnClearEl) btnClearEl.style.display = isCurrentUserAdmin() ? "" : "none";
   }
+
+  // Toggle Accordion
+  window.toggleTopicAttemptsAccordion = function (panelId, btnEl) {
+    const panel = document.getElementById(panelId);
+    if (!panel) return;
+    const isHidden = panel.style.display === "none";
+    panel.style.display = isHidden ? "flex" : "none";
+    const arrow = btnEl ? btnEl.querySelector(".qh-accordion-arrow") : null;
+    if (arrow) {
+      arrow.textContent = isHidden ? "▴" : "▾";
+    }
+  };
+
+  // Làm bài thi lại từ lịch sử
+  window.retryTopicFromHistory = function (subjectId, topicId) {
+    KeduQuizHistory.closeModal();
+    if (window.startQuiz && typeof window.startQuiz === "function") {
+      window.startQuiz(topicId, "full");
+    } else {
+      const pageMap = {
+        toan: "toan-hoc.html",
+        vatli: "vat-li.html",
+        hoa: "hoa-hoc.html",
+        sinh: "sinh-hoc.html",
+        tinhoc: "tin-hoc.html",
+        lichsu: "lich-su.html"
+      };
+      const pageName = pageMap[subjectId] || "toan-hoc.html";
+      const targetUrl = window.location.pathname.includes("/pages/") ? pageName : `pages/${pageName}`;
+      window.location.href = targetUrl;
+    }
+  };
 
   /* Render Chi Tiết Bài Làm */
   function renderDetailContent(attempt) {

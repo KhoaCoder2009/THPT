@@ -461,6 +461,22 @@ function renderDashboard() {
         lessonName = isNaN(num) ? ("Chuyên đề " + set.index) : ("Bài " + String(num).padStart(2, '0'));
       }
 
+      // Tra cứu thành tích lịch sử làm bài của riêng bộ đề này
+      const topicStats = (window.KeduQuizHistory && typeof window.KeduQuizHistory.getStats === 'function')
+        ? window.KeduQuizHistory.getStats(window.CURRENT_SUBJECT_ID, set.id)
+        : null;
+
+      let historyBadgeHtml = '';
+      if (topicStats && topicStats.totalAttempts > 0) {
+        historyBadgeHtml = `
+          <div class="h-card-history-stats" onclick="event.stopPropagation(); if(window.openQuizHistoryModal) window.openQuizHistoryModal('${window.CURRENT_SUBJECT_ID}', '${set.id}');" title="Xem lịch sử làm bài và tiến trình điểm của bộ đề này">
+            <span class="h-stat-pill high">🏆 Cao nhất: ${topicStats.highestScore}đ</span>
+            <span class="h-stat-pill avg">📊 TB: ${topicStats.averageScore}đ</span>
+            <span class="h-stat-pill count">(${topicStats.totalAttempts} lượt)</span>
+          </div>
+        `;
+      }
+
       // Cấu trúc chi tiết 3 phần
       const partsDetail = [];
       if (mcCount > 0) partsDetail.push(`Phần I: ${mcCount} câu`);
@@ -468,7 +484,7 @@ function renderDashboard() {
       if (saCount > 0) partsDetail.push(`Phần III: ${saCount} câu`);
       const partsSummary = partsDetail.join(' • ');
 
-      // Nút hành động: Luôn gộp trọn bộ 3 phần vào làm 1 bài thi hoàn chỉnh thang điểm 10.0
+      // Nút hành động: Cho phép làm Trọn bộ 3 phần HOẶC Tách riêng từng phần để luyện tập
       const fullActionBtn = totalCount > 0
         ? `<button class="btn-h-action primary btn-start-full" onclick="startQuiz('${set.id}', 'full')" title="Vào làm bài thi trọn bộ 3 phần (${totalCount} câu • 10.0 điểm)">
              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
@@ -477,6 +493,29 @@ function renderDashboard() {
         : `<button class="btn-h-action disabled" disabled title="Bộ đề chưa có câu hỏi">
              <span>Chưa có câu hỏi</span>
            </button>`;
+
+      const separatePartsBtns = [];
+      if (mcCount > 0) {
+        separatePartsBtns.push(`
+          <button class="btn-h-action secondary" onclick="startQuiz('${set.id}', 'mc')" title="Chỉ làm Phần I: Trắc nghiệm 4 lựa chọn (${mcCount} câu • Thang 10 điểm)">
+            <span>Trắc nghiệm (${mcCount})</span>
+          </button>
+        `);
+      }
+      if (tfCount > 0) {
+        separatePartsBtns.push(`
+          <button class="btn-h-action secondary" onclick="startQuiz('${set.id}', 'tf')" title="Chỉ làm Phần II: Đúng / Sai (${tfCount} câu • Thang 10 điểm)">
+            <span>Đúng sai (${tfCount})</span>
+          </button>
+        `);
+      }
+      if (saCount > 0) {
+        separatePartsBtns.push(`
+          <button class="btn-h-action secondary" onclick="startQuiz('${set.id}', 'sa')" title="Chỉ làm Phần III: Trả lời ngắn (${saCount} câu • Thang 10 điểm)">
+            <span>Trả lời ngắn (${saCount})</span>
+          </button>
+        `);
+      }
 
       return `
         <div class="h-topic-card ${set.isFull ? "featured" : ""}" data-topic-id="${set.id}">
@@ -487,7 +526,7 @@ function renderDashboard() {
             </div>
           </div>
 
-          <!-- 2. Thông tin chính: Bài, Tên bộ đề, Số câu hỏi -->
+          <!-- 2. Thông tin chính: Bài, Tên bộ đề, Số câu hỏi & Thành tích -->
           <div class="h-card-center">
             <div class="h-card-breadcrumbs">
               <span class="h-badge-lesson">${lessonName}</span>
@@ -505,17 +544,27 @@ function renderDashboard() {
               </span>
               ${partsSummary ? `<span class="h-count-sub">${partsSummary}</span>` : ''}
             </div>
+
+            ${historyBadgeHtml}
           </div>
 
-          <!-- 3. Nút hành động: Admin quản lý đề VS Học viên luyện thi -->
-          <div class="h-card-actions">
+          <!-- 3. Nút hành động: Admin quản lý đề VS Học viên luyện thi (Làm trọn bộ hoặc tách riêng từng phần) -->
+          <div class="h-card-actions" style="display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
             ${(window.KeduAuth && typeof window.KeduAuth.isAdmin === 'function' && window.KeduAuth.isAdmin()) ? `
               <a href="quan-ly-de.html?subject=${window.CURRENT_SUBJECT_ID || 'toan'}&topic=${set.id}" class="btn-h-action primary" style="background:var(--dol-red, #D42525); border-color:var(--dol-red, #D42525); color:#ffffff; font-weight:700; text-decoration:none;" title="Chuyển sang trang Quản lý đề và Chỉnh sửa đáp án bộ đề này">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10M6 14h6"/></svg>
                 <span>Quản lý & Sửa đề (${totalCount} câu)</span>
               </a>
             ` : `
-              ${fullActionBtn}
+              <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
+                ${fullActionBtn}
+              </div>
+              ${separatePartsBtns.length > 1 ? `
+                <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; font-size:12px;">
+                  <span style="font-size:11.5px; color:#64748b; align-self:center; margin-right:2px;">Hoặc làm riêng:</span>
+                  ${separatePartsBtns.join("")}
+                </div>
+              ` : ''}
             `}
           </div>
         </div>
@@ -682,8 +731,9 @@ function startQuiz(setId, mode = "full") {
     return;
   }
   currentSetId = setId;
-  // Luôn gộp trọn bộ 3 phần làm 1 bài thi duy nhất
-  currentMode = (mode === "retry") ? "retry" : "full";
+  // Hỗ trợ linh hoạt: Trọn bộ 3 phần (full) HOẶC làm riêng từng phần (mc, tf, sa)
+  const validModes = ["full", "mc", "tf", "sa", "retry"];
+  currentMode = validModes.includes(mode) ? mode : "full";
   currentIndex = 0;
   currentScore = 0;
   currentEarnedPoints = 0;
@@ -703,16 +753,46 @@ function startQuiz(setId, mode = "full") {
   const rawTf = getQuestionsForTopic("tf", setId);
   const rawSa = getQuestionsForTopic("sa", setId);
 
-  const listMc = (shouldShuffle ? shuffle(rawMc) : [...rawMc]).map(it => buildMcQuestionObj(it, bd.mcPerQ, bd.mcPerQ, shouldShuffle));
-  const listTf = (shouldShuffle ? shuffle(rawTf) : [...rawTf]).map(it => buildTfQuestionObj(it, bd.tfPerQ, bd.tfPerQ));
-  const listSa = (shouldShuffle ? shuffle(rawSa) : [...rawSa]).map(it => buildSaQuestionObj(it, bd.saPerQ, bd.saPerQ));
+  if (currentMode === "mc") {
+    // Chỉ làm riêng Phần I: Trắc nghiệm 4 lựa chọn (Quy đổi thang 10.0 điểm)
+    const perQ = rawMc.length > 0 ? (10.0 / rawMc.length) : 0;
+    activeQuestions = (shouldShuffle ? shuffle(rawMc) : [...rawMc]).map(it => buildMcQuestionObj(it, perQ, perQ, shouldShuffle));
+    partMaxPoints = { mc: 10.0, tf: 0, sa: 0 };
+    if (quizModeBadge) {
+      quizModeBadge.textContent = `Phần I: Trắc nghiệm (${activeQuestions.length} câu • 10.0đ)`;
+      quizModeBadge.className = "quiz-mode-pill badge-state mc";
+    }
+  } else if (currentMode === "tf") {
+    // Chỉ làm riêng Phần II: Đúng / Sai (Quy đổi thang 10.0 điểm)
+    const perQ = rawTf.length > 0 ? (10.0 / rawTf.length) : 0;
+    activeQuestions = (shouldShuffle ? shuffle(rawTf) : [...rawTf]).map(it => buildTfQuestionObj(it, perQ, perQ));
+    partMaxPoints = { mc: 0, tf: 10.0, sa: 0 };
+    if (quizModeBadge) {
+      quizModeBadge.textContent = `Phần II: Đúng / Sai (${activeQuestions.length} câu • 10.0đ)`;
+      quizModeBadge.className = "quiz-mode-pill badge-state tf";
+    }
+  } else if (currentMode === "sa") {
+    // Chỉ làm riêng Phần III: Trả lời ngắn (Quy đổi thang 10.0 điểm)
+    const perQ = rawSa.length > 0 ? (10.0 / rawSa.length) : 0;
+    activeQuestions = (shouldShuffle ? shuffle(rawSa) : [...rawSa]).map(it => buildSaQuestionObj(it, perQ, perQ));
+    partMaxPoints = { mc: 0, tf: 0, sa: 10.0 };
+    if (quizModeBadge) {
+      quizModeBadge.textContent = `Phần III: Trả lời ngắn (${activeQuestions.length} câu • 10.0đ)`;
+      quizModeBadge.className = "quiz-mode-pill badge-state sa";
+    }
+  } else {
+    // Làm Trọn bộ 3 phần gộp theo cấu trúc chuẩn 10.0 điểm của Bộ GD&ĐT
+    const listMc = (shouldShuffle ? shuffle(rawMc) : [...rawMc]).map(it => buildMcQuestionObj(it, bd.mcPerQ, bd.mcPerQ, shouldShuffle));
+    const listTf = (shouldShuffle ? shuffle(rawTf) : [...rawTf]).map(it => buildTfQuestionObj(it, bd.tfPerQ, bd.tfPerQ));
+    const listSa = (shouldShuffle ? shuffle(rawSa) : [...rawSa]).map(it => buildSaQuestionObj(it, bd.saPerQ, bd.saPerQ));
 
-  activeQuestions = [...listMc, ...listTf, ...listSa];
-  partMaxPoints = { mc: bd.mcTotal, tf: bd.tfTotal, sa: bd.saTotal };
+    activeQuestions = [...listMc, ...listTf, ...listSa];
+    partMaxPoints = { mc: bd.mcTotal, tf: bd.tfTotal, sa: bd.saTotal };
 
-  if (quizModeBadge) {
-    quizModeBadge.textContent = "Trọn bộ 3 phần • 10 điểm";
-    quizModeBadge.className = "quiz-mode-pill badge-state mc";
+    if (quizModeBadge) {
+      quizModeBadge.textContent = `Trọn bộ 3 phần (${activeQuestions.length} câu • 10.0đ)`;
+      quizModeBadge.className = "quiz-mode-pill badge-state mc";
+    }
   }
 
   if (dashboardView) dashboardView.classList.remove("active");
@@ -901,7 +981,18 @@ function renderQuestionPalette() {
     paletteEl.style.display = "none";
     return;
   }
+
+  // Inline fallback styling để đảm bảo không bao giờ bị vỡ giao diện kể cả khi CSS bị cache
   paletteEl.style.display = "flex";
+  paletteEl.style.flexWrap = "wrap";
+  paletteEl.style.gap = "8px";
+  paletteEl.style.alignItems = "center";
+  paletteEl.style.padding = "12px 18px";
+  paletteEl.style.background = "#ffffff";
+  paletteEl.style.border = "1.5px solid #e2e8f0";
+  paletteEl.style.borderRadius = "14px";
+  paletteEl.style.boxShadow = "0 2px 6px rgba(0,0,0,0.03)";
+  paletteEl.style.marginBottom = "20px";
 
   const partNames = {
     mc: "Phần I",
@@ -909,10 +1000,14 @@ function renderQuestionPalette() {
     sa: "Phần III"
   };
 
+  const modePaletteTitle = currentMode === "mc"
+    ? `Phần I • Trắc nghiệm (${total} câu)`
+    : (currentMode === "tf" ? `Phần II • Đúng/Sai (${total} câu)` : (currentMode === "sa" ? `Phần III • Trả lời ngắn (${total} câu)` : "Danh sách câu hỏi"));
+
   let pillsHtml = `
-    <div class="quiz-questions-palette-label">
+    <div class="quiz-questions-palette-label" style="display:inline-flex; align-items:center; gap:6px; font-weight:700; color:#64748b; font-size:12.5px; margin-right:6px; font-family:var(--font-heading, inherit);">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-      <span>Danh sách câu:</span>
+      <span>${modePaletteTitle}:</span>
     </div>
   `;
 
@@ -927,12 +1022,22 @@ function renderQuestionPalette() {
     }
 
     let stateClass = "";
+    // Đảm bảo từng pill luôn có khoảng đệm, bo góc và kích thước độc lập
+    let pillInline = "display:inline-flex; align-items:center; justify-content:center; min-width:34px; height:34px; padding:0 8px; border-radius:8px; font-size:13px; font-weight:700; border:1.5px solid #cbd5e1; background:#f8fafc; color:#334155; cursor:pointer; margin:2px; font-family:inherit; user-select:none;";
+
     if (i === currentIndex) {
       stateClass = "is-current";
+      pillInline = "display:inline-flex; align-items:center; justify-content:center; min-width:34px; height:34px; padding:0 8px; border-radius:8px; font-size:13px; font-weight:800; border:1.5px solid #1d4ed8; background:#2563eb; color:#ffffff; cursor:pointer; margin:2px; font-family:inherit; user-select:none; box-shadow:0 2px 8px rgba(37,99,235,0.35);";
     } else if (i < currentAttemptAnswers.length) {
-      stateClass = currentAttemptAnswers[i]?.isCorrect ? "is-correct-pill" : "is-wrong-pill";
+      if (currentAttemptAnswers[i]?.isCorrect) {
+        stateClass = "is-correct-pill";
+        pillInline = "display:inline-flex; align-items:center; justify-content:center; min-width:34px; height:34px; padding:0 8px; border-radius:8px; font-size:13px; font-weight:700; border:1.5px solid #10b981; background:#ecfdf5; color:#059669; cursor:pointer; margin:2px; font-family:inherit;";
+      } else {
+        stateClass = "is-wrong-pill";
+        pillInline = "display:inline-flex; align-items:center; justify-content:center; min-width:34px; height:34px; padding:0 8px; border-radius:8px; font-size:13px; font-weight:700; border:1.5px solid #ef4444; background:#fef2f2; color:#dc2626; cursor:pointer; margin:2px; font-family:inherit;";
+      }
     }
-    pillsHtml += `<button type="button" class="qq-pill ${stateClass}" data-q-idx="${i}" title="Chuyển tới Câu ${i + 1} (${partNames[qType] || ''})">${i + 1}</button>`;
+    pillsHtml += `<button type="button" class="qq-pill ${stateClass}" style="${pillInline}" data-q-idx="${i}" title="Chuyển tới Câu ${i + 1} (${partNames[qType] || ''})">${i + 1}</button>`;
   }
   paletteEl.innerHTML = pillsHtml;
 
@@ -1155,19 +1260,34 @@ function renderQuizQuestion() {
 
         <div id="supabaseSaveNotice" style="font-size:12.5px; color:var(--dol-green); font-weight:600; margin:4px 0 14px;"></div>
 
-        <div class="footer-actions" style="justify-content:center; margin-bottom: 24px;">
-          <button class="btn-secondary-action" onclick="window.KeduQuizHistory ? window.KeduQuizHistory.openModal() : window.openQuizHistoryModal()" style="display:inline-flex; align-items:center; gap:6px;">
+        <div class="footer-actions" style="justify-content:center; margin-bottom: 24px; flex-wrap:wrap; gap:10px;">
+          <button class="btn-secondary-action" onclick="if(window.openQuizHistoryModal) window.openQuizHistoryModal(window.CURRENT_SUBJECT_ID, '${currentSetId}'); else if(window.KeduQuizHistory) window.KeduQuizHistory.openModal(window.CURRENT_SUBJECT_ID, '${currentSetId}');" style="display:inline-flex; align-items:center; gap:6px;">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            <span>Xem lịch sử làm bài</span>
+            <span>Xem lịch sử bài thi đề này</span>
           </button>
           ${wrongAnswersList.length > 0 ? `
             <button class="btn-primary-action" onclick="retryWrongQuestions()">
               Ôn lại ${wrongAnswersList.length} câu vừa sai
             </button>
           ` : ''}
-          <button class="btn-primary-action" onclick="startQuiz('${currentSetId}', 'full')">
-            Làm lại bài thi trọn bộ (10.0 điểm)
+          <button class="btn-primary-action btn-start-full" onclick="startQuiz('${currentSetId}', 'full')">
+            Làm lại trọn bộ 3 phần (10.0đ)
           </button>
+          ${bd.mcCount > 0 ? `
+            <button class="btn-secondary-action" onclick="startQuiz('${currentSetId}', 'mc')">
+              Luyện riêng Phần I: Trắc nghiệm (${bd.mcCount} câu)
+            </button>
+          ` : ''}
+          ${bd.tfCount > 0 ? `
+            <button class="btn-secondary-action" onclick="startQuiz('${currentSetId}', 'tf')">
+              Luyện riêng Phần II: Đúng sai (${bd.tfCount} câu)
+            </button>
+          ` : ''}
+          ${bd.saCount > 0 ? `
+            <button class="btn-secondary-action" onclick="startQuiz('${currentSetId}', 'sa')">
+              Luyện riêng Phần III: Trả lời ngắn (${bd.saCount} câu)
+            </button>
+          ` : ''}
           <button class="btn-secondary-action" onclick="if(backToMenuBtn) backToMenuBtn.click()">
             Trở về danh sách bộ đề
           </button>

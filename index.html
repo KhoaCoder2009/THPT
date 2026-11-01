@@ -277,10 +277,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function refreshUserDashboard() {
     let history = [];
-    try {
-      const raw = localStorage.getItem("kedu_quiz_history_attempts");
-      if (raw) history = JSON.parse(raw);
-    } catch(e) {}
+    if (window.KeduQuizHistory && typeof window.KeduQuizHistory.getHistory === "function") {
+      history = window.KeduQuizHistory.getHistory();
+    } else {
+      try {
+        const raw = localStorage.getItem("kedu_quiz_history_v1") || localStorage.getItem("kedu_quiz_history_attempts");
+        if (raw) history = JSON.parse(raw);
+      } catch(e) {}
+    }
 
     const totalAttempts = Array.isArray(history) ? history.length : 0;
 
@@ -296,9 +300,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!userDashStrip) return;
 
     if (totalAttempts > 0) {
+      const stats = (window.KeduQuizHistory && typeof window.KeduQuizHistory.getStats === "function")
+        ? window.KeduQuizHistory.getStats()
+        : null;
+
       const totalScore = history.reduce((sum, it) => sum + (Number(it.score) || 0), 0);
-      const avgScore = (totalScore / totalAttempts).toFixed(2);
-      const maxScore = Math.max(...history.map(it => Number(it.score) || 0)).toFixed(2);
+      const avgScore = stats ? stats.averageScore : (totalScore / totalAttempts).toFixed(2);
+      const maxScore = stats ? stats.highestScore : Math.max(...history.map(it => Number(it.score) || 0)).toFixed(2);
       const latest = history[0];
 
       userDashStrip.style.display = "flex";
@@ -306,7 +314,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="ups-left">
           <div class="ups-badge">Hồ sơ học tập</div>
           <div class="ups-metrics">
-            <span class="ups-metric-item">Đã làm: <strong>${totalAttempts}</strong> đề</span>
+            <span class="ups-metric-item">Đã làm: <strong>${totalAttempts}</strong> lượt</span>
             <span class="ups-sep">•</span>
             <span class="ups-metric-item">Điểm TB: <strong>${avgScore} / 10.0</strong></span>
             <span class="ups-sep">•</span>
