@@ -219,14 +219,25 @@ function getSetPointBreakdown(setId) {
   let mcTotal = 0, tfTotal = 0, saTotal = 0;
 
   if (mcCount > 0 && tfCount > 0 && saCount > 0) {
-    if (tfCount <= 4 && saCount <= 6 && (tfCount * 1.0 + saCount * 0.5) <= 4.5) {
+    // Chuẩn cấu trúc định dạng Bộ GD&ĐT 2025:
+    // - Môn KHTN (Hóa, Lí, Sinh): 18 câu MC (4.5đ) + 4 câu TF (4.0đ) + 6 câu SA (1.5đ) = 10.0đ
+    // - Môn Toán: 12 câu MC (3.0đ) + 4 câu TF (4.0đ) + 6 câu SA (3.0đ) = 10.0đ
+    if (mcCount === 18 && tfCount === 4 && saCount === 6) {
+      mcTotal = 4.5;
+      tfTotal = 4.0;
+      saTotal = 1.5;
+    } else if (mcCount === 12 && tfCount === 4 && saCount === 6) {
+      mcTotal = 3.0;
+      tfTotal = 4.0;
+      saTotal = 3.0;
+    } else if (tfCount <= 4 && saCount <= 6 && (tfCount * 1.0 + saCount * 0.5) <= 7.0) {
       tfTotal = tfCount * 1.0;
       saTotal = saCount * 0.5;
       mcTotal = Math.round((10.0 - tfTotal - saTotal) * 100) / 100;
     } else {
-      mcTotal = 7.0;
-      tfTotal = 2.0;
-      saTotal = 1.0;
+      mcTotal = 4.5;
+      tfTotal = 4.0;
+      saTotal = 1.5;
     }
   } else if (totalCount > 0) {
     const wMc = mcCount * 1;
@@ -924,7 +935,12 @@ function renderQuestionPalette() {
   }
   paletteEl.style.display = "flex";
 
-  let pillsHtml = "";
+  let pillsHtml = `
+    <div class="quiz-questions-palette-label">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span>Câu hỏi:</span>
+    </div>
+  `;
   for (let i = 0; i < total; i++) {
     let stateClass = "";
     if (i === currentIndex) {
@@ -932,9 +948,20 @@ function renderQuestionPalette() {
     } else if (i < currentAttemptAnswers.length) {
       stateClass = currentAttemptAnswers[i]?.isCorrect ? "is-correct-pill" : "is-wrong-pill";
     }
-    pillsHtml += `<div class="qq-pill ${stateClass}" title="Câu ${i + 1}">${i + 1}</div>`;
+    pillsHtml += `<button type="button" class="qq-pill ${stateClass}" data-q-idx="${i}" title="Chuyển tới Câu ${i + 1}">${i + 1}</button>`;
   }
   paletteEl.innerHTML = pillsHtml;
+
+  paletteEl.querySelectorAll(".qq-pill").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const idx = parseInt(btn.getAttribute("data-q-idx"), 10);
+      if (!isNaN(idx) && idx >= 0 && idx < total) {
+        currentIndex = idx;
+        hasAnswered = (currentIndex < currentAttemptAnswers.length);
+        renderQuizQuestion();
+      }
+    });
+  });
 }
 
 function updateProgress() {

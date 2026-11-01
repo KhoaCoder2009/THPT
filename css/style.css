@@ -850,6 +850,77 @@ body.tv-mode .bp-logo-img {
 }
 
 /* Question Workspace Pane */
+
+/* ========================================================
+   QUESTION NAVIGATION PALETTE (BẢNG SỐ THỨ TỰ CÂU HỎI)
+   ======================================================== */
+.quiz-questions-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 22px;
+  padding: 12px 18px;
+  background: #ffffff;
+  border: 1px solid var(--dol-border);
+  border-radius: var(--radius-lg, 14px);
+  box-shadow: 0 1px 4px rgba(15, 38, 87, 0.05);
+}
+.quiz-questions-palette-label {
+  font-family: var(--font-heading);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--dol-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-right: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.qq-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 8px;
+  border-radius: 8px;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 700;
+  color: #475569;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+.qq-pill:hover {
+  border-color: #2563eb;
+  color: #1d4ed8;
+  background: #eff6ff;
+  transform: translateY(-1px);
+}
+.qq-pill.is-current {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #1d4ed8;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+  font-weight: 800;
+  transform: scale(1.06);
+}
+.qq-pill.is-correct-pill {
+  background: #ecfdf5;
+  color: #059669;
+  border-color: #10b981;
+}
+.qq-pill.is-wrong-pill {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #ef4444;
+}
+
 .question-pane {
   background: #ffffff;
   border: 1px solid var(--dol-border);

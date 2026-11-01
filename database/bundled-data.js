@@ -565,12 +565,12 @@ window.KEDU_DATABASE_DATA = {
         "Tên của X là ethyl methyl malonate.",
         "X có nhiệt độ sôi cao vì có liên kết hydrogen giữa các phân tử.",
         "X là ester no có hai nhóm chức có công thức phân tử $\\text{C}_6\\text{H}_{10}\\text{O}_4$.",
-        "Công thức cấu tạo của (X) được biểu diễn như sau:<br><div class=\"quiz-diagram-box\"><img src=\"../assets/images/diagrams/hoa_gk1_mc3_ester.png\" alt=\"Cấu tạo ester X\" class=\"quiz-diagram-img\"></div>"
+        "Công thức cấu tạo của (X) được biểu diễn như hình sơ đồ trên."
       ],
       "correct_index": 1,
       "accepted_answers": [],
       "explanation": "Phản ứng thủy phân X tạo muối malonate và hai ancol là methanol và ethanol, do đó X là diester: $\\text{CH}_3\\text{OOC-CH}_2\\text{-COOC}_2\\text{H}_5$ (ethyl methyl malonate, CTPT $\\text{C}_6\\text{H}_{10}\\text{O}_4$). Ester không có nguyên tử H linh động liên kết với O nên không tạo được liên kết hydrogen liên phân tử, do đó nhiệt độ sôi của ester thấp hơn nhiều so với alcohol và carboxylic acid tương ứng. Phát biểu B sai. Chọn B.",
-      "diagram": null,
+      "diagram": "<div class=\"quiz-diagram-box\"><img src=\"../assets/images/diagrams/hoa_gk1_mc3_ester.png\" alt=\"Cấu tạo ester X\" class=\"quiz-diagram-img\"></div>",
       "order_index": 3
     },
     {
@@ -878,7 +878,7 @@ window.KEDU_DATABASE_DATA = {
       "subject_id": "hoa",
       "topic_id": "2",
       "type": "tf",
-      "question_text": "Naftifine là một chất có tác dụng chống nấm. Naftifine có công thức cấu tạo như hình bên:<br><div class=\"quiz-diagram-box\"><img src=\"../assets/images/diagrams/hoa_gk1_naftifine.png\" alt=\"Cấu tạo Naftifine\" class=\"quiz-diagram-img\"></div>Xét tính Đúng / Sai của các phát biểu sau:",
+      "question_text": "Naftifine là một chất có tác dụng chống nấm. Naftifine có công thức cấu tạo như hình bên. Xét tính Đúng / Sai của các phát biểu sau:",
       "options": [
         {
           "text": "Naftifine thuộc loại amine bậc một.",
@@ -1016,7 +1016,7 @@ window.KEDU_DATABASE_DATA = {
       "subject_id": "hoa",
       "topic_id": "2",
       "type": "sa",
-      "question_text": "Cho sơ đồ phản ứng sau:<br><div class=\"quiz-diagram-box\"><img src=\"../assets/images/diagrams/hoa_gk1_sa_sodo.png\" alt=\"Sơ đồ phản ứng\" class=\"quiz-diagram-img\"></div>Biết rằng X, Y, Z, T, W là các hợp chất hữu cơ khác nhau; T chỉ chứa một loại nhóm chức. Tổng phân tử khối của T và W là bao nhiêu?",
+      "question_text": "Cho sơ đồ phản ứng sau. Biết rằng X, Y, Z, T, W là các hợp chất hữu cơ khác nhau; T chỉ chứa một loại nhóm chức. Tổng phân tử khối của T và W là bao nhiêu?",
       "options": [],
       "correct_index": null,
       "accepted_answers": [
