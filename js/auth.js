@@ -154,6 +154,155 @@
     }
   }
 
+  /* ========================================================
+   * SUPABASE CLOUD DATABASE SYNCHRONIZATION FOR USERS & KEYS
+   * ======================================================== */
+  function getSupabase() {
+    return (typeof window !== "undefined" && window.getSupabaseClient) ? window.getSupabaseClient() : null;
+  }
+
+  function userToRow(u) {
+    return {
+      username: u.username,
+      full_name: u.fullName || u.username,
+      role: u.role || 'student',
+      password_hash: u.passwordHash,
+      unlocked_subjects: u.unlockedSubjects || [],
+      avatar: u.avatar || null,
+      email: u.email || null,
+      created_at: u.createdAt || new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+  }
+
+  function rowToUser(row) {
+    return {
+      username: row.username,
+      fullName: row.full_name || row.username,
+      role: row.role || 'student',
+      passwordHash: row.password_hash,
+      unlockedSubjects: Array.isArray(row.unlocked_subjects) ? row.unlocked_subjects : [],
+      avatar: row.avatar || null,
+      email: row.email || null,
+      createdAt: row.created_at || new Date().toISOString()
+    };
+  }
+
+  function keyToRow(k) {
+    return {
+      code: k.code,
+      subject_id: k.subjectId,
+      max_activations: k.maxActivations || 1,
+      used_count: k.usedCount || 0,
+      used_by: k.usedBy || [],
+      activations: k.activations || [],
+      is_used: !!k.isUsed,
+      used_at: k.usedAt || null,
+      created_at: k.createdAt || new Date().toISOString()
+    };
+  }
+
+  function rowToKey(row) {
+    return {
+      code: row.code,
+      subjectId: row.subject_id,
+      maxActivations: row.max_activations || 1,
+      usedCount: row.used_count || 0,
+      usedBy: Array.isArray(row.used_by) ? row.used_by : [],
+      activations: Array.isArray(row.activations) ? row.activations : [],
+      isUsed: !!row.is_used,
+      usedAt: row.used_at || null,
+      createdAt: row.created_at || new Date().toISOString()
+    };
+  }
+
+  let isSyncingSupabase = false;
+  async function syncWithSupabase() {
+    const client = getSupabase();
+    if (!client || isSyncingSupabase) return;
+    isSyncingSupabase = true;
+
+    try {
+      // 1. Đồng bộ bảng license_keys
+      const { data: remoteKeys, error: keyErr } = await client.from('license_keys').select('*');
+      if (!keyErr && Array.isArray(remoteKeys)) {
+        const localKeys = getAllLicenseKeys();
+        let keysModified = false;
+
+        remoteKeys.forEach(rk => {
+          const norm = normalizeKey(rowToKey(rk));
+          const existing = localKeys[rk.code];
+          if (!existing || (new Date(norm.usedAt || 0) > new Date(existing.usedAt || 0)) || norm.usedCount > (existing.usedCount || 0)) {
+            localKeys[rk.code] = norm;
+            keysModified = true;
+          }
+        });
+
+        // Đẩy các key có ở local nhưng Supabase chưa có lên Cloud
+        const remoteCodes = new Set(remoteKeys.map(k => k.code));
+        const missingRemotely = [];
+        for (const code in localKeys) {
+          if (!remoteCodes.has(code)) {
+            missingRemotely.push(keyToRow(localKeys[code]));
+          }
+        }
+        if (missingRemotely.length > 0) {
+          await client.from('license_keys').upsert(missingRemotely);
+        }
+
+        if (keysModified) {
+          saveAllLicenseKeys(localKeys);
+        }
+      }
+
+      // 2. Đồng bộ bảng users
+      const { data: remoteUsers, error: userErr } = await client.from('users').select('*');
+      if (!userErr && Array.isArray(remoteUsers)) {
+        const localUsers = getAllUsers();
+        let usersModified = false;
+
+        remoteUsers.forEach(ru => {
+          const u = rowToUser(ru);
+          const normKey = u.username.toLowerCase();
+          if (!localUsers[normKey]) {
+            localUsers[normKey] = u;
+            usersModified = true;
+          } else {
+            const remoteSubs = u.unlockedSubjects || [];
+            const localSubs = localUsers[normKey].unlockedSubjects || [];
+            const mergedSubs = Array.from(new Set([...localSubs, ...remoteSubs]));
+            if (mergedSubs.length !== localSubs.length || localUsers[normKey].role !== u.role) {
+              localUsers[normKey].unlockedSubjects = mergedSubs;
+              localUsers[normKey].role = u.role;
+              usersModified = true;
+            }
+          }
+        });
+
+        // Đẩy các user có ở local nhưng Supabase chưa có lên Cloud
+        const remoteUsernames = new Set(remoteUsers.map(u => u.username.toLowerCase()));
+        const missingUsersRemotely = [];
+        for (const uKey in localUsers) {
+          if (!remoteUsernames.has(uKey.toLowerCase())) {
+            missingUsersRemotely.push(userToRow(localUsers[uKey]));
+          }
+        }
+        if (missingUsersRemotely.length > 0) {
+          await client.from('users').upsert(missingUsersRemotely);
+        }
+
+        if (usersModified) {
+          saveAllUsers(localUsers);
+        }
+      }
+      console.log("[KEdu Sync] Đồng bộ đám mây Supabase hoàn tất thành công.");
+    } catch (err) {
+      console.warn("[KEdu Sync] Thông báo kết nối Supabase:", err.message || err);
+    } finally {
+      isSyncingSupabase = false;
+    }
+  }
+
   function generateKeyCode(prefix = "KEDU") {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     let p1 = "";
@@ -234,6 +383,9 @@
     if (updatedKeys) {
       saveAllLicenseKeys(keys);
     }
+
+    // Kích hoạt đồng bộ với Supabase Cloud
+    syncWithSupabase();
   }
 
   /**
@@ -387,6 +539,17 @@
       return { success: false, message: "Tên tài khoản này đã có người sử dụng. Hãy chọn một tên khác!" };
     }
 
+    // Kiểm tra trên Supabase Cloud xem tên tài khoản đã tồn tại chưa
+    const client = getSupabase();
+    if (client) {
+      try {
+        const { data: remoteExisting } = await client.from('users').select('username').ilike('username', username).maybeSingle();
+        if (remoteExisting) {
+          return { success: false, message: "Tên tài khoản này đã có người sử dụng trên hệ thống Cloud. Hãy chọn một tên khác!" };
+        }
+      } catch (_) {}
+    }
+
     const passwordHash = await hashPassword(password);
     const assignedRole = (normalizedKey === "admin" || normalizedKey === "tdka" || role === "admin") ? "admin" : "student";
 
@@ -401,6 +564,16 @@
 
     users[normalizedKey] = newUser;
     saveAllUsers(users);
+
+    // Đẩy tài khoản mới lên Supabase Cloud
+    if (client) {
+      try {
+        await client.from('users').upsert([userToRow(newUser)]);
+        console.log(`[KEdu Sync] Đã đồng bộ tài khoản mới @${newUser.username} lên Supabase Cloud.`);
+      } catch (err) {
+        console.warn("[KEdu Sync] Lỗi đẩy user lên Supabase:", err);
+      }
+    }
 
     setSession(newUser, true);
 
@@ -426,7 +599,23 @@
 
     const users = getAllUsers();
     const normalizedKey = username.toLowerCase();
-    const user = users[normalizedKey];
+    let user = users[normalizedKey];
+
+    // Nếu chưa có ở LocalStorage, tra cứu trên Supabase Cloud
+    if (!user) {
+      const client = getSupabase();
+      if (client) {
+        try {
+          const { data: remoteUser, error } = await client.from('users').select('*').ilike('username', username).maybeSingle();
+          if (!error && remoteUser) {
+            user = rowToUser(remoteUser);
+            users[normalizedKey] = user;
+            saveAllUsers(users);
+            console.log(`[KEdu Sync] Đã tìm thấy tài khoản @${username} từ Supabase Cloud và đồng bộ về máy.`);
+          }
+        } catch (_) {}
+      }
+    }
 
     if (!user) {
       return { success: false, message: "Tài khoản không tồn tại. Vui lòng kiểm tra lại hoặc Đăng ký mới!" };
@@ -447,6 +636,9 @@
     saveAllUsers(users);
 
     setSession(user, remember);
+    // Kích hoạt đồng bộ ngầm toàn bộ dữ liệu mới nhất
+    syncWithSupabase();
+
     const roleTitle = user.role === "admin" ? "Quản trị viên" : "Học viên";
     return {
       success: true,
@@ -509,6 +701,23 @@
     }
 
     const keys = getAllLicenseKeys();
+
+    // Thử tải thông tin key mới nhất từ Supabase Cloud trước khi kiểm tra
+    const client = getSupabase();
+    if (client) {
+      try {
+        const { data: remoteKey, error: fetchErr } = await client
+          .from('license_keys')
+          .select('*')
+          .eq('code', code)
+          .maybeSingle();
+        if (!fetchErr && remoteKey) {
+          keys[code] = normalizeKey(rowToKey(remoteKey));
+          saveAllLicenseKeys(keys);
+        }
+      } catch (_) {}
+    }
+
     const rawKey = keys[code];
 
     if (!rawKey) {
@@ -572,6 +781,20 @@
     saveAllUsers(users);
 
     setSession(userObj, true);
+
+    // Đồng bộ kết quả kích hoạt lên Supabase Cloud
+    if (client) {
+      try {
+        Promise.all([
+          client.from('license_keys').upsert([keyToRow(keyData)]),
+          client.from('users').upsert([userToRow(userObj)])
+        ]).then(() => {
+          console.log(`[KEdu Sync] Đã đồng bộ kích hoạt Key ${code} cho @${currentUser.username} lên Supabase Cloud.`);
+        }).catch(err => {
+          console.warn("[KEdu Sync] Lỗi đồng bộ kích hoạt lên Supabase:", err);
+        });
+      } catch (_) {}
+    }
 
     // Gỡ màn hình khóa nếu đang xem môn học đó
     const lockOverlay = document.getElementById("subjectLockOverlay");
@@ -707,6 +930,17 @@
     const quotaLabel = quota === 1 ? "1 tài khoản/key" : `${quota} tài khoản/key`;
     showToast(`Đã tạo thành công ${numKeys} mã key (${quotaLabel}) cho môn ${subj.name}!`, "success");
     renderAdminKeysTable();
+
+    // Đồng bộ danh sách key vừa tạo lên Supabase Cloud
+    const client = getSupabase();
+    if (client && createdList.length > 0) {
+      const records = createdList.map(c => keyToRow(keys[c]));
+      client.from('license_keys').upsert(records).then(({ error }) => {
+        if (error) console.warn("[KEdu Sync] Lỗi lưu key lên Supabase:", error.message);
+        else console.log(`[KEdu Sync] Đã đồng bộ ${records.length} key mới lên Supabase Cloud.`);
+      }).catch(() => {});
+    }
+
     return createdList;
   }
 
@@ -730,6 +964,12 @@
     saveAllLicenseKeys(keys);
     showToast(`Đã cập nhật hạn mức key ${code} thành ${quota} tài khoản!`, "success");
     renderAdminKeysTable();
+
+    const client = getSupabase();
+    if (client) {
+      client.from('license_keys').upsert([keyToRow(keys[code])]).catch(() => {});
+    }
+
     return true;
   }
 
@@ -746,6 +986,12 @@
     saveAllLicenseKeys(keys);
     showToast(`Đã xóa mã key ${code}!`, "info");
     renderAdminKeysTable();
+
+    const client = getSupabase();
+    if (client) {
+      client.from('license_keys').delete().eq('code', code).catch(() => {});
+    }
+
     return true;
   }
 
@@ -772,8 +1018,23 @@
     if (newRole === "admin") {
       if (!users[normalizedKey].unlockedSubjects) users[normalizedKey].unlockedSubjects = [];
       if (!users[normalizedKey].unlockedSubjects.includes("all")) users[normalizedKey].unlockedSubjects.push("all");
+    } else {
+      if (users[normalizedKey].unlockedSubjects) {
+        users[normalizedKey].unlockedSubjects = users[normalizedKey].unlockedSubjects.filter(s => s !== "all");
+      }
     }
     saveAllUsers(users);
+
+    if (currentUser && currentUser.username.toLowerCase() === normalizedKey) {
+      currentUser.role = newRole;
+      currentUser.unlockedSubjects = users[normalizedKey].unlockedSubjects;
+      setSession(currentUser, true);
+    }
+
+    const client = getSupabase();
+    if (client) {
+      client.from('users').upsert([userToRow(users[normalizedKey])]).catch(() => {});
+    }
 
     showToast(`Đã đổi vai trò @${targetUsername} thành ${newRole === "admin" ? "Quản trị viên" : "Học viên"}!`, "success");
     renderAdminUsersTable();
@@ -801,6 +1062,11 @@
     users[normalizedKey].passwordHash = await hashPassword(newPassword);
     saveAllUsers(users);
 
+    const client = getSupabase();
+    if (client) {
+      client.from('users').upsert([userToRow(users[normalizedKey])]).catch(() => {});
+    }
+
     showToast(`Đã đặt lại mật khẩu mới cho tài khoản @${targetUsername}!`, "success");
     return true;
   }
@@ -827,6 +1093,11 @@
     delete users[normalizedKey];
     saveAllUsers(users);
 
+    const client = getSupabase();
+    if (client) {
+      client.from('users').delete().eq('username', targetUsername).catch(() => {});
+    }
+
     showToast(`Đã xóa tài khoản @${targetUsername}!`, "info");
     renderAdminUsersTable();
     renderAdminSummaryMetrics();
@@ -846,6 +1117,18 @@
     }
     users[normalizedKey].unlockedSubjects = Array.isArray(subjectIdsArray) ? subjectIdsArray : [];
     saveAllUsers(users);
+
+    const cur = getCurrentUser();
+    if (cur && cur.username.toLowerCase() === normalizedKey) {
+      cur.unlockedSubjects = users[normalizedKey].unlockedSubjects;
+      setSession(cur, true);
+    }
+
+    const client = getSupabase();
+    if (client) {
+      client.from('users').upsert([userToRow(users[normalizedKey])]).catch(() => {});
+    }
+
     showToast(`Đã cập nhật danh sách môn học cho @${targetUsername}!`, "success");
     renderAdminUsersTable();
     renderAdminSummaryMetrics();
@@ -3280,6 +3563,8 @@
     injectAuthModal();
     renderHeaderAuthUI();
     checkSubjectAccessOnPage();
+    // Đồng bộ đám mây Supabase
+    setTimeout(syncWithSupabase, 150);
   }
 
   if (document.readyState === "loading") {
@@ -3288,8 +3573,15 @@
     init();
   }
 
+  // Tự động đồng bộ lại khi người dùng quay lại tab hoặc kết nối mạng phục hồi
+  if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+    window.addEventListener("online", () => syncWithSupabase());
+    window.addEventListener("focus", () => syncWithSupabase());
+  }
+
   // Xuất API toàn cục
   window.KeduAuth = {
+    syncWithSupabase,
     normalizeKey,
     getCurrentUser,
     isAdmin,

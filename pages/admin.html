@@ -791,7 +791,22 @@
           <span class="admin-cloud-dot" style="background:#22c55e;"></span>
           <span style="color:#15803d; font-weight:700;">Supabase Cloud: Đã kết nối</span>
         `;
-        pill.title = "Dự án Supabase (vhgpngrguazxymxcddvu) đã được kết nối.";
+        pill.title = "Dự án Supabase (vhgpngrguazxymxcddvu) đã kết nối. Nhấp để đồng bộ ngay.";
+        pill.style.cursor = "pointer";
+        pill.onclick = async () => {
+          pill.innerHTML = '<span class="admin-cloud-dot" style="background:#eab308;"></span><span style="color:#b45309; font-weight:700;">Đang đồng bộ Cloud...</span>';
+          if (window.KeduAuth && window.KeduAuth.syncWithSupabase) {
+            await window.KeduAuth.syncWithSupabase();
+            renderDashUsersTable();
+            renderDashKeysTable();
+            updateDashboardKPI();
+            if (window.KeduAuth.showToast) window.KeduAuth.showToast("Đã đồng bộ toàn bộ Người dùng & Mã Key với Supabase Cloud!", "success");
+          }
+          pill.innerHTML = `
+            <span class="admin-cloud-dot" style="background:#22c55e;"></span>
+            <span style="color:#15803d; font-weight:700;">Supabase Cloud: Đã đồng bộ</span>
+          `;
+        };
       }
     }
 
@@ -1216,6 +1231,12 @@
       tabs.forEach(t => t.classList.toggle("active", t.getAttribute("data-tab") === target));
       panes.forEach(p => p.classList.toggle("active", p.id === `paneDash${capitalize(target)}`));
 
+      if (window.KeduAuth && typeof window.KeduAuth.syncWithSupabase === 'function') {
+        window.KeduAuth.syncWithSupabase().then(() => {
+          if (target === "users") renderDashUsersTable();
+          if (target === "keys") renderDashKeysTable();
+        }).catch(() => {});
+      }
       if (target === "users") renderDashUsersTable();
       if (target === "keys") renderDashKeysTable();
     }

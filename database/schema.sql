@@ -55,11 +55,37 @@ CREATE TABLE IF NOT EXISTS public.quiz_results (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   subject_id TEXT NOT NULL,
   topic_id TEXT NOT NULL,
-  mode TEXT NOT NULL CHECK (mode IN ('mc', 'tf', 'sa', 'fb')),
-  score INT NOT NULL,
-  total INT NOT NULL,
-  percentage INT NOT NULL,
+  mode TEXT NOT NULL,
+  score NUMERIC(5,2) NOT NULL DEFAULT 0,
+  total INT NOT NULL DEFAULT 0,
+  percentage INT NOT NULL DEFAULT 0,
   student_name TEXT DEFAULT 'Học sinh KEdu',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 5. BẢNG NGƯỜI DÙNG & TÀI KHOẢN (USERS)
+CREATE TABLE IF NOT EXISTS public.users (
+  username TEXT PRIMARY KEY,
+  full_name TEXT,
+  role TEXT DEFAULT 'student',
+  password_hash TEXT NOT NULL,
+  unlocked_subjects JSONB DEFAULT '[]'::JSONB,
+  avatar TEXT,
+  email TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 6. BẢNG MÃ KEY BẢN QUYỀN MÔN HỌC (LICENSE_KEYS)
+CREATE TABLE IF NOT EXISTS public.license_keys (
+  code TEXT PRIMARY KEY,
+  subject_id TEXT NOT NULL,
+  max_activations INT DEFAULT 1,
+  used_count INT DEFAULT 0,
+  used_by JSONB DEFAULT '[]'::JSONB,
+  activations JSONB DEFAULT '[]'::JSONB,
+  is_used BOOLEAN DEFAULT FALSE,
+  used_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -71,6 +97,8 @@ ALTER TABLE public.subjects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.topics ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.questions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.quiz_results ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.license_keys ENABLE ROW LEVEL SECURITY;
 
 -- Cho phép đọc công khai
 DROP POLICY IF EXISTS "Public read subjects" ON public.subjects;
@@ -85,9 +113,22 @@ CREATE POLICY "Public read questions" ON public.questions FOR SELECT USING (true
 DROP POLICY IF EXISTS "Public read quiz_results" ON public.quiz_results;
 CREATE POLICY "Public read quiz_results" ON public.quiz_results FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Public read users" ON public.users;
+CREATE POLICY "Public read users" ON public.users FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public read license_keys" ON public.license_keys;
+CREATE POLICY "Public read license_keys" ON public.license_keys FOR SELECT USING (true);
+
 -- Cho phép học sinh gửi kết quả thi
 DROP POLICY IF EXISTS "Public insert quiz_results" ON public.quiz_results;
 CREATE POLICY "Public insert quiz_results" ON public.quiz_results FOR INSERT WITH CHECK (true);
+
+-- Cho phép ghi danh, cập nhật tài khoản và kích hoạt mã key
+DROP POLICY IF EXISTS "Public write users" ON public.users;
+CREATE POLICY "Public write users" ON public.users FOR ALL USING (true);
+
+DROP POLICY IF EXISTS "Public write license_keys" ON public.license_keys;
+CREATE POLICY "Public write license_keys" ON public.license_keys FOR ALL USING (true);
 
 -- Cho phép Admin quản lý dữ liệu môn, chuyên đề, câu hỏi
 DROP POLICY IF EXISTS "Admin write subjects" ON public.subjects;
@@ -98,6 +139,20 @@ CREATE POLICY "Admin write topics" ON public.topics FOR ALL USING (true);
 
 DROP POLICY IF EXISTS "Admin write questions" ON public.questions;
 CREATE POLICY "Admin write questions" ON public.questions FOR ALL USING (true);
+
+-- ========================================================
+-- NẠP SẴN MÃ KEY MẪU CHO TỪNG MÔN TRÊN CLOUD
+-- ========================================================
+INSERT INTO public.license_keys (code, subject_id, max_activations, used_count, used_by, activations, is_used, created_at)
+VALUES 
+  ('TOAN-2026-VIP1', 'toan', 5, 0, '[]'::jsonb, '[]'::jsonb, false, NOW()),
+  ('VATLI-2026-VIP2', 'vatli', 5, 0, '[]'::jsonb, '[]'::jsonb, false, NOW()),
+  ('HOA-2026-VIP3', 'hoa', 5, 0, '[]'::jsonb, '[]'::jsonb, false, NOW()),
+  ('SINH-2026-VIP4', 'sinh', 5, 0, '[]'::jsonb, '[]'::jsonb, false, NOW()),
+  ('TINHOC-2026-VIP5', 'tinhoc', 5, 0, '[]'::jsonb, '[]'::jsonb, false, NOW()),
+  ('LICHSU-2026-VIP7', 'lichsu', 5, 0, '[]'::jsonb, '[]'::jsonb, false, NOW()),
+  ('ALL-2026-VIP9', 'all', 10, 0, '[]'::jsonb, '[]'::jsonb, false, NOW())
+ON CONFLICT (code) DO NOTHING;
 
 -- ========================================================
 -- NẠP SẴN THÔNG TIN 6 MÔN HỌC CHUẨN
