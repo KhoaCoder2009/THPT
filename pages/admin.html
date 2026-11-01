@@ -795,16 +795,49 @@
       }
     }
 
-    let user = window.KeduAuth.getCurrentUser();
-    let isAdmin = window.KeduAuth.isAdmin();
+    const user = window.KeduAuth.getCurrentUser();
+    const isAdmin = window.KeduAuth.isAdmin();
 
     if (!user || !isAdmin) {
-      // Tự động cấp quyền quản trị để vào thẳng Dashboard không qua màn hình chặn
-      await window.KeduAuth.login({ username: "admin", password: "admin123" });
-      user = window.KeduAuth.getCurrentUser() || { username: "admin", fullname: "Quản trị viên", role: "admin" };
+      renderAccessGate(user);
+    } else {
+      renderAdminDashboard(user);
     }
+  }
 
-    renderAdminDashboard(user);
+  /* MÀN HÌNH CHẶN TRUY CẬP (ACCESS GATE) DÀNH CHO HỌC VIÊN HOẶC CHƯA ĐĂNG NHẬP */
+  function renderAccessGate(currentUser) {
+    container.innerHTML = `
+      <div class="admin-gate-wrap">
+        <div class="admin-gate-icon">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h2 style="font-family: var(--font-heading); font-size: 22px; font-weight: 800; color: #0f2657; margin-bottom: 8px;">
+          Khu Vực Quản Trị Hệ Thống (Admin Only)
+        </h2>
+        <p style="font-size: 14px; color: #64748b; line-height: 1.6; margin-bottom: 22px;">
+          ${currentUser 
+            ? `Tài khoản <strong>@${escapeHTML(currentUser.username)}</strong> của bạn là tài khoản Học viên, không có đặc quyền Quản trị viên (Admin). Vui lòng đăng nhập với tài khoản Quản trị viên để truy cập.` 
+            : 'Trang này yêu cầu quyền Quản trị viên (Admin). Vui lòng đăng nhập bằng tài khoản Quản trị viên để truy cập trung tâm điều hành.'}
+        </p>
+
+        <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; align-items: center;">
+          <button type="button" class="btn-admin-primary" id="btnGateLoginAdmin" style="padding: 10px 20px; font-size: 13.5px; font-weight: 700; border-radius: 10px; background: linear-gradient(135deg, #d97706, #b45309); color: #fff; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            <span>Đăng nhập Quản trị viên</span>
+          </button>
+          <a href="../index.html" class="btn-admin-secondary" style="text-decoration: none; padding: 10px 20px; font-size: 13px; font-weight: 600; border-radius: 10px; background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; display: inline-flex; align-items: center; gap: 6px;">
+            ← Về Trang chủ
+          </a>
+        </div>
+      </div>
+    `;
+
+    document.getElementById("btnGateLoginAdmin")?.addEventListener("click", () => {
+      if (window.KeduAuth && window.KeduAuth.openLoginModal) {
+        window.KeduAuth.openLoginModal();
+      }
+    });
   }
 
   /* MÀN HÌNH DASHBOARD TOÀN DIỆN CHO ADMIN */

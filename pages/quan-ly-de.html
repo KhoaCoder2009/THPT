@@ -2829,23 +2829,55 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    let isAdmin = window.KeduAuth.isAdmin();
+    const isAdmin = window.KeduAuth.isAdmin();
+    const currentUser = window.KeduAuth.getCurrentUser();
     const mainContent = document.getElementById("qmMainContent");
     const gateWrap = document.getElementById("qmAccessGate");
 
     if (!isAdmin) {
-      await window.KeduAuth.login({ username: "admin", password: "admin123" });
-      isAdmin = window.KeduAuth.isAdmin();
-    }
-
-    if (gateWrap) gateWrap.style.display = "none";
-    if (mainContent) {
-      mainContent.style.display = "block";
-      if (!hasRenderedOnce) {
-        hasRenderedOnce = true;
-        populateSubjects();
-        populateTopics();
-        renderQuestionList();
+      if (mainContent) mainContent.style.display = "none";
+      if (gateWrap) {
+        gateWrap.style.display = "flex";
+        gateWrap.innerHTML = `
+          <div class="qm-gate-card" style="max-width: 520px; margin: 60px auto; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 48px 32px; box-shadow: 0 10px 30px rgba(15, 38, 87, 0.06);">
+            <div style="width: 72px; height: 72px; border-radius: 20px; background: #fffbeb; border: 1.5px solid #fde68a; color: #d97706; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px;">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <h2 style="font-family: inherit; font-size: 22px; font-weight: 800; color: #0f2657; margin-bottom: 8px;">Khu Vực Quản Lý Đề & Đáp Án (Admin Only)</h2>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.6; margin-bottom: 22px;">
+              ${currentUser 
+                ? `Tài khoản <strong>@${currentUser.username ? escapeHTML(currentUser.username) : ''}</strong> của bạn là tài khoản Học viên, không có quyền tra cứu toàn bộ đề thi và đáp án gốc. Chức năng này chỉ dành riêng cho Quản trị viên (Admin).` 
+                : 'Chức năng tra cứu toàn bộ ngân hàng đề thi, xem và chỉnh sửa đáp án chỉ dành riêng cho tài khoản Quản trị viên (Admin). Vui lòng đăng nhập với tài khoản Quản trị viên để tiếp tục.'}
+            </p>
+            <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; align-items: center;">
+              <button type="button" id="btnGateLoginAdmin" style="padding: 10px 20px; font-size: 13.5px; font-weight: 700; border-radius: 10px; background: linear-gradient(135deg, #d97706, #b45309); color: #fff; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                <span>Đăng nhập Quản trị viên</span>
+              </button>
+              <a href="../index.html" style="text-decoration: none; padding: 10px 20px; font-size: 13px; font-weight: 600; border-radius: 10px; background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; display: inline-flex; align-items: center; gap: 6px;">
+                ← Về Trang chủ
+              </a>
+            </div>
+          </div>
+        `;
+        document.getElementById("btnGateLoginAdmin")?.addEventListener("click", () => {
+          if (window.KeduAuth && window.KeduAuth.openLoginModal) {
+            window.KeduAuth.openLoginModal();
+          }
+        });
+      }
+    } else {
+      if (gateWrap) gateWrap.style.display = "none";
+      if (mainContent) {
+        mainContent.style.display = "block";
+        if (!hasRenderedOnce) {
+          hasRenderedOnce = true;
+          populateSubjects();
+          populateTopics();
+          renderQuestionList();
+        }
       }
     }
   }
