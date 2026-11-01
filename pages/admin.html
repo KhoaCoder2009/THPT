@@ -1439,7 +1439,8 @@
 
     tbody.innerHTML = filtered.map(k => {
       const u = users[k];
-      const isAdmin = u.role === "admin";
+      const isTdka = u.username.toLowerCase() === "tdka";
+      const isAdmin = isTdka || u.role === "admin";
       const isSelf = currentUser && currentUser.username.toLowerCase() === u.username.toLowerCase();
       const initial = (u.fullName || u.username).charAt(0).toUpperCase();
       const userPhoto = u.avatar ? `<img src="${escapeHTML(u.avatar)}" alt="${escapeHTML(u.username)}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;" onerror="this.parentElement.innerHTML='${initial}';">` : initial;
@@ -1462,7 +1463,8 @@
               <div>
                 <div style="font-weight:700; color:#0f172a; display:flex; align-items:center; gap:4px; flex-wrap:wrap;">
                   <span>@${escapeHTML(u.username)}</span>
-                  ${isSelf ? '<span style="font-size:10px; color:#2563eb; font-weight:800; background:#eff6ff; padding:1px 5px; border-radius:4px;">BẠN</span>' : ''}
+                  ${isTdka ? '<span style="font-size:10px; color:#b45309; font-weight:800; background:#fef3c7; border:1px solid #fde68a; padding:1px 6px; border-radius:4px;">ADMIN CHÍNH</span>' : ''}
+                  ${isSelf && !isTdka ? '<span style="font-size:10px; color:#2563eb; font-weight:800; background:#eff6ff; padding:1px 5px; border-radius:4px;">BẠN</span>' : ''}
                 </div>
                 <div style="font-size:12px; color:#64748b;">
                   ${escapeHTML(u.fullName || u.username)}
@@ -1483,7 +1485,7 @@
               <button type="button" class="adm-btn-action btn-dash-edit-subjects" data-username="${u.username}" title="Mở khóa môn học cho tài khoản">
                 Môn học
               </button>
-              ${!isSelf ? `
+              ${!isSelf && !isTdka ? `
                 <button type="button" class="adm-btn-action btn-dash-toggle-role" data-username="${u.username}" data-current-role="${u.role}" title="Chuyển đổi vai trò">
                   ${isAdmin ? 'Hạ cấp' : 'Thăng cấp'}
                 </button>
@@ -1491,7 +1493,7 @@
               <button type="button" class="adm-btn-action btn-dash-reset-pwd" data-username="${u.username}" title="Đặt lại mật khẩu">
                 Đổi MK
               </button>
-              ${!isSelf ? `
+              ${!isSelf && !isTdka ? `
                 <button type="button" class="adm-btn-action danger btn-dash-delete-user" data-username="${u.username}" title="Xóa tài khoản này">
                   Xóa
                 </button>
@@ -1519,6 +1521,10 @@
         const username = btn.getAttribute("data-username");
         const curRole = btn.getAttribute("data-current-role");
         const newRole = curRole === "admin" ? "student" : "admin";
+        if (newRole === "admin" && username.toLowerCase() !== "tdka") {
+          alert("Hệ thống quy định chỉ duy nhất @tdka làm Quản trị viên chính!");
+          return;
+        }
         if (confirm(`Bạn có chắc muốn chuyển vai trò của @${username} thành ${newRole === "admin" ? "Quản trị viên" : "Học viên"}?`)) {
           window.KeduAuth.setUserRole(username, newRole);
           renderDashUsersTable();

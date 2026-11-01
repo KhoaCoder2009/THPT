@@ -319,20 +319,24 @@
     const users = getAllUsers();
     let updatedUsers = false;
 
-    if (!users["admin"]) {
-      const adminPassHash = await hashPassword("admin123");
-      users["admin"] = {
-        username: "admin",
-        fullName: "Quản trị viên",
-        role: "admin",
-        passwordHash: adminPassHash,
-        unlockedSubjects: ["all"],
-        createdAt: new Date().toISOString()
-      };
+    // Xóa vĩnh viễn tài khoản @admin mẫu cũ nếu còn tồn tại
+    if (users["admin"]) {
+      delete users["admin"];
       updatedUsers = true;
     }
 
-    // Tài khoản Quản trị viên cấp cao: tdka
+    // Quét toàn bộ: chỉ duy nhất @tdka là Quản trị viên chính, hạ cấp tất cả các admin khác về học viên
+    for (const uKey in users) {
+      if (uKey.toLowerCase() !== "tdka" && users[uKey].role === "admin") {
+        users[uKey].role = "student";
+        if (users[uKey].unlockedSubjects) {
+          users[uKey].unlockedSubjects = users[uKey].unlockedSubjects.filter(s => s !== "all");
+        }
+        updatedUsers = true;
+      }
+    }
+
+    // Tài khoản Quản trị viên cấp cao duy nhất: tdka
     const tdkaHash = await hashPassword("Khoavip123@");
     if (!users["tdka"] || users["tdka"].role !== "admin" || users["tdka"].passwordHash !== tdkaHash) {
       users["tdka"] = {
@@ -348,6 +352,15 @@
 
     if (updatedUsers) {
       saveAllUsers(users);
+    }
+
+    // Xóa @admin khỏi Cloud Supabase nếu có kết nối
+    const client = getSupabase();
+    if (client) {
+      try {
+        client.from('users').delete().eq('username', 'admin').catch(() => {});
+        client.from('users').update({ role: 'student' }).neq('username', 'tdka').eq('role', 'admin').catch(() => {});
+      } catch (_) {}
     }
 
     // Seed mã key mặc định cho từng môn
@@ -390,8 +403,23 @@
    */
   function getCurrentUser() {
     try {
-      const session = localStorage.getItem(STORAGE_SESSION_KEY) || sessionStorage.getItem(STORAGE_SESSION_KEY);
-      return session ? JSON.parse(session) : null;
+      const sessionStr = localStorage.getItem(STORAGE_SESSION_KEY) || sessionStorage.getItem(STORAGE_SESSION_KEY);
+      if (!sessionStr) return null;
+      const session = JSON.parse(sessionStr);
+      if (!session || !session.username) return null;
+      // Dọn dẹp nếu người dùng vẫn đang lưu phiên của tài khoản @admin cũ
+      if (session.username.toLowerCase() === "admin") {
+        clearSession();
+        return null;
+      }
+      // Đảm bảo duy nhất @tdka có vai trò admin
+      if (session.username.toLowerCase() === "tdka") {
+        session.role = "admin";
+        session.unlockedSubjects = ["all"];
+      } else if (session.role === "admin") {
+        session.role = "student";
+      }
+      return session;
     } catch (e) {
       return null;
     }
@@ -413,6 +441,7 @@
   }
 
   function setSession(user, remember = true) {
+    const isTdka = user.username && user.username.toLowerCase() === "tdka";
     const sessionData = {
       username: user.username,
       fullName: user.fullName || user.username,
@@ -420,8 +449,8 @@
       avatar: user.avatar || user.picture || null,
       authProvider: user.authProvider || "local",
       googleId: user.googleId || null,
-      role: user.role || (user.username.toLowerCase() === "admin" || user.username.toLowerCase() === "tdka" ? "admin" : "student"),
-      unlockedSubjects: user.unlockedSubjects || [],
+      role: isTdka ? "admin" : "student",
+      unlockedSubjects: isTdka ? ["all"] : (user.unlockedSubjects || []),
       createdAt: user.createdAt,
       loginAt: new Date().toISOString()
     };
@@ -532,6 +561,10 @@
 
     const users = getAllUsers();
     const normalizedKey = username.toLowerCase();
+
+    if (normalizedKey === "admin") {
+      return { success: false, message: "Tên tài khoản @admin đã bị khóa và không được phép đăng ký!" };
+    }
     if (users[normalizedKey]) {
       return { success: false, message: "Tên tài khoản này đã có người sử dụng. Hãy chọn một tên khác!" };
     }
@@ -548,7 +581,7 @@
     }
 
     const passwordHash = await hashPassword(password);
-    const assignedRole = (normalizedKey === "admin" || normalizedKey === "tdka" || role === "admin") ? "admin" : "student";
+    const assignedRole = (normalizedKey === "tdka") ? "admin" : "student";
 
     const newUser = {
       username: username,
@@ -596,6 +629,13 @@
 
     const users = getAllUsers();
     const normalizedKey = username.toLowerCase();
+
+    if (normalizedKey === "admin") {
+      return { 
+        success: false, 
+        message: "Tài khoản @admin đã bị xóa khỏi hệ thống. Vui lòng đăng nhập với Quản trị viên chính @tdka!" 
+      };
+    }
     let user = users[normalizedKey];
 
     // Nếu chưa có ở LocalStorage, tra cứu trên Supabase Cloud
@@ -640,11 +680,17 @@
       };
     }
 
-    if (!user.role || normalizedKey === "admin" || normalizedKey === "tdka") {
-      user.role = (normalizedKey === "admin" || normalizedKey === "tdka") ? "admin" : (user.role || "student");
-    }
-    if (user.role === "admin" && (!user.unlockedSubjects || !user.unlockedSubjects.includes("all"))) {
+    if (normalizedKey === "tdka") {
+      user.role = "admin";
       user.unlockedSubjects = ["all"];
+    } else {
+      // Chỉ duy nhất @tdka có đặc quyền Quản trị viên
+      if (user.role === "admin") {
+        user.role = "student";
+        if (user.unlockedSubjects) {
+          user.unlockedSubjects = user.unlockedSubjects.filter(s => s !== "all");
+        }
+      }
     }
     users[normalizedKey] = user;
     saveAllUsers(users);
@@ -1015,6 +1061,14 @@
 
     const currentUser = getCurrentUser();
     const normalizedKey = targetUsername.toLowerCase();
+    if (normalizedKey === "tdka" && newRole !== "admin") {
+      showToast("Không thể hạ quyền Quản trị viên chính @tdka!", "error");
+      return false;
+    }
+    if (newRole === "admin" && normalizedKey !== "tdka") {
+      showToast("Hệ thống chỉ cho phép duy nhất @tdka làm Quản trị viên!", "error");
+      return false;
+    }
     if (currentUser.username.toLowerCase() === normalizedKey && newRole !== "admin") {
       showToast("Bạn không thể tự hạ quyền Admin của chính mình!", "error");
       return false;
@@ -1091,6 +1145,10 @@
 
     const currentUser = getCurrentUser();
     const normalizedKey = targetUsername.toLowerCase();
+    if (normalizedKey === "tdka") {
+      showToast("Không thể xóa tài khoản Quản trị viên chính @tdka!", "error");
+      return false;
+    }
     if (currentUser.username.toLowerCase() === normalizedKey) {
       showToast("Bạn không thể tự xóa tài khoản của chính mình!", "error");
       return false;
