@@ -786,7 +786,7 @@
   let keySubjectFilter = "all";
   let keyKeyword = "";
 
-  function checkAdminAndRender() {
+  async function checkAdminAndRender() {
     if (!window.KeduAuth) {
       setTimeout(checkAdminAndRender, 100);
       return;
