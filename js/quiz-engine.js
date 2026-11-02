@@ -1880,9 +1880,10 @@ function initApp() {
 
   if (backToMenuBtn) {
     backToMenuBtn.onclick = () => {
-      if (currentIndex < activeQuestions.length && !hasAnswered && currentAttemptAnswers.length > 0) {
+      if (currentIndex < activeQuestions.length && currentAttemptAnswers.length > 0) {
         if (!confirm("Bạn có chắc chắn muốn rời khỏi bài thi đang làm dở không? Lượt thi này sẽ không được lưu điểm.")) return;
       }
+      currentAttemptAnswers = [];
       stopQuizTimer();
       const qTimerPill = document.getElementById("quizTimerPill");
       if (qTimerPill) qTimerPill.style.display = "none";
@@ -1893,6 +1894,15 @@ function initApp() {
       window.scrollTo({ top: 0, behavior: "smooth" });
     };
   }
+
+  // Cảnh báo ngăn mất dữ liệu làm bài thi khi người dùng vô tình tải lại (F5) hoặc đóng tab
+  window.addEventListener("beforeunload", (e) => {
+    if (quizView && quizView.classList.contains("active") && currentIndex < activeQuestions.length && currentAttemptAnswers.length > 0) {
+      e.preventDefault();
+      e.returnValue = "Bạn có bài thi đang làm dở. Rời khỏi trang lúc này sẽ làm mất kết quả bài làm!";
+      return e.returnValue;
+    }
+  });
   localStorage.removeItem("bp_tv_mode");
   document.body.classList.remove("tv-mode");
 

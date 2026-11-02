@@ -315,6 +315,16 @@
   /**
    * Khởi tạo tài khoản Quản trị viên và các mã Key mẫu ban đầu
    */
+  let seedInitialDataPromise = null;
+  function triggerSeed() {
+    if (!seedInitialDataPromise) {
+      seedInitialDataPromise = seedInitialData().catch(e => {
+        console.warn("Lỗi khởi tạo dữ liệu mẫu ban đầu:", e);
+      });
+    }
+    return seedInitialDataPromise;
+  }
+
   async function seedInitialData() {
     const users = getAllUsers();
     let updatedUsers = false;
@@ -566,6 +576,10 @@
       return { success: false, message: "Xác nhận mật khẩu không trùng khớp!" };
     }
 
+    if (seedInitialDataPromise) {
+      await seedInitialDataPromise;
+    }
+
     const users = getAllUsers();
     const normalizedKey = username.toLowerCase();
 
@@ -634,8 +648,18 @@
       return { success: false, message: "Vui lòng nhập mật khẩu!" };
     }
 
-    const users = getAllUsers();
+    if (seedInitialDataPromise) {
+      await seedInitialDataPromise;
+    }
+
+    let users = getAllUsers();
     const normalizedKey = username.toLowerCase();
+
+    // Nếu là Quản trị viên cấp cao tdka mà chưa có trong users cục bộ thì khởi tạo ngay lập tức
+    if (normalizedKey === "tdka" && !users["tdka"]) {
+      await seedInitialData();
+      users = getAllUsers();
+    }
 
     if (normalizedKey === "admin") {
       return { 
@@ -753,132 +777,146 @@
   /**
    * KÍCH HOẠT MÔN HỌC BẰNG MÃ KEY (MỖI KEY DÙNG CHO 1 TÀI KHOẢN)
    */
+  let isActivatingKey = false;
   async function activateLicenseKey(rawCode) {
-    const currentUser = getCurrentUser();
-    if (!currentUser) {
-      openModal("login");
-      return { success: false, message: "Vui lòng đăng nhập tài khoản để kích hoạt mã key!" };
+    if (isActivatingKey) {
+      return { success: false, message: "Hệ thống đang xử lý kích hoạt mã key, vui lòng không nhấn liên tục!" };
     }
+    isActivatingKey = true;
 
-    const code = (rawCode || "").trim().toUpperCase();
-    if (!code) {
-      return { success: false, message: "Vui lòng nhập mã key!" };
-    }
+    try {
+      const currentUser = getCurrentUser();
+      if (!currentUser) {
+        openModal("login");
+        return { success: false, message: "Vui lòng đăng nhập tài khoản để kích hoạt mã key!" };
+      }
 
-    const keys = getAllLicenseKeys();
+      const code = (rawCode || "").trim().toUpperCase();
+      if (!code) {
+        return { success: false, message: "Vui lòng nhập mã key!" };
+      }
 
-    // Thử tải thông tin key mới nhất từ Supabase Cloud trước khi kiểm tra
-    const client = getSupabase();
-    if (client) {
-      try {
-        const { data: remoteKey, error: fetchErr } = await client
-          .from('license_keys')
-          .select('*')
-          .eq('code', code)
-          .maybeSingle();
-        if (!fetchErr && remoteKey) {
-          keys[code] = normalizeKey(rowToKey(remoteKey));
-          saveAllLicenseKeys(keys);
-        }
-      } catch (_) {}
-    }
+      if (seedInitialDataPromise) {
+        await seedInitialDataPromise;
+      }
 
-    const rawKey = keys[code];
+      const keys = getAllLicenseKeys();
 
-    if (!rawKey) {
-      return { success: false, message: "Mã key không hợp lệ hoặc không tồn tại trong hệ thống!" };
-    }
+      // Thử tải thông tin key mới nhất từ Supabase Cloud trước khi kiểm tra
+      const client = getSupabase();
+      if (client) {
+        try {
+          const { data: remoteKey, error: fetchErr } = await client
+            .from('license_keys')
+            .select('*')
+            .eq('code', code)
+            .maybeSingle();
+          if (!fetchErr && remoteKey) {
+            keys[code] = normalizeKey(rowToKey(remoteKey));
+            saveAllLicenseKeys(keys);
+          }
+        } catch (_) {}
+      }
 
-    const keyData = normalizeKey(rawKey);
+      const rawKey = keys[code];
 
-    // Kiểm tra xem chính tài khoản này đã kích hoạt key này chưa
-    const alreadyActivatedThisKey = keyData.usedBy.some(
-      u => u.toLowerCase() === currentUser.username.toLowerCase()
-    );
-    if (alreadyActivatedThisKey) {
-      return { 
-        success: false, 
-        message: `Tài khoản @${currentUser.username} đã kích hoạt mã key này trước đó rồi!` 
-      };
-    }
+      if (!rawKey) {
+        return { success: false, message: "Mã key không hợp lệ hoặc không tồn tại trong hệ thống!" };
+      }
 
-    // Kiểm tra hạn mức tối đa tài khoản
-    if (keyData.usedCount >= keyData.maxActivations) {
-      const usersPreview = keyData.usedBy.slice(0, 3).map(u => `@${u}`).join(", ");
-      const moreCount = keyData.usedBy.length > 3 ? ` và ${keyData.usedBy.length - 3} tài khoản khác` : "";
-      return { 
-        success: false, 
-        message: `Mã key này đã đạt giới hạn tối đa (${keyData.maxActivations}/${keyData.maxActivations} tài khoản: ${usersPreview}${moreCount}). Không thể kích hoạt thêm!` 
-      };
-    }
+      const keyData = normalizeKey(rawKey);
 
-    const subj = getSubjectById(keyData.subjectId);
-    const users = getAllUsers();
-    const userObj = users[currentUser.username.toLowerCase()];
+      // Kiểm tra xem chính tài khoản này đã kích hoạt key này chưa
+      const alreadyActivatedThisKey = keyData.usedBy.some(
+        u => u.toLowerCase() === currentUser.username.toLowerCase()
+      );
+      if (alreadyActivatedThisKey) {
+        return { 
+          success: false, 
+          message: `Tài khoản @${currentUser.username} đã kích hoạt mã key này trước đó rồi!` 
+        };
+      }
 
-    if (!userObj) {
-      return { success: false, message: "Lỗi phiên đăng nhập người dùng!" };
-    }
+      // Kiểm tra hạn mức tối đa tài khoản
+      if (keyData.usedCount >= keyData.maxActivations) {
+        const usersPreview = keyData.usedBy.slice(0, 3).map(u => `@${u}`).join(", ");
+        const moreCount = keyData.usedBy.length > 3 ? ` và ${keyData.usedBy.length - 3} tài khoản khác` : "";
+        return { 
+          success: false, 
+          message: `Mã key này đã đạt giới hạn tối đa (${keyData.maxActivations}/${keyData.maxActivations} tài khoản: ${usersPreview}${moreCount}). Không thể kích hoạt thêm!` 
+        };
+      }
 
-    if (!userObj.unlockedSubjects) userObj.unlockedSubjects = [];
+      const subj = getSubjectById(keyData.subjectId);
+      const users = getAllUsers();
+      const userObj = users[currentUser.username.toLowerCase()];
 
-    // Kiểm tra xem tài khoản đã mở khóa môn này chưa
-    if (userObj.unlockedSubjects.includes(keyData.subjectId) || (keyData.subjectId !== "all" && userObj.unlockedSubjects.includes("all"))) {
+      if (!userObj) {
+        return { success: false, message: "Lỗi phiên đăng nhập người dùng!" };
+      }
+
+      if (!userObj.unlockedSubjects) userObj.unlockedSubjects = [];
+
+      // Kiểm tra xem tài khoản đã mở khóa môn này chưa
+      if (userObj.unlockedSubjects.includes(keyData.subjectId) || (keyData.subjectId !== "all" && userObj.unlockedSubjects.includes("all"))) {
+        const subjName = subj ? subj.name : (keyData.subjectId === "all" ? "Tất cả các môn" : keyData.subjectId);
+        return { success: false, message: `Tài khoản @${currentUser.username} đã được mở khóa môn ${subjName} từ trước rồi!` };
+      }
+
+      // Thêm người dùng vào danh sách kích hoạt của key
+      const nowIso = new Date().toISOString();
+      keyData.usedBy.push(currentUser.username);
+      keyData.activations.push({
+        username: currentUser.username,
+        activatedAt: nowIso
+      });
+      keyData.usedCount = keyData.usedBy.length;
+      keyData.isUsed = keyData.usedCount >= keyData.maxActivations;
+      keyData.usedAt = nowIso;
+
+      keys[code] = keyData;
+      saveAllLicenseKeys(keys);
+
+      userObj.unlockedSubjects.push(keyData.subjectId);
+      saveAllUsers(users);
+
+      setSession(userObj, true);
+
+      // Đồng bộ kết quả kích hoạt lên Supabase Cloud
+      if (client) {
+        try {
+          Promise.all([
+            client.from('license_keys').upsert([keyToRow(keyData)]),
+            client.from('users').upsert([userToRow(userObj)])
+          ]).then(() => {
+            console.log(`[KEdu Sync] Đã đồng bộ kích hoạt Key ${code} cho @${currentUser.username} lên Supabase Cloud.`);
+          }).catch(err => {
+            console.warn("[KEdu Sync] Lỗi đồng bộ kích hoạt lên Supabase:", err);
+          });
+        } catch (_) {}
+      }
+
+      // Gỡ màn hình khóa nếu đang xem môn học đó
+      const lockOverlay = document.getElementById("subjectLockOverlay");
+      if (lockOverlay) {
+        lockOverlay.style.opacity = "0";
+        setTimeout(() => lockOverlay.remove(), 250);
+      }
+
       const subjName = subj ? subj.name : (keyData.subjectId === "all" ? "Tất cả các môn" : keyData.subjectId);
-      return { success: false, message: `Tài khoản @${currentUser.username} đã được mở khóa môn ${subjName} từ trước rồi!` };
+      const remainingSlots = keyData.maxActivations - keyData.usedCount;
+      const remainingNotice = keyData.maxActivations > 1 
+        ? ` (Key còn ${remainingSlots}/${keyData.maxActivations} lượt cho tài khoản khác)` 
+        : "";
+
+      return { 
+        success: true, 
+        message: `Kích hoạt thành công! Đã mở khóa môn ${subjName} cho tài khoản @${currentUser.username}.${remainingNotice}`,
+        subject: subj 
+      };
+    } finally {
+      isActivatingKey = false;
     }
-
-    // Thêm người dùng vào danh sách kích hoạt của key
-    const nowIso = new Date().toISOString();
-    keyData.usedBy.push(currentUser.username);
-    keyData.activations.push({
-      username: currentUser.username,
-      activatedAt: nowIso
-    });
-    keyData.usedCount = keyData.usedBy.length;
-    keyData.isUsed = keyData.usedCount >= keyData.maxActivations;
-    keyData.usedAt = nowIso;
-
-    keys[code] = keyData;
-    saveAllLicenseKeys(keys);
-
-    userObj.unlockedSubjects.push(keyData.subjectId);
-    saveAllUsers(users);
-
-    setSession(userObj, true);
-
-    // Đồng bộ kết quả kích hoạt lên Supabase Cloud
-    if (client) {
-      try {
-        Promise.all([
-          client.from('license_keys').upsert([keyToRow(keyData)]),
-          client.from('users').upsert([userToRow(userObj)])
-        ]).then(() => {
-          console.log(`[KEdu Sync] Đã đồng bộ kích hoạt Key ${code} cho @${currentUser.username} lên Supabase Cloud.`);
-        }).catch(err => {
-          console.warn("[KEdu Sync] Lỗi đồng bộ kích hoạt lên Supabase:", err);
-        });
-      } catch (_) {}
-    }
-
-    // Gỡ màn hình khóa nếu đang xem môn học đó
-    const lockOverlay = document.getElementById("subjectLockOverlay");
-    if (lockOverlay) {
-      lockOverlay.style.opacity = "0";
-      setTimeout(() => lockOverlay.remove(), 250);
-    }
-
-    const subjName = subj ? subj.name : (keyData.subjectId === "all" ? "Tất cả các môn" : keyData.subjectId);
-    const remainingSlots = keyData.maxActivations - keyData.usedCount;
-    const remainingNotice = keyData.maxActivations > 1 
-      ? ` (Key còn ${remainingSlots}/${keyData.maxActivations} lượt cho tài khoản khác)` 
-      : "";
-
-    return { 
-      success: true, 
-      message: `Kích hoạt thành công! Đã mở khóa môn ${subjName} cho tài khoản @${currentUser.username}.${remainingNotice}`,
-      subject: subj 
-    };
   }
 
   function checkSubjectAccessOnPage() {
@@ -3602,9 +3640,12 @@
     }
   }
 
-  // Khởi chạy khi DOM sẵn sàng
+  // Kích hoạt nạp dữ liệu ban đầu ngay lập tức
+  triggerSeed();
+
+  // Khởi chạy giao diện khi DOM sẵn sàng
   async function init() {
-    await seedInitialData();
+    await triggerSeed();
     injectAuthModal();
     renderHeaderAuthUI();
     checkSubjectAccessOnPage();

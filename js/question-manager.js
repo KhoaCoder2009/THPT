@@ -1,7 +1,7 @@
 /**
  * ========================================================
  * KEdu • QUESTION & ANSWER MANAGEMENT ENGINE
- * H? Th?ng Qu?n L Ngn Hng ??, Coi & Ch?nh S?a ?p n
+ * Hệ Thống Quản Lý Ngân Hàng Đề, Câu Hỏi & Chỉnh Sửa Đáp Án
  * ========================================================
  */
 
@@ -30,7 +30,7 @@
   }
 
   /**
-   * Kh?i t?o d? li?u t? window.KEDU_DATABASE_DATA ho?c fetch JSON
+   * Khởi tạo dữ liệu từ window.KEDU_DATABASE_DATA hoặc fetch JSON
    */
   async function init() {
     if (isInitialized && cachedData) return cachedData;
@@ -41,7 +41,7 @@
       return cachedData;
     }
 
-    // Th? fetch supabase-data.json n?u ch?y trn Web Server
+    // Thử fetch supabase-data.json nếu chạy trên Web Server
     try {
       const candidates = [
         '../database/supabase-data.json',
@@ -80,14 +80,14 @@
   }
 
   /**
-   * L?y ton b? danh sch mn h?c
+   * Lấy toàn bộ danh sách môn học
    */
   function getSubjects() {
     return cachedData?.subjects || [];
   }
 
   /**
-   * L?y danh sch cc b? ?? thu?c mn h?c
+   * Lấy danh sách các bộ đề thuộc môn học
    */
   function getTopics(subjectId) {
     if (!cachedData?.topics) return [];
@@ -96,7 +96,7 @@
   }
 
   /**
-   * L?y danh sch cu h?i theo b? l?c (mn, ??, d?ng cu h?i, tm ki?m)
+   * Lấy danh sách câu hỏi theo bộ lọc (môn, đề, dạng câu hỏi, tìm kiếm)
    */
   function getQuestions(filters = {}) {
     if (!cachedData?.questions) return [];
@@ -175,7 +175,7 @@
   }
 
   /**
-   * L?y thng tin chi ti?t 1 cu h?i theo ID
+   * Lấy thông tin chi tiết 1 câu hỏi theo ID
    */
   function getQuestionById(id) {
     if (!cachedData?.questions) return null;
@@ -299,7 +299,7 @@
   }
 
   /**
-   * Xu?t ton b? d? li?u d??i d?ng JSON ?? ng??i dng t?i v?
+   * Xuất toàn bộ dữ liệu dưới dạng JSON để người dùng tải về
    */
   function exportMergedDatabase() {
     if (!cachedData) return null;
@@ -319,14 +319,14 @@
   }
 
   /**
-   * T?o cu l?nh SQL UPDATE cho cc cu h?i ? ch?nh s?a ?p n
+   * Tạo câu lệnh SQL UPDATE cho các câu hỏi đã chỉnh sửa đáp án
    */
   function generateSqlUpdateScript() {
     const overrides = getOverrides();
     const keys = Object.keys(overrides);
-    if (keys.length === 0) return '-- Ch?a c cu h?i no b? thay ??i ?p n.';
+    if (keys.length === 0) return '-- Chưa có câu hỏi nào bị thay đổi đáp án.';
 
-    let sql = `-- ========================================================\n-- C?P NH?T ?P N CU H?I KEDU (${keys.length} cu ? s?a)\n-- Xu?t lc: ${new Date().toLocaleString('vi-VN')}\n-- ========================================================\n\n`;
+    let sql = `-- ========================================================\n-- CẬP NHẬT ĐÁP ÁN CÂU HỎI KEDU (${keys.length} câu đã sửa)\n-- Xuất lúc: ${new Date().toLocaleString('vi-VN')}\n-- ========================================================\n\n`;
 
     for (const id of keys) {
       const q = getQuestionById(id);
