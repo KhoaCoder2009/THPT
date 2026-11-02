@@ -499,28 +499,7 @@ function renderDashboard() {
              <span>Chưa có câu hỏi</span>
            </button>`;
 
-      const separatePartsBtns = [];
-      if (mcCount > 0) {
-        separatePartsBtns.push(`
-          <button class="btn-h-action secondary" onclick="startQuiz('${set.id}', 'mc')" title="Chỉ làm Phần I: Trắc nghiệm 4 lựa chọn (${mcCount} câu • Thang 10 điểm)">
-            <span>Trắc nghiệm (${mcCount})</span>
-          </button>
-        `);
-      }
-      if (tfCount > 0) {
-        separatePartsBtns.push(`
-          <button class="btn-h-action secondary" onclick="startQuiz('${set.id}', 'tf')" title="Chỉ làm Phần II: Đúng / Sai (${tfCount} câu • Thang 10 điểm)">
-            <span>Đúng sai (${tfCount})</span>
-          </button>
-        `);
-      }
-      if (saCount > 0) {
-        separatePartsBtns.push(`
-          <button class="btn-h-action secondary" onclick="startQuiz('${set.id}', 'sa')" title="Chỉ làm Phần III: Trả lời ngắn (${saCount} câu • Thang 10 điểm)">
-            <span>Trả lời ngắn (${saCount})</span>
-          </button>
-        `);
-      }
+
 
       return `
         <div class="h-topic-card ${set.isFull ? "featured" : ""}" data-topic-id="${set.id}">
@@ -564,12 +543,6 @@ function renderDashboard() {
               <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
                 ${fullActionBtn}
               </div>
-              ${separatePartsBtns.length > 1 ? `
-                <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; font-size:12px;">
-                  <span style="font-size:11.5px; color:#64748b; align-self:center; margin-right:2px;">Hoặc làm riêng:</span>
-                  ${separatePartsBtns.join("")}
-                </div>
-              ` : ''}
             `}
           </div>
         </div>
@@ -1297,21 +1270,6 @@ function renderQuizQuestion() {
           <button class="btn-primary-action btn-start-full" onclick="startQuiz('${currentSetId}', 'full')">
             Làm lại bài thi trọn bộ (10.0đ)
           </button>
-          ${bd.mcCount > 0 ? `
-            <button class="btn-secondary-action" onclick="startQuiz('${currentSetId}', 'mc')">
-              Luyện riêng Phần I: Trắc nghiệm (${bd.mcCount} câu)
-            </button>
-          ` : ''}
-          ${bd.tfCount > 0 ? `
-            <button class="btn-secondary-action" onclick="startQuiz('${currentSetId}', 'tf')">
-              Luyện riêng Phần II: Đúng sai (${bd.tfCount} câu)
-            </button>
-          ` : ''}
-          ${bd.saCount > 0 ? `
-            <button class="btn-secondary-action" onclick="startQuiz('${currentSetId}', 'sa')">
-              Luyện riêng Phần III: Trả lời ngắn (${bd.saCount} câu)
-            </button>
-          ` : ''}
           <button class="btn-secondary-action" onclick="if(backToMenuBtn) backToMenuBtn.click()">
             Trở về danh sách bộ đề
           </button>
