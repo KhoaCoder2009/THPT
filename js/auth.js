@@ -3539,12 +3539,6 @@
             </div>
 
             <ul class="user-dropdown-list">
-              <li>
-                <button type="button" class="user-dropdown-item-btn" id="btnUserOpenQuizHistory" title="Xem lịch sử các lần làm bài thi của bạn">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                  <span>Lịch sử làm bài</span>
-                </button>
-              </li>
               ${userIsAdmin ? `
               <li>
                 <a href="${isSubPage ? 'admin.html' : 'pages/admin.html'}" class="user-dropdown-item-btn item-admin" id="btnAdminOpenPanel" title="Mở Bảng quản trị hệ thống" style="text-decoration:none;">
@@ -3553,6 +3547,12 @@
                 </a>
               </li>
               ` : ''}
+              <li>
+                <button type="button" class="user-dropdown-item-btn" id="btnUserOpenQuizHistory" title="Xem lịch sử các lần làm bài thi của bạn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  <span>Lịch sử làm bài</span>
+                </button>
+              </li>
               <li>
                 <button type="button" class="user-dropdown-item-btn" id="btnUserOpenActivateKey" title="Kích hoạt mã môn học">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-1.5 1.5L14 9l-1.5-1.5L11 9l-1.5-1.5L8 9l-4.5 4.5a3 3 0 1 0 4.24 4.24L12 13.5l1.5 1.5 1.5-1.5 1.5 1.5 3.5-3.5a3 3 0 0 0-4.24-4.24z"/></svg>
