@@ -60,10 +60,6 @@ document.addEventListener('DOMContentLoaded', checkSupabasePortal);
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         <span>Trang chủ</span>
       </a>
-      <button type="button" class="sh-nav-item btn-open-leaderboard" title="Bảng xếp hạng vinh danh theo từng bộ đề" style="background:none; border:none; cursor:pointer;">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
-        <span>Bảng xếp hạng</span>
-      </button>
     </div>
 
     <div class="sh-auth-slot" id="shAuthSlot"></div>
@@ -78,9 +74,6 @@ document.addEventListener('DOMContentLoaded', checkSupabasePortal);
       Hệ Thống Ôn Luyện Đề Thi Trực Tuyến
     </h1>
   </section>
-
-  <!-- PERSONALIZED STUDENT DASHBOARD STRIP (DYNAMIC LIVE WIDGET) -->
-  <div id="keduUserDashboardStrip" class="user-progress-strip" style="display:none;"></div>
 
   <!-- SECTION BAR -->
   <div class="section-bar">
@@ -275,11 +268,9 @@ document.addEventListener('DOMContentLoaded', checkSupabasePortal);
 <!-- CLIENT SCRIPT -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  // Render User Progress Strip (Clean & Compact)
-  const userDashStrip = document.getElementById("keduUserDashboardStrip");
   const headerBadge = document.getElementById("headerHistoryCountBadge");
 
-  function refreshUserDashboard() {
+  function updateHeaderHistoryBadge() {
     let history = [];
     if (window.KeduQuizHistory && typeof window.KeduQuizHistory.getHistory === "function") {
       history = window.KeduQuizHistory.getHistory();
@@ -291,7 +282,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const totalAttempts = Array.isArray(history) ? history.length : 0;
-
     if (headerBadge) {
       if (totalAttempts > 0) {
         headerBadge.textContent = totalAttempts;
@@ -300,56 +290,9 @@ document.addEventListener("DOMContentLoaded", () => {
         headerBadge.style.display = "none";
       }
     }
-
-    if (!userDashStrip) return;
-
-    if (totalAttempts > 0) {
-      const stats = (window.KeduQuizHistory && typeof window.KeduQuizHistory.getStats === "function")
-        ? window.KeduQuizHistory.getStats()
-        : null;
-
-      const totalScore = history.reduce((sum, it) => sum + (Number(it.score) || 0), 0);
-      const avgScore = stats ? stats.averageScore : (totalScore / totalAttempts).toFixed(2);
-      const maxScore = stats ? stats.highestScore : Math.max(...history.map(it => Number(it.score) || 0)).toFixed(2);
-      const latest = history[0];
-
-      userDashStrip.style.display = "flex";
-      userDashStrip.innerHTML = `
-        <div class="ups-left">
-          <div class="ups-badge">Hồ sơ học tập</div>
-          <div class="ups-metrics">
-            <span class="ups-metric-item">Đã làm: <strong>${totalAttempts}</strong> lượt</span>
-            <span class="ups-sep">•</span>
-            <span class="ups-metric-item">Điểm TB: <strong>${avgScore} / 10.0</strong></span>
-            <span class="ups-sep">•</span>
-            <span class="ups-metric-item">Điểm cao nhất: <strong class="text-success">${maxScore} / 10.0</strong></span>
-            ${latest ? `<span class="ups-sep">•</span><span class="ups-metric-item">Gần nhất: <strong>${latest.subjectName || ''} (${Number(latest.score).toFixed(2)}đ)</strong></span>` : ''}
-          </div>
-        </div>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <button type="button" class="btn-ups-history btn-open-leaderboard" title="Mở bảng xếp hạng vinh danh">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
-            <span>Bảng xếp hạng</span>
-          </button>
-          <button type="button" class="btn-ups-history btn-open-quiz-history" title="Mở danh sách bài thi đã làm">
-          <span>Xem chi tiết lịch sử</span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
-        </button>
-        </div>
-      `;
-
-      userDashStrip.querySelector(".btn-open-quiz-history")?.addEventListener("click", () => {
-        if (window.KeduQuizHistory && window.KeduQuizHistory.openHistoryModal) {
-          window.KeduQuizHistory.openHistoryModal();
-        }
-      });
-    } else {
-      userDashStrip.style.display = "none";
-    }
   }
 
-  
-  // Cập nhật số lượng đề thi động cho 6 môn học khi hover hoặc tải trang
+  // Cập nhật số lượng đề thi động cho 6 môn học khi tải trang
   function updateSubjectExamCounts() {
     const data = window.KEDU_DATABASE_DATA;
     const topics = (data && Array.isArray(data.topics)) ? data.topics : [];
@@ -404,8 +347,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   updateSubjectExamCounts();
 
-  refreshUserDashboard();
-  window.addEventListener("storage", refreshUserDashboard);
+  updateHeaderHistoryBadge();
+  window.addEventListener("storage", updateHeaderHistoryBadge);
 
   // Clear legacy TV mode
   localStorage.removeItem("bp_tv_mode");
@@ -413,7 +356,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 <script src="js/quiz-history.js"></script>
-<script src="js/leaderboard.js"></script>
 <script src="database/bundled-data.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/page-loader.js"></script>
