@@ -72,7 +72,15 @@
   function getAllUsers() {
     try {
       const data = localStorage.getItem(STORAGE_USERS_KEY);
-      return data ? JSON.parse(data) : {};
+      const parsed = data ? JSON.parse(data) : {};
+      if (parsed["admin"] || parsed["Admin"]) {
+        delete parsed["admin"];
+        delete parsed["Admin"];
+        try {
+          localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(parsed));
+        } catch (_) {}
+      }
+      return parsed;
     } catch (e) {
       console.error("Lỗi đọc cơ sở dữ liệu người dùng:", e);
       return {};
@@ -81,6 +89,10 @@
 
   function saveAllUsers(users) {
     try {
+      if (users && typeof users === "object") {
+        delete users["admin"];
+        delete users["Admin"];
+      }
       localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
     } catch (e) {
       console.error("Lỗi lưu cơ sở dữ liệu người dùng:", e);
@@ -263,7 +275,8 @@
 
         remoteUsers.forEach(ru => {
           const u = rowToUser(ru);
-          const normKey = u.username.toLowerCase();
+          const normKey = (u.username || "").toLowerCase();
+          if (normKey === "admin") return; // Tuyệt đối loại bỏ tài khoản @admin cũ
           if (!localUsers[normKey]) {
             localUsers[normKey] = u;
             usersModified = true;
@@ -280,9 +293,10 @@
         });
 
         // Đẩy các user có ở local nhưng Supabase chưa có lên Cloud
-        const remoteUsernames = new Set(remoteUsers.map(u => u.username.toLowerCase()));
+        const remoteUsernames = new Set(remoteUsers.map(u => (u.username || "").toLowerCase()));
         const missingUsersRemotely = [];
         for (const uKey in localUsers) {
+          if (uKey.toLowerCase() === "admin") continue;
           if (!remoteUsernames.has(uKey.toLowerCase())) {
             missingUsersRemotely.push(userToRow(localUsers[uKey]));
           }
@@ -290,6 +304,9 @@
         if (missingUsersRemotely.length > 0) {
           await client.from('users').upsert(missingUsersRemotely);
         }
+
+        // Đảm bảo xóa sạch tài khoản @admin trên Supabase Cloud nếu vô tình còn sót
+        await client.from('users').delete().ilike('username', 'admin').catch(() => {});
 
         if (usersModified) {
           saveAllUsers(localUsers);
@@ -2894,7 +2911,7 @@
    */
   function openAdminPanel(targetTab = "users") {
     if (!isAdmin()) {
-      showToast("Vui lòng đăng nhập tài khoản Quản trị viên (@admin hoặc @tdka) để mở Bảng quản trị!", "info");
+      showToast("Vui lòng đăng nhập tài khoản Quản trị viên (@tdka) để mở Bảng quản trị!", "info");
       openLoginModal();
       return;
     }
@@ -2932,8 +2949,10 @@
 
   function renderAdminSummaryMetrics() {
     const users = getAllUsers();
+    delete users["admin"];
+    delete users["Admin"];
     const keys = getAllLicenseKeys();
-    const userKeys = Object.keys(users);
+    const userKeys = Object.keys(users).filter(k => k.toLowerCase() !== "admin");
     const keyCodes = Object.keys(keys);
 
     let totalUsers = userKeys.length;
@@ -3091,8 +3110,10 @@
     if (!tbody) return;
 
     const users = getAllUsers();
+    delete users["admin"];
+    delete users["Admin"];
     const currentUser = getCurrentUser();
-    let userKeys = Object.keys(users);
+    let userKeys = Object.keys(users).filter(k => k.toLowerCase() !== "admin");
 
     const kw = (keyword || "").toLowerCase().trim();
     if (kw) {

@@ -858,10 +858,12 @@
   /* MÀN HÌNH DASHBOARD TOÀN DIỆN CHO ADMIN */
   function renderAdminDashboard(adminUser) {
     const users = window.KeduAuth.getAllUsers ? window.KeduAuth.getAllUsers() : {};
+    delete users["admin"];
+    delete users["Admin"];
     const keys = window.KeduAuth.getAllLicenseKeys ? window.KeduAuth.getAllLicenseKeys() : {};
     const subjects = window.KeduAuth.SUBJECTS ? window.KeduAuth.SUBJECTS.filter(s => s.id !== "all") : [];
 
-    const userKeys = Object.keys(users);
+    const userKeys = Object.keys(users).filter(k => k.toLowerCase() !== "admin");
     const keyCodes = Object.keys(keys);
 
     let totalUsers = userKeys.length;
@@ -1410,8 +1412,10 @@
     if (!tbody) return;
 
     const users = window.KeduAuth.getAllUsers ? window.KeduAuth.getAllUsers() : {};
+    delete users["admin"];
+    delete users["Admin"];
     const currentUser = window.KeduAuth.getCurrentUser();
-    const userKeys = Object.keys(users);
+    const userKeys = Object.keys(users).filter(k => k.toLowerCase() !== "admin");
 
     const filtered = userKeys.filter(k => {
       const u = users[k];
