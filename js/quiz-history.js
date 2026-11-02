@@ -784,99 +784,210 @@
       }
       .qh-stat-card {
         background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 12px 14px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        border: 1.5px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 14px 16px;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .qh-stat-card:hover {
+        border-color: #cbd5e1;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px -2px rgba(15, 23, 42, 0.08);
+      }
+      .qh-stat-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 6px;
       }
       .qh-stat-lbl {
-        font-size: 11px;
-        font-weight: 700;
+        font-size: 11.5px;
+        font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.05em;
         color: #64748b;
-        margin-bottom: 4px;
       }
+      .qh-stat-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .qh-stat-icon.slate { background: #f1f5f9; color: #475569; }
+      .qh-stat-icon.blue { background: #eff6ff; color: #2563eb; }
+      .qh-stat-icon.green { background: #f0fdf4; color: #16a34a; }
+      .qh-stat-icon.purple { background: #faf5ff; color: #7c3aed; }
       .qh-stat-val {
         font-family: var(--font-heading, "Plus Jakarta Sans", sans-serif);
-        font-size: 18px;
-        font-weight: 800;
+        font-size: 23px;
+        font-weight: 850;
         color: #0f2657;
+        line-height: 1.15;
       }
 
       /* CONTROLS BAR */
       .qh-controls-bar {
-        padding: 12px 24px;
+        padding: 14px 24px;
         border-bottom: 1px solid #e2e8f0;
         display: flex;
-        align-items: center;
-        justify-content: space-between;
+        flex-direction: column;
         gap: 12px;
-        flex-wrap: wrap;
         background: #ffffff;
         flex-shrink: 0;
       }
-      .qh-filter-select {
-        padding: 7px 12px;
-        border-radius: 8px;
-        border: 1.5px solid #cbd5e1;
-        font-size: 13px;
-        font-weight: 600;
-        color: #1e293b;
-        background: #ffffff;
-        outline: none;
-      }
-      .qh-filter-select:focus {
-        border-color: #2563eb;
-      }
-      .qh-search-input {
-        padding: 7px 12px;
-        border-radius: 8px;
-        border: 1.5px solid #cbd5e1;
-        font-size: 13px;
-        color: #1e293b;
-        outline: none;
-        min-width: 200px;
-      }
-      .qh-search-input:focus {
-        border-color: #2563eb;
-      }
-
-      /* VIEW SWITCHER TABS */
-      .qh-controls-right {
+      .qh-controls-top-row {
         display: flex;
         align-items: center;
-        gap: 12px;
+        justify-content: space-between;
+        gap: 14px;
         flex-wrap: wrap;
       }
+      .qh-search-wrap {
+        position: relative;
+        flex: 1;
+        min-width: 260px;
+        display: flex;
+        align-items: center;
+      }
+      .qh-search-icon {
+        position: absolute;
+        left: 12px;
+        color: #94a3b8;
+        pointer-events: none;
+      }
+      .qh-search-input {
+        width: 100%;
+        padding: 9px 36px 9px 36px;
+        border-radius: 10px;
+        border: 1.5px solid #cbd5e1;
+        font-size: 13.5px;
+        color: #0f172a;
+        outline: none;
+        background: #f8fafc;
+        transition: all 0.2s ease;
+      }
+      .qh-search-input:focus {
+        background: #ffffff;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+      }
+      .qh-search-clear {
+        position: absolute;
+        right: 10px;
+        background: #e2e8f0;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        color: #64748b;
+        cursor: pointer;
+        padding: 0;
+        transition: all 0.15s ease;
+      }
+      .qh-search-clear:hover {
+        background: #cbd5e1;
+        color: #0f172a;
+      }
+
+      /* VIEW SWITCHER SEGMENTED CONTROL */
       .qh-view-switcher {
         display: inline-flex;
         background: #f1f5f9;
-        padding: 3px;
-        border-radius: 9px;
+        padding: 4px;
+        border-radius: 10px;
         border: 1px solid #e2e8f0;
+        flex-shrink: 0;
       }
-      .qh-view-btn {
-        padding: 6px 12px;
+      .qh-view-btn, .qh-view-tab-btn {
+        padding: 7px 14px;
         border-radius: 7px;
         border: none;
         background: transparent;
         color: #64748b;
-        font-size: 12px;
-        font-weight: 700;
+        font-size: 12.5px;
+        font-weight: 750;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
-        gap: 5px;
-        transition: all 0.15s ease;
+        gap: 6px;
+        transition: all 0.18s ease;
       }
-      .qh-view-btn:hover {
+      .qh-view-btn:hover, .qh-view-tab-btn:hover {
         color: #0f2657;
       }
-      .qh-view-btn.active {
+      .qh-view-btn.active, .qh-view-tab-btn.active {
         background: #ffffff;
-        color: #2563eb;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        color: #1d4ed8;
+        box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+      }
+
+      /* ROW 2: FILTERS */
+      .qh-controls-filter-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .qh-filter-group {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .qh-filter-group.flex-1 {
+        flex: 1;
+        min-width: 220px;
+      }
+      .qh-filter-label {
+        font-size: 12px;
+        font-weight: 750;
+        color: #64748b;
+        white-space: nowrap;
+      }
+      .qh-select-wrap {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+      }
+      .qh-select-wrap.flex-1 {
+        flex: 1;
+      }
+      .qh-filter-select {
+        appearance: none;
+        -webkit-appearance: none;
+        padding: 7px 30px 7px 12px;
+        border-radius: 8px;
+        border: 1.5px solid #cbd5e1;
+        font-size: 12.5px;
+        font-weight: 650;
+        color: #1e293b;
+        background: #ffffff;
+        outline: none;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        width: 100%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+      .qh-filter-select:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+      }
+      .qh-select-arrow {
+        position: absolute;
+        right: 9px;
+        color: #64748b;
+        pointer-events: none;
       }
 
       /* CONTEXT NOTICE BANNER */
@@ -904,52 +1015,88 @@
         background: #ffffff;
         border: 1.5px solid #e2e8f0;
         border-radius: 16px;
-        padding: 18px 20px;
-        transition: all 0.2s ease;
+        padding: 20px 22px;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         display: flex;
         flex-direction: column;
         gap: 14px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.02);
       }
       .qh-topic-group-card:hover {
         border-color: #93c5fd;
-        box-shadow: 0 8px 24px -6px rgba(37, 99, 235, 0.12);
+        box-shadow: 0 8px 24px -4px rgba(37, 99, 235, 0.1);
+        transform: translateY(-1px);
       }
       .qh-tg-header {
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
-        gap: 14px;
+        gap: 16px;
         flex-wrap: wrap;
       }
       .qh-tg-title-wrap {
         flex: 1;
         min-width: 250px;
       }
-      .qh-tg-title {
-        font-family: var(--font-heading, "Plus Jakarta Sans", sans-serif);
-        font-size: 16.5px;
-        font-weight: 800;
-        color: #0f2657;
-        margin: 0;
-        line-height: 1.35;
+      .qh-tg-subj-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+        flex-wrap: wrap;
       }
-      .qh-tg-meta-badge {
-        background: #f1f5f9;
+      .qh-tg-count-badge {
+        background: #f8fafc;
         color: #475569;
+        border: 1px solid #e2e8f0;
         font-size: 11.5px;
         font-weight: 700;
-        padding: 3px 8px;
+        padding: 3px 9px;
         border-radius: 6px;
         display: inline-flex;
         align-items: center;
-        gap: 5px;
-        border: 1px solid #e2e8f0;
+        gap: 4px;
       }
+      .qh-tg-title {
+        font-family: var(--font-heading, "Plus Jakarta Sans", sans-serif);
+        font-size: 17px;
+        font-weight: 800;
+        color: #0f2657;
+        margin: 0;
+        line-height: 1.4;
+      }
+
+      /* Nút "Làm bài thi đề này" */
+      .qh-tg-retry-btn {
+        background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+        color: #ffffff;
+        border: none;
+        border-radius: 9px;
+        padding: 9px 18px;
+        font-size: 13px;
+        font-weight: 750;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        box-shadow: 0 3px 10px rgba(37, 99, 235, 0.28);
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        flex-shrink: 0;
+      }
+      .qh-tg-retry-btn:hover {
+        background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 5px 16px rgba(37, 99, 235, 0.38);
+      }
+      .qh-tg-retry-btn:active {
+        transform: translateY(0);
+      }
+
+      /* KHỐI 3 KPI METRIC CHO BỘ ĐỀ */
       .qh-tg-kpi-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
+        gap: 12px;
       }
       @media (max-width: 640px) {
         .qh-tg-kpi-grid {
@@ -957,10 +1104,14 @@
         }
       }
       .qh-tg-kpi-item {
-        border-radius: 10px;
-        padding: 10px 14px;
-        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 12px 16px;
+        border: 1.5px solid #e2e8f0;
         background: #f8fafc;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: all 0.15s ease;
       }
       .qh-tg-kpi-item.high {
         background: #f0fdf4;
@@ -976,58 +1127,64 @@
       }
       .qh-tg-kpi-lbl {
         font-size: 11px;
-        font-weight: 700;
+        font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.04em;
         display: flex;
         align-items: center;
-        gap: 5px;
-        margin-bottom: 4px;
+        gap: 6px;
+        margin-bottom: 6px;
       }
       .qh-tg-kpi-item.high .qh-tg-kpi-lbl { color: #15803d; }
       .qh-tg-kpi-item.avg .qh-tg-kpi-lbl { color: #1d4ed8; }
       .qh-tg-kpi-item.latest .qh-tg-kpi-lbl { color: #7e22ce; }
       .qh-tg-kpi-val {
         font-family: var(--font-heading, "Plus Jakarta Sans", sans-serif);
-        font-size: 21px;
-        font-weight: 800;
+        font-size: 23px;
+        font-weight: 850;
         line-height: 1.1;
       }
       .qh-tg-kpi-item.high .qh-tg-kpi-val { color: #16a34a; }
       .qh-tg-kpi-item.avg .qh-tg-kpi-val { color: #2563eb; }
-      .qh-tg-kpi-item.latest .qh-tg-kpi-val { color: #9333ea; font-size: 18px; }
+      .qh-tg-kpi-item.latest .qh-tg-kpi-val { color: #9333ea; }
       .qh-tg-kpi-unit {
         font-size: 12.5px;
-        font-weight: 600;
-        opacity: 0.75;
+        font-weight: 700;
+        opacity: 0.8;
       }
       .qh-tg-kpi-time {
         font-size: 11.5px;
         font-weight: 600;
         color: #7e22ce;
-        display: block;
-        margin-top: 2px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 4px;
       }
+
+      /* ACCORDION XEM DANH SÁCH LẦN THI */
       .qh-tg-accordion-btn {
         width: 100%;
-        padding: 9px 14px;
+        padding: 10px 16px;
         background: #f8fafc;
         border: 1px solid #e2e8f0;
-        border-radius: 9px;
-        font-size: 12.5px;
+        border-radius: 10px;
+        font-size: 13px;
         font-weight: 700;
         color: #334155;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        transition: all 0.15s ease;
+        transition: all 0.18s ease;
       }
       .qh-tg-accordion-btn:hover {
         background: #f1f5f9;
         border-color: #cbd5e1;
+        color: #0f2657;
       }
       .qh-accordion-arrow {
+        font-size: 14px;
         transition: transform 0.2s ease;
       }
       .qh-tg-accordion-panel {
@@ -1035,9 +1192,9 @@
         flex-direction: column;
         gap: 8px;
         margin-top: 8px;
-        padding: 10px;
+        padding: 12px;
         background: #f8fafc;
-        border-radius: 10px;
+        border-radius: 12px;
         border: 1px solid #e2e8f0;
       }
       .qh-tg-nested-row {
@@ -1045,9 +1202,14 @@
         align-items: center;
         justify-content: space-between;
         gap: 12px;
-        padding: 8px 12px;
+        padding: 9px 14px;
         background: #ffffff;
-        border-radius: 8px;
+        border-radius: 9px;
+        border: 1px solid #e2e8f0;
+        font-size: 13px;
+        flex-wrap: wrap;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+      }
         border: 1px solid #e2e8f0;
         font-size: 13px;
         flex-wrap: wrap;
@@ -1157,34 +1319,40 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        padding: 4px 10px;
-        border-radius: 8px;
-        font-size: 12px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        padding: 5px 12px;
+        border-radius: 10px;
+        backdrop-filter: blur(8px);
       }
       .qh-sync-status {
-        font-size: 11.5px;
+        font-size: 12px;
         font-weight: 600;
-        color: #475569;
-      }
-      .btn-qh-sync {
-        background: #eff6ff;
-        border: 1px solid #bfdbfe;
-        color: #1d4ed8;
-        padding: 4px 10px;
-        border-radius: 6px;
-        font-size: 11.5px;
-        font-weight: 700;
-        cursor: pointer;
+        color: #f1f5f9;
         display: inline-flex;
         align-items: center;
         gap: 5px;
-        transition: all 0.15s ease;
+      }
+      .btn-qh-sync {
+        background: #ffffff;
+        border: none;
+        color: #1e3a8a;
+        padding: 5px 12px;
+        border-radius: 7px;
+        font-size: 12px;
+        font-weight: 750;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        transition: all 0.18s ease;
       }
       .btn-qh-sync:hover {
-        background: #dbeafe;
-        border-color: #93c5fd;
+        background: #eff6ff;
+        color: #1d4ed8;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 8px rgba(0,0,0,0.18);
       }
 
       /* LIST BODY */
@@ -1526,20 +1694,40 @@
         <!-- STATS BAR -->
         <div class="qh-stats-row">
           <div class="qh-stat-card">
-            <div class="qh-stat-lbl">Lượt làm bài</div>
+            <div class="qh-stat-header">
+              <span class="qh-stat-lbl">Lượt làm bài</span>
+              <span class="qh-stat-icon slate">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              </span>
+            </div>
             <div class="qh-stat-val" id="qhStatAttempts">0</div>
           </div>
           <div class="qh-stat-card">
-            <div class="qh-stat-lbl">Điểm trung bình</div>
+            <div class="qh-stat-header">
+              <span class="qh-stat-lbl">Điểm trung bình</span>
+              <span class="qh-stat-icon blue">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m19 9-5 5-4-4-3 3"/><path d="M3 3v18h18"/></svg>
+              </span>
+            </div>
             <div class="qh-stat-val" id="qhStatAvg" style="color:#2563eb;">0.00đ</div>
           </div>
           <div class="qh-stat-card">
-            <div class="qh-stat-lbl">Điểm cao nhất</div>
+            <div class="qh-stat-header">
+              <span class="qh-stat-lbl">Điểm cao nhất</span>
+              <span class="qh-stat-icon green">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+              </span>
+            </div>
             <div class="qh-stat-val" id="qhStatHigh" style="color:#16a34a;">0.00đ</div>
           </div>
           <div class="qh-stat-card">
-            <div class="qh-stat-lbl">Tỷ lệ chính xác</div>
-            <div class="qh-stat-val" id="qhStatAcc">0%</div>
+            <div class="qh-stat-header">
+              <span class="qh-stat-lbl">Tỷ lệ chính xác</span>
+              <span class="qh-stat-icon purple">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+              </span>
+            </div>
+            <div class="qh-stat-val" id="qhStatAcc" style="color:#7c3aed;">0%</div>
           </div>
         </div>
 
@@ -1547,40 +1735,66 @@
 
         <!-- CONTROLS BAR -->
         <div class="qh-controls-bar">
-          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-            <select class="qh-filter-select" id="qhFilterSubject">
-              <option value="all">-- Tất cả môn học --</option>
-              <option value="toan">Toán học 12</option>
-              <option value="vatli">Vật lí 12</option>
-              <option value="hoa">Hóa học 12</option>
-              <option value="sinh">Sinh học 12</option>
-              <option value="tinhoc">Tin học 12</option>
-              <option value="lichsu">Lịch sử 12</option>
-            </select>
+          <!-- HÀNG 1: TÌM KIẾM & CHUYỂN CHẾ ĐỘ XEM (SEGMENTED CONTROL) -->
+          <div class="qh-controls-top-row">
+            <div class="qh-search-wrap">
+              <svg class="qh-search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" class="qh-search-input" id="qhSearchInput" placeholder="Tìm tên đề thi, bài học, môn học...">
+              <button type="button" class="qh-search-clear" id="btnQhSearchClear" style="display:none;" title="Xóa tìm kiếm">✕</button>
+            </div>
 
-            <select class="qh-filter-select" id="qhFilterTopic">
-              <option value="all">-- Tất cả bộ đề --</option>
-            </select>
-
-            <select class="qh-filter-select" id="qhSortBy">
-              <option value="newest">Thời gian: Mới nhất trước</option>
-              <option value="highest">Điểm số: Cao xuống thấp</option>
-              <option value="lowest">Điểm số: Thấp lên cao</option>
-            </select>
+            <div class="qh-view-switcher">
+              <button type="button" class="qh-view-btn qh-view-tab-btn active" id="btnQhViewByTopic" title="Gom nhóm lịch sử theo từng bộ đề thi">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                <span>Theo bộ đề</span>
+              </button>
+              <button type="button" class="qh-view-btn qh-view-tab-btn" id="btnQhViewByList" title="Xem danh sách chi tiết tất cả các lượt làm">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>Từng lượt làm</span>
+              </button>
+            </div>
           </div>
 
-          <div class="qh-view-switcher">
-            <button type="button" class="qh-view-tab-btn active" id="btnQhViewByTopic" title="Gom nhóm lịch sử theo từng bộ đề thi">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-              <span>Theo bộ đề</span>
-            </button>
-            <button type="button" class="qh-view-tab-btn" id="btnQhViewByList" title="Xem danh sách chi tiết tất cả các lượt làm">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              <span>Từng lượt làm</span>
-            </button>
-          </div>
+          <!-- HÀNG 2: BỘ LỌC MÔN HỌC, BỘ ĐỀ VÀ SẮP XẾP -->
+          <div class="qh-controls-filter-row">
+            <div class="qh-filter-group">
+              <label class="qh-filter-label">Môn học:</label>
+              <div class="qh-select-wrap">
+                <select class="qh-filter-select" id="qhFilterSubject">
+                  <option value="all">Tất cả môn học</option>
+                  <option value="toan">Toán học 12</option>
+                  <option value="vatli">Vật lí 12</option>
+                  <option value="hoa">Hóa học 12</option>
+                  <option value="sinh">Sinh học 12</option>
+                  <option value="tinhoc">Tin học 12</option>
+                  <option value="lichsu">Lịch sử 12</option>
+                </select>
+                <svg class="qh-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+            </div>
 
-          <input type="text" class="qh-search-input" id="qhSearchInput" placeholder="Tìm tên đề thi, bài học...">
+            <div class="qh-filter-group flex-1">
+              <label class="qh-filter-label">Bộ đề thi:</label>
+              <div class="qh-select-wrap flex-1">
+                <select class="qh-filter-select" id="qhFilterTopic">
+                  <option value="all">Tất cả bộ đề thi</option>
+                </select>
+                <svg class="qh-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+            </div>
+
+            <div class="qh-filter-group">
+              <label class="qh-filter-label">Sắp xếp:</label>
+              <div class="qh-select-wrap">
+                <select class="qh-filter-select" id="qhSortBy">
+                  <option value="newest">Mới nhất trước</option>
+                  <option value="highest">Điểm cao nhất</option>
+                  <option value="lowest">Điểm thấp nhất</option>
+                </select>
+                <svg class="qh-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- LIST CONTAINER -->
@@ -1683,9 +1897,17 @@
     });
 
     let searchDebounce = null;
-    document.getElementById("qhSearchInput")?.addEventListener("input", () => {
+    const qhSearchInp = document.getElementById("qhSearchInput");
+    const qhSearchClr = document.getElementById("btnQhSearchClear");
+    qhSearchInp?.addEventListener("input", () => {
+      if (qhSearchClr) qhSearchClr.style.display = qhSearchInp.value.trim() ? "flex" : "none";
       clearTimeout(searchDebounce);
       searchDebounce = setTimeout(renderHistoryList, 250);
+    });
+    qhSearchClr?.addEventListener("click", () => {
+      if (qhSearchInp) qhSearchInp.value = "";
+      qhSearchClr.style.display = "none";
+      renderHistoryList();
     });
 
     document.getElementById("btnQhExport")?.addEventListener("click", () => KeduQuizHistory.exportHistory());
@@ -1717,7 +1939,7 @@
     if (!topicSelect) return;
 
     const topics = KeduQuizHistory.getAllTopicsForSubject(selectedSubj);
-    let optionsHtml = '<option value="all">-- Tất cả bộ đề thi --</option>';
+    let optionsHtml = '<option value="all">Tất cả bộ đề thi</option>';
 
     topics.forEach(t => {
       const isSel = (String(t.topicId) === String(keepSelectedTopic)) ? 'selected' : '';
@@ -1869,10 +2091,13 @@
       html += `
         <div class="qh-topic-group-card" id="qhTopicCard_${sum.key}">
           <div class="qh-tg-header">
-            <div>
+            <div class="qh-tg-title-wrap">
               <div class="qh-tg-subj-row">
                 <span class="qh-badge qh-badge-subj">${escapeHTML(sum.subjectName)}</span>
-                <span class="qh-tg-count-badge">${sum.totalAttempts} lượt làm bài</span>
+                <span class="qh-tg-count-badge">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  ${sum.totalAttempts} lượt làm bài
+                </span>
               </div>
               <h3 class="qh-tg-title">${escapeHTML(sum.topicTitle)}</h3>
             </div>
