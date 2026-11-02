@@ -477,16 +477,21 @@ function renderDashboard() {
         `;
       }
 
-      // Cấu trúc chi tiết 3 phần
+      // Cấu trúc chi tiết các phần
       const partsDetail = [];
       if (mcCount > 0) partsDetail.push(`Phần I: ${mcCount} câu`);
       if (tfCount > 0) partsDetail.push(`Phần II: ${tfCount} câu`);
       if (saCount > 0) partsDetail.push(`Phần III: ${saCount} câu`);
       const partsSummary = partsDetail.join(' • ');
 
-      // Nút hành động: Cho phép làm Trọn bộ 3 phần HOẶC Tách riêng từng phần để luyện tập
+      const activePartsCount = partsDetail.length;
+      const partSetLabel = activePartsCount > 1
+        ? `Trọn bộ ${activePartsCount} phần`
+        : (mcCount > 0 ? 'Phần I: Trắc nghiệm' : (tfCount > 0 ? 'Phần II: Đúng sai' : 'Phần III: Trả lời ngắn'));
+
+      // Nút hành động: Cho phép làm Trọn bộ các phần HOẶC Tách riêng từng phần để luyện tập
       const fullActionBtn = totalCount > 0
-        ? `<button class="btn-h-action primary btn-start-full" onclick="startQuiz('${set.id}', 'full')" title="Vào làm bài thi trọn bộ 3 phần (${totalCount} câu • 10.0 điểm)">
+        ? `<button class="btn-h-action primary btn-start-full" onclick="startQuiz('${set.id}', 'full')" title="Vào làm bài thi ${partSetLabel.toLowerCase()} (${totalCount} câu • 10.0 điểm)">
              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
              <span>Vào làm bài thi (${totalCount} câu • 10.0đ)</span>
            </button>`
@@ -540,7 +545,7 @@ function renderDashboard() {
             <div class="h-card-question-count">
               <span class="h-count-main">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                <strong>${totalCount} câu</strong> (Trọn bộ 3 phần • 10.0 điểm)
+                <strong>${totalCount} câu</strong> (${partSetLabel} • 10.0 điểm)
               </span>
               ${partsSummary ? `<span class="h-count-sub">${partsSummary}</span>` : ''}
             </div>
@@ -790,7 +795,16 @@ function startQuiz(setId, mode = "full") {
     partMaxPoints = { mc: bd.mcTotal, tf: bd.tfTotal, sa: bd.saTotal };
 
     if (quizModeBadge) {
-      quizModeBadge.textContent = `Trọn bộ 3 phần (${activeQuestions.length} câu • 10.0đ)`;
+      const activeParts = [];
+      if (listMc.length > 0) activeParts.push("Trắc nghiệm");
+      if (listTf.length > 0) activeParts.push("Đúng sai");
+      if (listSa.length > 0) activeParts.push("Trả lời ngắn");
+
+      const fullBadgeLabel = activeParts.length > 1
+        ? `Trọn bộ ${activeParts.length} phần (${activeQuestions.length} câu • 10.0đ)`
+        : `Bài thi (${activeQuestions.length} câu • 10.0đ)`;
+
+      quizModeBadge.textContent = fullBadgeLabel;
       quizModeBadge.className = "quiz-mode-pill badge-state mc";
     }
   }
@@ -1281,7 +1295,7 @@ function renderQuizQuestion() {
             </button>
           ` : ''}
           <button class="btn-primary-action btn-start-full" onclick="startQuiz('${currentSetId}', 'full')">
-            Làm lại trọn bộ 3 phần (10.0đ)
+            Làm lại bài thi trọn bộ (10.0đ)
           </button>
           ${bd.mcCount > 0 ? `
             <button class="btn-secondary-action" onclick="startQuiz('${currentSetId}', 'mc')">
