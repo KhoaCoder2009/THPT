@@ -363,16 +363,16 @@ window.KEDU_DATABASE_DATA = {
       "subject_id": "toan",
       "topic_id": "1",
       "type": "mc",
-      "question_text": "Cho hàm số $f(x)$ có đạo hàm $f'(x) = (x + 1)(x - 2)^3 (x - 4)^2$. Hàm số đã cho có bao nhiêu điểm cực trị?",
+      "question_text": "Cho hàm số $y=\\frac{\\sqrt{x^2 - 9}}{x^2 - 4x + 3}$. Chọn khẳng định đúng:",
       "options": [
-        "1.",
-        "2.",
-        "3.",
-        "4."
+        "Đồ thị hàm số có đường tiệm cận đứng là $x=1$.",
+        "Đồ thị hàm số có hai đường tiệm cận đứng $x=1$ và $x=3$.",
+        "Đồ thị hàm số có đường tiệm cận đứng là $x=3$.",
+        "Đồ thị hàm số không có tiệm cận ngang."
       ],
-      "correct_index": 1,
+      "correct_index": 2,
       "accepted_answers": [],
-      "explanation": "Ta có $f'(x) = (x+1)(x-2)^3(x-4)^2 = 0 \\Leftrightarrow x = -1$, $x = 2$, $x = 4$. Trong đó: $x = -1$ (bội 1) và $x = 2$ (bội 3) là các nghiệm bội lẻ nên $f'(x)$ đổi dấu khi qua các nghiệm này; $x = 4$ (bội 2) là nghiệm bội chẵn nên $f'(x)$ không đổi dấu. Do đó hàm số có đúng 2 điểm cực trị. Đáp án B.",
+      "explanation": "Điều kiện xác định: $x^2 - 9 \\ge 0 \\Leftrightarrow x \\le -3$ hoặc $x \\ge 3$. Mẫu số bằng $0$ khi $x=1$ hoặc $x=3$, do đó tập xác định là $(-\\infty; -3] \\cup (3; +\\infty)$. Ta có $x^2 - 4x + 3 = (x-1)(x-3)$. Khi $x \\to 3^+$, ta có $y = \\frac{\\sqrt{x+3}}{(x-1)\\sqrt{x-3}} \\to +\\infty \\Rightarrow x = 3$ là tiệm cận đứng. Vì $x=1$ không thuộc tập xác định và không phải điểm tụ nên $x=1$ không là tiệm cận đứng. Ngoài ra khi $x \\to \\pm\\infty$ thì $y \\to 0$ nên tiệm cận ngang là $y=0$. Đáp án C.",
       "diagram": null,
       "order_index": 1
     },
@@ -381,17 +381,17 @@ window.KEDU_DATABASE_DATA = {
       "subject_id": "toan",
       "topic_id": "1",
       "type": "mc",
-      "question_text": "Đồ thị ở hình vẽ bên dưới là đồ thị của hàm số nào?",
+      "question_text": "Cho hàm số $y=f(x)$ liên tục trên đoạn $[-1;4]$ và có đồ thị như hình vẽ dưới đây. Giá trị nhỏ nhất của hàm số trên đoạn $[-1;4]$ là:",
       "options": [
-        "$y = \\frac{x^2 - 1}{x}$",
-        "$y = \\frac{x^2 + 1}{x}$",
-        "$y = \\frac{x + 1}{x}$",
-        "$y = \\frac{x^2 - 2x + 1}{x}$"
+        "$3$",
+        "$-2$",
+        "$2$",
+        "$1$"
       ],
       "correct_index": 1,
       "accepted_answers": [],
-      "explanation": "Đồ thị có đường tiệm cận đứng là trục tung $x = 0$ và tiệm cận xiên $y = x$. Điểm cực tiểu tại $(1; 2)$ và điểm cực đại tại $(-1; -2)$. Xét hàm số $y = \\frac{x^2+1}{x} = x + \\frac{1}{x}$: đạo hàm $y' = 1 - \\frac{1}{x^2} = 0 \\Leftrightarrow x = \\pm 1$, $y(1) = 2$, $y(-1) = -2$. Tiệm cận xiên $y = x$. Hoàn toàn trùng khớp với đồ thị hình vẽ. Đáp án B.",
-      "diagram": "<div class=\"quiz-diagram-box\"><img src=\"../assets/images/diagrams/toan_gk1_mc_c3.png\" alt=\"Đồ thị hàm số phân thức\" class=\"quiz-diagram-img\"></div>",
+      "explanation": "Quan sát đồ thị: tại $x=2$, đồ thị đạt tung độ $-2$; ở đầu mút $x=-1$, tung độ cũng là $-2$. Điểm cực đại tại $x=4$ có tung độ $3$. Không có điểm nào trên đoạn $[-1;4]$ nằm thấp hơn đường thẳng $y=-2$. Do đó $\\min_{[-1;4]} f(x) = -2$. Đáp án B.",
+      "diagram": "<div class=\"quiz-diagram-box\"><img src=\"../assets/images/diagrams/toan_gk1_mc_c2.png\" alt=\"Đồ thị hàm số trên đoạn [-1;4]\" class=\"quiz-diagram-img\"></div>",
       "order_index": 2
     },
     {
@@ -1135,7 +1135,7 @@ window.KEDU_DATABASE_DATA = {
           "isCorrect": false
         },
         {
-          "text": "Nếu thay dung dịch NaOH ở bước 2 bằng dung dịch KOH thì hiện tượng ở bước 2 vẫn tương tự.",
+          "text": "Nếu thay dung dịch NaOH ở bước 1 bằng dung dịch KOH thì hiện tượng ở bước 2 vẫn tương tự.",
           "isCorrect": true
         },
         {
