@@ -1534,6 +1534,7 @@
       <!-- 1. MODAL ĐĂNG NHẬP RIÊNG BIỆT -->
       <div class="auth-modal-overlay" id="loginModal" aria-hidden="true">
         <div class="auth-modal-card" role="dialog" aria-modal="true" aria-labelledby="loginModalTitle">
+          <div class="auth-mobile-sheet-handle" aria-hidden="true"><span></span></div>
           <div class="auth-card-progressbar" id="loginProgressBar" aria-hidden="true">
             <div class="auth-progressbar-indicator"></div>
           </div>
@@ -1547,6 +1548,17 @@
             </div>
             <h3 class="auth-modal-title" id="loginModalTitle">Đăng Nhập Tài Khoản</h3>
             <p class="auth-modal-subtitle">Truy cập ngân hàng ôn luyện và làm bài thi trực tuyến</p>
+          </div>
+
+          <div class="auth-tabs-row" role="tablist" aria-label="Chuyển đổi Đăng nhập và Đăng ký">
+            <button type="button" class="auth-tab-btn active auth-switch-tab-login" role="tab" aria-selected="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+              <span>Đăng nhập</span>
+            </button>
+            <button type="button" class="auth-tab-btn auth-switch-tab-register" role="tab" aria-selected="false">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+              <span>Đăng ký</span>
+            </button>
           </div>
 
           <div class="auth-modal-body">
@@ -1580,7 +1592,7 @@
                 </div>
               </div>
 
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; font-size: 13px;">
+              <div class="auth-remember-row" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; font-size: 13px;">
                 <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer; color: #475569; font-weight: 500; user-select: none;">
                   <input type="checkbox" id="loginRemember" checked style="accent-color: #dc2626; width: 16px; height: 16px; border-radius: 4px; cursor: pointer;">
                   <span>Ghi nhớ phiên đăng nhập</span>
@@ -1604,6 +1616,7 @@
       <!-- 2. MODAL ĐĂNG KÝ RIÊNG BIỆT -->
       <div class="auth-modal-overlay" id="registerModal" aria-hidden="true">
         <div class="auth-modal-card" role="dialog" aria-modal="true" aria-labelledby="registerModalTitle">
+          <div class="auth-mobile-sheet-handle" aria-hidden="true"><span></span></div>
           <div class="auth-card-progressbar" id="registerProgressBar" aria-hidden="true">
             <div class="auth-progressbar-indicator"></div>
           </div>
@@ -1617,6 +1630,17 @@
             </div>
             <h3 class="auth-modal-title" id="registerModalTitle">Tạo Tài Khoản Học Viên</h3>
             <p class="auth-modal-subtitle">Khởi tạo tài khoản ôn luyện và làm bài thi trực tuyến miễn phí</p>
+          </div>
+
+          <div class="auth-tabs-row" role="tablist" aria-label="Chuyển đổi Đăng nhập và Đăng ký">
+            <button type="button" class="auth-tab-btn auth-switch-tab-login" role="tab" aria-selected="false">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+              <span>Đăng nhập</span>
+            </button>
+            <button type="button" class="auth-tab-btn active auth-switch-tab-register" role="tab" aria-selected="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+              <span>Đăng ký</span>
+            </button>
           </div>
 
           <div class="auth-modal-body">
@@ -1686,7 +1710,7 @@
 
               <div class="auth-form-footer">
                 <span>Đã có tài khoản?</span>
-                <button type="button" class="auth-link" id="linkToLogin">← Đã có tài khoản? Đăng nhập ngay</button>
+                <button type="button" class="auth-link" id="linkToLogin">← Đăng nhập ngay</button>
               </div>
             </form>
           </div>
@@ -1696,6 +1720,7 @@
       <!-- 3. MODAL ĐỔI MẬT KHẨU RIÊNG BIỆT -->
       <div class="auth-modal-overlay" id="changePasswordModal" aria-hidden="true">
         <div class="auth-modal-card" role="dialog" aria-modal="true" aria-labelledby="changePasswordModalTitle">
+          <div class="auth-mobile-sheet-handle" aria-hidden="true"><span></span></div>
           <div class="auth-card-progressbar" id="changePasswordProgressBar" aria-hidden="true">
             <div class="auth-progressbar-indicator"></div>
           </div>
@@ -1775,6 +1800,7 @@
       <!-- MODAL KÍCH HOẠT MÔN HỌC BẰNG KEY DÀNH CHO USER -->
       <div class="auth-modal-overlay" id="activateKeyModal" aria-hidden="true">
         <div class="auth-modal-card" role="dialog" aria-modal="true" style="max-width: 460px;">
+          <div class="auth-mobile-sheet-handle" aria-hidden="true"><span></span></div>
           <div class="auth-card-progressbar" id="activateKeyProgressBar" aria-hidden="true">
             <div class="auth-progressbar-indicator"></div>
           </div>
@@ -2455,6 +2481,74 @@
       linkCancelChangePwd.addEventListener("click", () => closeAllAuthModals());
     }
 
+    // Segmented Tab Switcher (Đăng nhập / Đăng ký)
+    document.querySelectorAll(".auth-switch-tab-login").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (!loginModal?.classList.contains("active")) {
+          openLoginModal();
+        }
+      });
+    });
+    document.querySelectorAll(".auth-switch-tab-register").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (!registerModal?.classList.contains("active")) {
+          openRegisterModal();
+        }
+      });
+    });
+
+    // Mobile Touch Swipe-Down to Dismiss Sheet (Mượt mà như ứng dụng Native trên điện thoại)
+    [loginModal, registerModal, changePasswordModal, activateKeyModal].forEach(overlay => {
+      if (!overlay) return;
+      const card = overlay.querySelector(".auth-modal-card");
+      const dragZone = overlay.querySelector(".auth-mobile-sheet-handle");
+      const topZone = overlay.querySelector(".auth-modal-top");
+      if (!card) return;
+
+      let startY = 0;
+      let currentDeltaY = 0;
+      let isDraggingSheet = false;
+
+      const onTouchStart = (e) => {
+        if (window.innerWidth > 640 || e.touches.length !== 1) return;
+        startY = e.touches[0].clientY;
+        currentDeltaY = 0;
+        isDraggingSheet = true;
+        card.style.transition = "none";
+      };
+
+      const onTouchMove = (e) => {
+        if (!isDraggingSheet) return;
+        const deltaY = e.touches[0].clientY - startY;
+        if (deltaY > 0) {
+          currentDeltaY = deltaY;
+          card.style.transform = `translate3d(0, ${deltaY * 0.85}px, 0)`;
+        }
+      };
+
+      const onTouchEnd = () => {
+        if (!isDraggingSheet) return;
+        isDraggingSheet = false;
+        card.style.transition = "";
+        card.style.transform = "";
+        if (currentDeltaY > 95) {
+          if (overlay === activateKeyModal) {
+            closeActivateKeyModal();
+          } else {
+            closeAllAuthModals();
+          }
+        }
+        currentDeltaY = 0;
+      };
+
+      [dragZone, topZone].forEach(zone => {
+        if (!zone) return;
+        zone.addEventListener("touchstart", onTouchStart, { passive: true });
+        zone.addEventListener("touchmove", onTouchMove, { passive: true });
+        zone.addEventListener("touchend", onTouchEnd, { passive: true });
+      });
+    });
+
     // Toggle password eye button
     document.querySelectorAll(".auth-toggle-pwd").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -2966,12 +3060,20 @@
     });
   }
 
+  function isDesktopPointer() {
+    return typeof window !== "undefined" && window.matchMedia && window.matchMedia("(min-width: 769px) and (pointer: fine)").matches;
+  }
+
   function closeAllAuthModals() {
     ["loginModal", "registerModal", "changePasswordModal"].forEach(id => {
       const el = document.getElementById(id);
       if (el) {
-        el.classList.remove("active");
+        el.classList.remove("active", "is-tab-switch");
         el.setAttribute("aria-hidden", "true");
+        const card = el.querySelector(".auth-modal-card");
+        if (card) {
+          card.classList.remove("switch-to-register", "switch-to-login");
+        }
       }
     });
     const authModal = document.getElementById("authModal");
@@ -2979,6 +3081,7 @@
       authModal.classList.remove("active");
       authModal.setAttribute("aria-hidden", "true");
     }
+    document.body.classList.remove("auth-modal-open");
   }
 
   function closeModal() {
@@ -2987,11 +3090,22 @@
 
   function openLoginModal() {
     injectAuthModal();
+    const wasRegisterActive = document.getElementById("registerModal")?.classList.contains("active");
     closeAllAuthModals();
     const modal = document.getElementById("loginModal");
     if (!modal) return;
+    const card = modal.querySelector(".auth-modal-card");
+    if (wasRegisterActive) {
+      modal.classList.add("is-tab-switch");
+      if (card) {
+        card.classList.remove("switch-to-register");
+        void card.offsetWidth;
+        card.classList.add("switch-to-login");
+      }
+    }
     modal.classList.add("active");
     modal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("auth-modal-open");
     const alertBox = document.getElementById("loginAlertBox");
     if (alertBox) {
       alertBox.className = "auth-alert";
@@ -3008,16 +3122,29 @@
     if (form) form.classList.remove("is-submitting");
     const pBar = document.getElementById("loginProgressBar");
     if (pBar) pBar.classList.remove("is-active");
-    setTimeout(() => document.getElementById("loginUsername")?.focus(), 150);
+    if (isDesktopPointer()) {
+      setTimeout(() => document.getElementById("loginUsername")?.focus(), 180);
+    }
   }
 
   function openRegisterModal() {
     injectAuthModal();
+    const wasLoginActive = document.getElementById("loginModal")?.classList.contains("active");
     closeAllAuthModals();
     const modal = document.getElementById("registerModal");
     if (!modal) return;
+    const card = modal.querySelector(".auth-modal-card");
+    if (wasLoginActive) {
+      modal.classList.add("is-tab-switch");
+      if (card) {
+        card.classList.remove("switch-to-login");
+        void card.offsetWidth;
+        card.classList.add("switch-to-register");
+      }
+    }
     modal.classList.add("active");
     modal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("auth-modal-open");
     const alertBox = document.getElementById("registerAlertBox");
     if (alertBox) {
       alertBox.className = "auth-alert";
@@ -3048,7 +3175,9 @@
       regPwdMatchNotice.textContent = "";
       regPwdMatchNotice.className = "auth-pwd-match-text";
     }
-    setTimeout(() => document.getElementById("regUsername")?.focus(), 150);
+    if (isDesktopPointer()) {
+      setTimeout(() => document.getElementById("regUsername")?.focus(), 180);
+    }
   }
 
   function openChangePasswordModal() {
@@ -3058,12 +3187,15 @@
     if (!modal) return;
     modal.classList.add("active");
     modal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("auth-modal-open");
     const alertBox = document.getElementById("changePasswordAlertBox");
     if (alertBox) {
       alertBox.className = "auth-alert";
       alertBox.innerHTML = "";
     }
-    setTimeout(() => document.getElementById("changeOldPassword")?.focus(), 150);
+    if (isDesktopPointer()) {
+      setTimeout(() => document.getElementById("changeOldPassword")?.focus(), 180);
+    }
   }
 
   function openModal(tab = "login") {
