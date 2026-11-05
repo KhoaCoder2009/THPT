@@ -842,12 +842,14 @@
       }
 
       const keyData = normalizeKey(rawKey);
+      const isAllSubjectsKey = (keyData.subjectId || "").toLowerCase() === "all";
       const subj = getSubjectById(keyData.subjectId);
-      const keySubjName = subj ? subj.name : (keyData.subjectId === "all" ? "Tất cả các môn (Combo VIP)" : keyData.subjectId);
+      const keySubjName = subj ? subj.name : (isAllSubjectsKey ? "Tất cả các môn (Combo VIP)" : keyData.subjectId);
 
       // Kiểm tra mã key có nhập đúng vào môn / chức năng của key đó hay không
+      // Lưu ý: Key All môn ("all") thì nhập ở môn nào cũng được và mở toàn bộ tất cả các môn luôn!
       const targetSubjId = (expectedSubjectId || window.CURRENT_SUBJECT_ID || "").trim().toLowerCase();
-      if (targetSubjId && keyData.subjectId.toLowerCase() !== targetSubjId) {
+      if (!isAllSubjectsKey && targetSubjId && keyData.subjectId.toLowerCase() !== targetSubjId) {
         const targetSubj = getSubjectById(targetSubjId);
         const targetSubjName = targetSubj ? targetSubj.name : targetSubjId;
         return {
@@ -894,8 +896,8 @@
       if (!userObj.unlockedSubjects) userObj.unlockedSubjects = [];
 
       // Kiểm tra xem tài khoản đã mở khóa môn này chưa
-      if (userObj.unlockedSubjects.includes(keyData.subjectId) || (keyData.subjectId !== "all" && userObj.unlockedSubjects.includes("all"))) {
-        return { success: false, message: `Tài khoản @${currentUser.username} đã được mở khóa môn ${keySubjName} từ trước rồi!` };
+      if (userObj.unlockedSubjects.includes("all") || (!isAllSubjectsKey && userObj.unlockedSubjects.includes(keyData.subjectId))) {
+        return { success: false, message: `Tài khoản @${currentUser.username} đã được mở khóa ${isAllSubjectsKey ? "Tất cả các môn (Combo VIP)" : "môn " + keySubjName} từ trước rồi!` };
       }
 
       // Thêm người dùng vào danh sách kích hoạt của key
@@ -912,7 +914,12 @@
       keys[code] = keyData;
       saveAllLicenseKeys(keys);
 
-      userObj.unlockedSubjects.push(keyData.subjectId);
+      if (isAllSubjectsKey) {
+        // Key All môn: Mở khóa toàn bộ tất cả các môn học trên hệ thống
+        userObj.unlockedSubjects = ["all"];
+      } else if (!userObj.unlockedSubjects.includes(keyData.subjectId)) {
+        userObj.unlockedSubjects.push(keyData.subjectId);
+      }
       saveAllUsers(users);
 
       setSession(userObj, true);
@@ -933,7 +940,7 @@
 
       // Gỡ màn hình khóa nếu môn học hiện tại trên trang đã được mở khóa
       const lockOverlay = document.getElementById("subjectLockOverlay");
-      if (lockOverlay && (!window.CURRENT_SUBJECT_ID || hasSubjectAccess(window.CURRENT_SUBJECT_ID))) {
+      if (lockOverlay && (isAllSubjectsKey || !window.CURRENT_SUBJECT_ID || hasSubjectAccess(window.CURRENT_SUBJECT_ID))) {
         lockOverlay.style.opacity = "0";
         setTimeout(() => lockOverlay.remove(), 250);
       }
@@ -945,7 +952,9 @@
 
       return { 
         success: true, 
-        message: `Kích hoạt thành công! Đã mở khóa môn ${keySubjName} cho tài khoản @${currentUser.username}.${remainingNotice}`,
+        message: isAllSubjectsKey
+          ? `Kích hoạt thành công Key All Môn! Đã mở khóa TOÀN BỘ 6 MÔN HỌC cho tài khoản @${currentUser.username}.${remainingNotice}`
+          : `Kích hoạt thành công! Đã mở khóa môn ${keySubjName} cho tài khoản @${currentUser.username}.${remainingNotice}`,
         subject: subj 
       };
     } finally {
