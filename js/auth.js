@@ -792,10 +792,10 @@
   }
 
   /**
-   * KÍCH HOẠT MÔN HỌC BẰNG MÃ KEY (MỖI KEY DÙNG CHO 1 TÀI KHOẢN)
+   * KÍCH HOẠT MÔN HỌC BẰNG MÃ KEY (KIỂM TRA ĐÚNG CHỨC NĂNG / MÔN CỦA KEY)
    */
   let isActivatingKey = false;
-  async function activateLicenseKey(rawCode) {
+  async function activateLicenseKey(rawCode, expectedSubjectId = null) {
     if (isActivatingKey) {
       return { success: false, message: "Hệ thống đang xử lý kích hoạt mã key, vui lòng không nhấn liên tục!" };
     }
@@ -842,6 +842,26 @@
       }
 
       const keyData = normalizeKey(rawKey);
+      const subj = getSubjectById(keyData.subjectId);
+      const keySubjName = subj ? subj.name : (keyData.subjectId === "all" ? "Tất cả các môn (Combo VIP)" : keyData.subjectId);
+
+      // Kiểm tra mã key có nhập đúng vào môn / chức năng của key đó hay không
+      const targetSubjId = (expectedSubjectId || window.CURRENT_SUBJECT_ID || "").trim().toLowerCase();
+      if (targetSubjId && keyData.subjectId.toLowerCase() !== targetSubjId) {
+        const targetSubj = getSubjectById(targetSubjId);
+        const targetSubjName = targetSubj ? targetSubj.name : targetSubjId;
+        return {
+          success: false,
+          wrongSubject: true,
+          keyCode: code,
+          keySubjectId: keyData.subjectId,
+          keySubjectName: keySubjName,
+          keySubjectPage: subj ? subj.page : null,
+          expectedSubjectId: targetSubjId,
+          expectedSubjectName: targetSubjName,
+          message: `Mã key "${code}" không đúng môn! Bạn đang nhập ở môn [${targetSubjName}], nhưng mã key này thuộc chức năng/môn: 【${keySubjName}】. Vui lòng nhập đúng vào môn ${keySubjName}!`
+        };
+      }
 
       // Kiểm tra xem chính tài khoản này đã kích hoạt key này chưa
       const alreadyActivatedThisKey = keyData.usedBy.some(
@@ -850,7 +870,7 @@
       if (alreadyActivatedThisKey) {
         return { 
           success: false, 
-          message: `Tài khoản @${currentUser.username} đã kích hoạt mã key này trước đó rồi!` 
+          message: `Tài khoản @${currentUser.username} đã kích hoạt mã key này (Môn: ${keySubjName}) trước đó rồi!` 
         };
       }
 
@@ -860,11 +880,10 @@
         const moreCount = keyData.usedBy.length > 3 ? ` và ${keyData.usedBy.length - 3} tài khoản khác` : "";
         return { 
           success: false, 
-          message: `Mã key này đã đạt giới hạn tối đa (${keyData.maxActivations}/${keyData.maxActivations} tài khoản: ${usersPreview}${moreCount}). Không thể kích hoạt thêm!` 
+          message: `Mã key môn ${keySubjName} này đã đạt giới hạn tối đa (${keyData.maxActivations}/${keyData.maxActivations} tài khoản: ${usersPreview}${moreCount}). Không thể kích hoạt thêm!` 
         };
       }
 
-      const subj = getSubjectById(keyData.subjectId);
       const users = getAllUsers();
       const userObj = users[currentUser.username.toLowerCase()];
 
@@ -876,8 +895,7 @@
 
       // Kiểm tra xem tài khoản đã mở khóa môn này chưa
       if (userObj.unlockedSubjects.includes(keyData.subjectId) || (keyData.subjectId !== "all" && userObj.unlockedSubjects.includes("all"))) {
-        const subjName = subj ? subj.name : (keyData.subjectId === "all" ? "Tất cả các môn" : keyData.subjectId);
-        return { success: false, message: `Tài khoản @${currentUser.username} đã được mở khóa môn ${subjName} từ trước rồi!` };
+        return { success: false, message: `Tài khoản @${currentUser.username} đã được mở khóa môn ${keySubjName} từ trước rồi!` };
       }
 
       // Thêm người dùng vào danh sách kích hoạt của key
@@ -913,14 +931,13 @@
         } catch (_) {}
       }
 
-      // Gỡ màn hình khóa nếu đang xem môn học đó
+      // Gỡ màn hình khóa nếu môn học hiện tại trên trang đã được mở khóa
       const lockOverlay = document.getElementById("subjectLockOverlay");
-      if (lockOverlay) {
+      if (lockOverlay && (!window.CURRENT_SUBJECT_ID || hasSubjectAccess(window.CURRENT_SUBJECT_ID))) {
         lockOverlay.style.opacity = "0";
         setTimeout(() => lockOverlay.remove(), 250);
       }
 
-      const subjName = subj ? subj.name : (keyData.subjectId === "all" ? "Tất cả các môn" : keyData.subjectId);
       const remainingSlots = keyData.maxActivations - keyData.usedCount;
       const remainingNotice = keyData.maxActivations > 1 
         ? ` (Key còn ${remainingSlots}/${keyData.maxActivations} lượt cho tài khoản khác)` 
@@ -928,7 +945,7 @@
 
       return { 
         success: true, 
-        message: `Kích hoạt thành công! Đã mở khóa môn ${subjName} cho tài khoản @${currentUser.username}.${remainingNotice}`,
+        message: `Kích hoạt thành công! Đã mở khóa môn ${keySubjName} cho tài khoản @${currentUser.username}.${remainingNotice}`,
         subject: subj 
       };
     } finally {
@@ -965,15 +982,16 @@
           </div>
           <h2 class="subject-lock-title">Môn ${escapeHTML(subj.name)} Đang Bị Khóa</h2>
           <p class="subject-lock-desc">
-            ${user ? `Tài khoản <strong>@${escapeHTML(user.username)}</strong> chưa kích hoạt môn học này. Hãy nhập mã key bản quyền để mở khóa truy cập toàn bộ câu hỏi ôn luyện.` : `Vui lòng đăng nhập tài khoản và kích hoạt mã key để truy cập ngân hàng câu hỏi môn <strong>${escapeHTML(subj.name)}</strong>.`}
+            ${user ? `Tài khoản <strong>@${escapeHTML(user.username)}</strong> chưa kích hoạt môn <strong>${escapeHTML(subj.name)}</strong>. Hãy nhập đúng mã key của môn <strong>${escapeHTML(subj.name)}</strong> để mở khóa.` : `Vui lòng đăng nhập tài khoản và kích hoạt mã key để truy cập ngân hàng câu hỏi môn <strong>${escapeHTML(subj.name)}</strong>.`}
           </p>
 
           ${user ? `
             <div class="subject-lock-input-group">
-              <input type="text" class="subject-lock-input" id="gateKeyInput" placeholder="Ví dụ: ${subj.prefix}-XXXX-XXXX" autocomplete="off">
+              <input type="text" class="subject-lock-input" id="gateKeyInput" placeholder="Nhập mã Key môn ${escapeHTML(subj.name)}..." style="text-transform: uppercase; font-family: 'Fira Code', monospace; font-weight: 700;" autocomplete="off">
               <button type="button" class="btn-lock-unlock" id="btnGateUnlock">Mở khóa ngay</button>
             </div>
-            <div style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">* Mỗi mã key chỉ sử dụng được cho 1 tài khoản duy nhất.</div>
+            <div id="gateKeyErrorBox" style="display:none; text-align:left; background:#fef2f2; border:1.5px solid #fca5a5; color:#991b1b; padding:12px 14px; border-radius:10px; font-size:13px; line-height:1.5; margin-bottom:12px;"></div>
+            <div style="font-size: 12px; color: #64748b; margin-bottom: 12px;">* Vui lòng nhập đúng mã key dành cho môn <strong>${escapeHTML(subj.name)}</strong>. Nếu nhập key của môn khác hệ thống sẽ báo lỗi và hiển thị môn của key đó.</div>
           ` : `
             <button type="button" class="btn-lock-unlock" id="btnGateLogin" style="width: 100%; margin-bottom: 14px;">Đăng nhập để mở khóa</button>
           `}
@@ -992,12 +1010,39 @@
     document.getElementById("btnGateLogin")?.addEventListener("click", () => openModal("login"));
     document.getElementById("btnGateUnlock")?.addEventListener("click", async () => {
       const input = document.getElementById("gateKeyInput");
+      const errBox = document.getElementById("gateKeyErrorBox");
       const code = input ? input.value : "";
-      const res = await activateLicenseKey(code);
+      if (errBox) {
+        errBox.style.display = "none";
+        errBox.innerHTML = "";
+      }
+      const res = await activateLicenseKey(code, rawSubjId);
       if (res.success) {
         showToast(res.message, "success");
       } else {
-        alert(res.message);
+        if (errBox) {
+          errBox.style.display = "block";
+          if (res.wrongSubject) {
+            const actionLink = (res.keySubjectId === "all")
+              ? `<button type="button" id="btnGateOpenComboModal" style="margin-top:8px; display:inline-flex; align-items:center; gap:6px; background:#dc2626; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-weight:700; font-size:12px; cursor:pointer;">👉 Kích hoạt gói ${escapeHTML(res.keySubjectName)} tại đây</button>`
+              : (res.keySubjectPage ? `<a href="${escapeHTML(res.keySubjectPage)}" style="margin-top:8px; display:inline-flex; align-items:center; gap:6px; background:#dc2626; color:#fff; text-decoration:none; padding:6px 12px; border-radius:6px; font-weight:700; font-size:12px;">👉 Chuyển sang môn ${escapeHTML(res.keySubjectName)} để nhập Key</a>` : "");
+            errBox.innerHTML = `
+              <div style="font-weight:800; color:#dc2626; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span>NHẬP SAI MÔN HỌC CỦA KEY!</span>
+              </div>
+              <div>Mã key <strong style="font-family:monospace; background:#fee2e2; padding:1px 5px; border-radius:4px;">${escapeHTML(res.keyCode)}</strong> không dùng cho môn <strong>${escapeHTML(res.expectedSubjectName)}</strong>.</div>
+              <div style="margin-top:4px;">🔑 Mã key này thuộc về môn / chức năng: <span style="display:inline-block; background:#fef3c7; color:#b45309; border:1px solid #fde68a; font-weight:800; padding:1px 8px; border-radius:6px;">${escapeHTML(res.keySubjectName)}</span></div>
+              ${actionLink}
+            `;
+            document.getElementById("btnGateOpenComboModal")?.addEventListener("click", () => {
+              openActivateKeyModal("all", res.keyCode);
+            });
+          } else {
+            errBox.innerHTML = `<strong>❌ Lỗi kích hoạt:</strong> ${escapeHTML(res.message)}`;
+          }
+        }
+        showToast(res.message, "error");
       }
     });
 
@@ -1011,10 +1056,10 @@
 
   /**
    * ========================================================
-   * QUẢN TRỊ VIÊN: TẠO & QUẢN LÝ MÃ KEY (ADMIN KEY MANAGER)
+   * QUẢN TRỊ VIÊN: TẠO & QUẢN LÝ MÃ KEY (HỖ TRỢ TỰ TẠO KEY THEO KÝ TỰ MONG MUỐN)
    * ========================================================
    */
-  function adminCreateLicenseKeys(subjectId, count = 1, maxActivations = 1) {
+  function adminCreateLicenseKeys(subjectId, count = 1, maxActivations = 1, customCode = "") {
     if (!isAdmin()) {
       showToast("Chỉ Quản trị viên mới có quyền tạo mã Key!", "error");
       return [];
@@ -1026,29 +1071,77 @@
     const keys = getAllLicenseKeys();
     const createdList = [];
 
-    for (let i = 0; i < numKeys; i++) {
-      let code = "";
-      do {
-        code = generateKeyCode(subj.prefix);
-      } while (keys[code]);
+    const rawCustom = (customCode || "").trim();
+    if (rawCustom) {
+      // Hỗ trợ tạo 1 hoặc nhiều mã key tùy chỉnh (ngăn cách bởi dấu phẩy nếu muốn tạo nhiều key tự đặt)
+      const customCodes = rawCustom
+        .split(",")
+        .map(s => s.trim().toUpperCase())
+        .filter(Boolean);
 
-      keys[code] = {
-        code: code,
-        subjectId: subj.id,
-        maxActivations: quota,
-        usedCount: 0,
-        usedBy: [],
-        activations: [],
-        isUsed: false,
-        usedAt: null,
-        createdAt: new Date().toISOString()
-      };
-      createdList.push(code);
+      if (customCodes.length === 0) {
+        showToast("Ký tự mã Key tự tạo không hợp lệ!", "error");
+        return [];
+      }
+
+      const duplicateCodes = [];
+      for (const c of customCodes) {
+        if (keys[c]) {
+          const existSubj = getSubjectById(keys[c].subjectId);
+          duplicateCodes.push(`${c} (${existSubj ? existSubj.name : keys[c].subjectId})`);
+        }
+      }
+
+      if (duplicateCodes.length > 0) {
+        const msg = `Mã key tự tạo đã tồn tại trong hệ thống: ${duplicateCodes.join(", ")}! Vui lòng nhập ký tự khác hoặc xóa key cũ trước.`;
+        showToast(msg, "error");
+        alert(msg);
+        return [];
+      }
+
+      for (const code of customCodes) {
+        keys[code] = {
+          code: code,
+          subjectId: subj.id,
+          maxActivations: quota,
+          usedCount: 0,
+          usedBy: [],
+          activations: [],
+          isUsed: false,
+          usedAt: null,
+          createdAt: new Date().toISOString()
+        };
+        createdList.push(code);
+      }
+    } else {
+      for (let i = 0; i < numKeys; i++) {
+        let code = "";
+        do {
+          code = generateKeyCode(subj.prefix);
+        } while (keys[code]);
+
+        keys[code] = {
+          code: code,
+          subjectId: subj.id,
+          maxActivations: quota,
+          usedCount: 0,
+          usedBy: [],
+          activations: [],
+          isUsed: false,
+          usedAt: null,
+          createdAt: new Date().toISOString()
+        };
+        createdList.push(code);
+      }
     }
 
     saveAllLicenseKeys(keys);
     const quotaLabel = quota === 1 ? "1 tài khoản/key" : `${quota} tài khoản/key`;
-    showToast(`Đã tạo thành công ${numKeys} mã key (${quotaLabel}) cho môn ${subj.name}!`, "success");
+    if (rawCustom && createdList.length === 1) {
+      showToast(`Đã tạo mã Key tùy chỉnh [${createdList[0]}] (${quotaLabel}) cho môn ${subj.name}!`, "success");
+    } else {
+      showToast(`Đã tạo thành công ${createdList.length} mã key (${quotaLabel}) cho môn ${subj.name}!`, "success");
+    }
     renderAdminKeysTable();
 
     // Đồng bộ danh sách key vừa tạo lên Supabase Cloud
@@ -1672,7 +1765,7 @@
 
       <!-- MODAL KÍCH HOẠT MÔN HỌC BẰNG KEY DÀNH CHO USER -->
       <div class="auth-modal-overlay" id="activateKeyModal" aria-hidden="true">
-        <div class="auth-modal-card" role="dialog" aria-modal="true" style="max-width: 440px;">
+        <div class="auth-modal-card" role="dialog" aria-modal="true" style="max-width: 460px;">
           <div class="auth-card-progressbar" id="activateKeyProgressBar" aria-hidden="true">
             <div class="auth-progressbar-indicator"></div>
           </div>
@@ -1685,22 +1778,38 @@
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.2"><path d="M21 2l-2 2m-1.5 1.5L14 9l-1.5-1.5L11 9l-1.5-1.5L8 9l-4.5 4.5a3 3 0 1 0 4.24 4.24L12 13.5l1.5 1.5 1.5-1.5 1.5 1.5 3.5-3.5a3 3 0 0 0-4.24-4.24z"/></svg>
             </div>
             <h3 class="auth-modal-title">Kích Hoạt Bản Quyền Môn Học</h3>
-            <p class="auth-modal-subtitle">Nhập mã key bản quyền để mở khóa truy cập môn học trên tài khoản của bạn</p>
+            <p class="auth-modal-subtitle">Chọn đúng môn học / chức năng của Key và nhập mã Key để mở khóa</p>
           </div>
 
           <div class="auth-modal-body">
+            <div id="activateKeyAlertBox" style="display:none; margin-bottom: 14px; padding: 12px 14px; border-radius: 10px; font-size: 13px; line-height: 1.5;"></div>
+
             <form id="formActivateKey" novalidate>
+              <div class="auth-field-group" style="margin-bottom: 14px;">
+                <label class="auth-label" for="selectActivateKeySubject">
+                  <span>Chọn môn học / chức năng của Key <span class="auth-req">*</span></span>
+                </label>
+                <div class="auth-input-wrapper">
+                  <span class="auth-input-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                  </span>
+                  <select id="selectActivateKeySubject" class="auth-input" style="font-weight: 700; color: #0f2657; cursor: pointer;" required>
+                    ${subjectsOptionsHTML}
+                  </select>
+                </div>
+                <span class="auth-field-hint">Key thuộc môn nào phải chọn đúng môn đó (nếu chọn sai hệ thống sẽ báo lỗi và hiện môn của key).</span>
+              </div>
+
               <div class="auth-field-group">
                 <label class="auth-label" for="inputLicenseKey">
-                  <span>Mã Key kích hoạt</span>
+                  <span>Mã Key kích hoạt <span class="auth-req">*</span></span>
                 </label>
                 <div class="auth-input-wrapper">
                   <span class="auth-input-icon">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-1.5 1.5L14 9l-1.5-1.5L11 9l-1.5-1.5L8 9l-4.5 4.5a3 3 0 1 0 4.24 4.24L12 13.5l1.5 1.5 1.5-1.5 1.5 1.5 3.5-3.5a3 3 0 0 0-4.24-4.24z"/></svg>
                   </span>
-                  <input type="text" id="inputLicenseKey" class="auth-input" placeholder="Ví dụ: TOAN-XXXX-XXXX" style="font-family: monospace; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" required>
+                  <input type="text" id="inputLicenseKey" class="auth-input" placeholder="Nhập mã Key của bạn..." style="font-family: monospace; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" required>
                 </div>
-                <span class="auth-field-hint">Mỗi mã key chỉ kích hoạt được cho 01 tài khoản học viên duy nhất.</span>
               </div>
 
               <button type="submit" class="btn-auth-submit" id="btnSubmitActivateKey">
@@ -1878,10 +1987,11 @@
               <div class="admin-key-gen-card">
                 <div class="admin-key-gen-controls">
                   <span style="font-weight: 700; font-size: 13px; color: #0f2657;">Tạo mã Key mới:</span>
-                  <select id="selAdminKeySubject" class="admin-select">
+                  <select id="selAdminKeySubject" class="admin-select" title="Chọn chức năng / môn học của Key">
                     ${subjectsOptionsHTML}
                   </select>
-                  <select id="selAdminKeyCount" class="admin-select" style="width: 105px;" title="Số lượng mã key cần tạo">
+                  <input type="text" id="inputAdminCustomKeyCode" class="admin-select" placeholder="Tự nhập ký tự Key muốn tạo (Trống = Ngẫu nhiên)" style="min-width: 245px; font-family: 'Fira Code', monospace; font-weight: 700; text-transform: uppercase; border-color: #d97706;" autocomplete="off" title="Nhập ký tự mã Key tự chọn (VD: KHOA-TIN-12 hoặc nhiều key cách nhau dấu phẩy). Để trống nếu muốn tạo ngẫu nhiên.">
+                  <select id="selAdminKeyCount" class="admin-select" style="width: 105px;" title="Số lượng mã key ngẫu nhiên cần tạo">
                     <option value="1">1 Key</option>
                     <option value="3">3 Key</option>
                     <option value="5" selected>5 Key</option>
@@ -2452,6 +2562,9 @@
     // Admin Gen Keys
     const selAdminQuotaEl = document.getElementById("selAdminKeyQuota");
     const inputAdminQuotaCustom = document.getElementById("inputAdminKeyQuotaCustom");
+    const inputAdminCustomKeyCode = document.getElementById("inputAdminCustomKeyCode");
+    const selAdminKeyCountEl = document.getElementById("selAdminKeyCount");
+
     selAdminQuotaEl?.addEventListener("change", (e) => {
       if (inputAdminQuotaCustom) {
         inputAdminQuotaCustom.style.display = e.target.value === "custom" ? "inline-block" : "none";
@@ -2459,9 +2572,26 @@
       }
     });
 
+    inputAdminCustomKeyCode?.addEventListener("input", (e) => {
+      const hasCustom = e.target.value.trim().length > 0;
+      if (selAdminKeyCountEl) {
+        selAdminKeyCountEl.disabled = hasCustom;
+        selAdminKeyCountEl.style.opacity = hasCustom ? "0.45" : "1";
+        selAdminKeyCountEl.title = hasCustom ? "Đang tạo Key theo ký tự tự nhập" : "Số lượng mã key ngẫu nhiên cần tạo";
+      }
+    });
+
+    inputAdminCustomKeyCode?.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        btnAdminGenKeys?.click();
+      }
+    });
+
     btnAdminGenKeys?.addEventListener("click", () => {
       const selSubj = document.getElementById("selAdminKeySubject")?.value || "toan";
-      const selCount = parseInt(document.getElementById("selAdminKeyCount")?.value || "1", 10);
+      const selCount = parseInt(selAdminKeyCountEl?.value || "1", 10);
+      const customKeyStr = inputAdminCustomKeyCode ? inputAdminCustomKeyCode.value.trim() : "";
       let selQuota = 1;
       if (selAdminQuotaEl?.value === "custom") {
         selQuota = parseInt(inputAdminQuotaCustom?.value || "1", 10);
@@ -2470,7 +2600,14 @@
       }
       if (isNaN(selQuota) || selQuota < 1) selQuota = 1;
 
-      adminCreateLicenseKeys(selSubj, selCount, selQuota);
+      const created = adminCreateLicenseKeys(selSubj, selCount, selQuota, customKeyStr);
+      if (created && created.length > 0 && inputAdminCustomKeyCode) {
+        inputAdminCustomKeyCode.value = "";
+        if (selAdminKeyCountEl) {
+          selAdminKeyCountEl.disabled = false;
+          selAdminKeyCountEl.style.opacity = "1";
+        }
+      }
       renderAdminSummaryMetrics();
       renderAdminKeysTable(adminSearchKeyInput?.value || "", currentKeyStatusFilter, document.getElementById("selAdminKeyFilterSubject")?.value || "all");
     });
@@ -2747,19 +2884,63 @@
       e.preventDefault();
       const submitBtn = document.getElementById("btnSubmitActivateKey");
       const card = formActivateKey.closest(".auth-modal-card");
-      setBtnLoading(submitBtn, true, "Đang kích hoạt...", "activateKeyProgressBar", formActivateKey);
+      const alertBox = document.getElementById("activateKeyAlertBox");
+      if (alertBox) {
+        alertBox.style.display = "none";
+        alertBox.innerHTML = "";
+      }
+      setBtnLoading(submitBtn, true, "Đang kiểm tra & kích hoạt...", "activateKeyProgressBar", formActivateKey);
 
       const input = document.getElementById("inputLicenseKey");
+      const selSubjEl = document.getElementById("selectActivateKeySubject");
       const code = input ? input.value : "";
-      
-      const res = await activateLicenseKey(code);
+      const selectedSubjId = selSubjEl ? selSubjEl.value : (window.CURRENT_SUBJECT_ID || "toan");
+
+      const res = await activateLicenseKey(code, selectedSubjId);
 
       if (!res.success) {
         setBtnLoading(submitBtn, false, "", "activateKeyProgressBar", formActivateKey);
         triggerCardShake(card);
-        alert(res.message);
+        if (alertBox) {
+          alertBox.style.display = "block";
+          alertBox.style.background = "#fef2f2";
+          alertBox.style.border = "1.5px solid #fca5a5";
+          alertBox.style.color = "#991b1b";
+          if (res.wrongSubject) {
+            alertBox.innerHTML = `
+              <div style="font-weight:800; color:#dc2626; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span>SAI MÔN HỌC / CHỨC NĂNG CỦA KEY!</span>
+              </div>
+              <div>Mã key <strong style="font-family:monospace; background:#fee2e2; padding:1px 5px; border-radius:4px;">${escapeHTML(res.keyCode)}</strong> không dùng cho môn <strong>${escapeHTML(res.expectedSubjectName)}</strong>.</div>
+              <div style="margin-top:4px;">🔑 Mã key này thuộc về môn / chức năng: <span style="display:inline-block; background:#fef3c7; color:#b45309; border:1px solid #fde68a; font-weight:800; padding:1px 8px; border-radius:6px;">${escapeHTML(res.keySubjectName)}</span></div>
+              <button type="button" id="btnSwitchModalKeySubject" style="margin-top:8px; display:inline-flex; align-items:center; gap:6px; background:#dc2626; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-weight:700; font-size:12px; cursor:pointer;">
+                👉 Chuyển sang chọn đúng môn "${escapeHTML(res.keySubjectName)}"
+              </button>
+            `;
+            document.getElementById("btnSwitchModalKeySubject")?.addEventListener("click", () => {
+              if (selSubjEl) {
+                selSubjEl.value = res.keySubjectId;
+              }
+              alertBox.style.background = "#eff6ff";
+              alertBox.style.border = "1.5px solid #93c5fd";
+              alertBox.style.color = "#1e40af";
+              alertBox.innerHTML = `✅ Đã chuyển sang môn <strong>${escapeHTML(res.keySubjectName)}</strong>. Hãy nhấn nút <strong>"Kích hoạt môn học ngay"</strong> bên dưới!`;
+            });
+          } else {
+            alertBox.innerHTML = `<strong>❌ Lỗi kích hoạt:</strong> ${escapeHTML(res.message)}`;
+          }
+        }
+        showToast(res.message, "error");
       } else {
         setBtnSuccess(submitBtn, "Kích hoạt thành công!", "activateKeyProgressBar");
+        if (alertBox) {
+          alertBox.style.display = "block";
+          alertBox.style.background = "#ecfdf5";
+          alertBox.style.border = "1.5px solid #6ee7b7";
+          alertBox.style.color = "#065f46";
+          alertBox.innerHTML = `<strong>✅ ${escapeHTML(res.message)}</strong>`;
+        }
         showToast(res.message, "success");
         setTimeout(() => {
           closeActivateKeyModal();
@@ -2771,7 +2952,7 @@
             submitBtn.disabled = false;
             submitBtn.setAttribute("aria-busy", "false");
           }
-        }, 250);
+        }, 400);
       }
     });
   }
@@ -2886,15 +3067,25 @@
     }
   }
 
-  function openActivateKeyModal() {
+  function openActivateKeyModal(preselectedSubjectId = null, prefillCode = "") {
     injectAuthModal();
     const modal = document.getElementById("activateKeyModal");
     if (!modal) return;
     modal.classList.add("active");
     modal.setAttribute("aria-hidden", "false");
+    const alertBox = document.getElementById("activateKeyAlertBox");
+    if (alertBox) {
+      alertBox.style.display = "none";
+      alertBox.innerHTML = "";
+    }
+    const selSubjEl = document.getElementById("selectActivateKeySubject");
+    if (selSubjEl) {
+      const defaultSubj = preselectedSubjectId || window.CURRENT_SUBJECT_ID || "toan";
+      selSubjEl.value = defaultSubj;
+    }
     const input = document.getElementById("inputLicenseKey");
     if (input) {
-      input.value = "";
+      input.value = prefillCode || "";
       setTimeout(() => input.focus(), 150);
     }
   }

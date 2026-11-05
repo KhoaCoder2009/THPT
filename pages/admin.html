@@ -1063,10 +1063,11 @@
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m21 3-9.5 9.5"/><path d="m15.5 7.5 3 3"/><path d="M14 3h7v7"/></svg>
                 Tạo mã Key mới:
               </span>
-              <select id="selDashKeySubject" class="adm-select">
+              <select id="selDashKeySubject" class="adm-select" title="Chọn chức năng / môn học của Key">
                 ${subjectsOptionsHTML}
               </select>
-              <select id="selDashKeyCount" class="adm-select" style="width: 110px;" title="Số lượng mã key cần tạo">
+              <input type="text" id="inputDashCustomKeyCode" class="adm-select" placeholder="Tự nhập ký tự Key muốn tạo (Trống = Ngẫu nhiên)" style="min-width: 265px; font-family: 'Fira Code', monospace; font-weight: 700; text-transform: uppercase; border-color: #d97706;" autocomplete="off" title="Nhập ký tự mã Key tự chọn (VD: KHOA-TIN-12 hoặc nhiều key cách nhau dấu phẩy). Để trống nếu muốn tạo ngẫu nhiên.">
+              <select id="selDashKeyCount" class="adm-select" style="width: 110px;" title="Số lượng mã key ngẫu nhiên cần tạo">
                 <option value="1">1 Key</option>
                 <option value="3">3 Key</option>
                 <option value="5" selected>5 Key</option>
@@ -1276,9 +1277,12 @@
       openAddUserDialog();
     });
 
-    // Key Gen Form - Tùy chỉnh hạn mức tài khoản tùy ý
+    // Key Gen Form - Tùy chỉnh hạn mức tài khoản & tự tạo key theo ký tự mong muốn
     const selDashQuotaEl = document.getElementById("selDashKeyQuota");
     const inputDashQuotaCustom = document.getElementById("inputDashKeyQuotaCustom");
+    const inputDashCustomKeyCode = document.getElementById("inputDashCustomKeyCode");
+    const selDashKeyCountEl = document.getElementById("selDashKeyCount");
+
     selDashQuotaEl?.addEventListener("change", (e) => {
       if (inputDashQuotaCustom) {
         inputDashQuotaCustom.style.display = e.target.value === "custom" ? "inline-block" : "none";
@@ -1286,9 +1290,26 @@
       }
     });
 
+    inputDashCustomKeyCode?.addEventListener("input", (e) => {
+      const hasCustom = e.target.value.trim().length > 0;
+      if (selDashKeyCountEl) {
+        selDashKeyCountEl.disabled = hasCustom;
+        selDashKeyCountEl.style.opacity = hasCustom ? "0.45" : "1";
+        selDashKeyCountEl.title = hasCustom ? "Đang tạo Key theo ký tự tự nhập" : "Số lượng mã key ngẫu nhiên cần tạo";
+      }
+    });
+
+    inputDashCustomKeyCode?.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        document.getElementById("btnDashGenKeys")?.click();
+      }
+    });
+
     document.getElementById("btnDashGenKeys")?.addEventListener("click", () => {
       const selSub = document.getElementById("selDashKeySubject")?.value || "toan";
-      const selCnt = parseInt(document.getElementById("selDashKeyCount")?.value || "5", 10);
+      const selCnt = parseInt(selDashKeyCountEl?.value || "5", 10);
+      const customKeyStr = inputDashCustomKeyCode ? inputDashCustomKeyCode.value.trim() : "";
       let selQuota = 1;
       if (selDashQuotaEl?.value === "custom") {
         selQuota = parseInt(inputDashQuotaCustom?.value || "1", 10);
@@ -1297,8 +1318,15 @@
       }
       if (isNaN(selQuota) || selQuota < 1) selQuota = 1;
 
-      const created = window.KeduAuth.adminCreateLicenseKeys(selSub, selCnt, selQuota);
+      const created = window.KeduAuth.adminCreateLicenseKeys(selSub, selCnt, selQuota, customKeyStr);
       if (created && created.length > 0) {
+        if (inputDashCustomKeyCode) {
+          inputDashCustomKeyCode.value = "";
+          if (selDashKeyCountEl) {
+            selDashKeyCountEl.disabled = false;
+            selDashKeyCountEl.style.opacity = "1";
+          }
+        }
         updateDashboardKPI();
         renderDashKeysTable();
       }
