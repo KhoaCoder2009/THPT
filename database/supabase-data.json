@@ -355,6 +355,30 @@
       "icon_svg": "<svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z\"/><path d=\"M6 6h10M6 10h10M6 14h6\"/></svg>",
       "is_full": true,
       "order_index": 23
+    },
+    {
+      "id": "1",
+      "subject_id": "tinhoc",
+      "index_code": "01",
+      "title": "Chủ đề A: Máy tính và xã hội tri thức – Trí tuệ nhân tạo (AI)",
+      "description": "Khái niệm, lịch sử phát triển, đặc trưng của Trí tuệ nhân tạo (AI), các lĩnh vực nghiên cứu (Học máy, Xử lý ngôn ngữ tự nhiên, Thị giác máy tính, AI tạo sinh), ứng dụng thực tiễn và cảnh báo nguy cơ (35 câu Trắc nghiệm • 5 câu Đúng/Sai).",
+      "chapter": "Chủ đề A: Máy tính và xã hội tri thức",
+      "theme": "blue",
+      "icon_svg": "<svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"2\"/><rect x=\"9\" y=\"9\" width=\"6\" height=\"6\"/><path d=\"M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3\"/></svg>",
+      "is_full": false,
+      "order_index": 1
+    },
+    {
+      "id": "2",
+      "subject_id": "tinhoc",
+      "index_code": "02",
+      "title": "Chủ đề B: Mạng máy tính và Internet – Thiết bị và Giao thức mạng",
+      "description": "Các thiết bị mạng thông dụng (Hub, Switch, Router, Modem, Access Point), mạng LAN/WAN, bộ giao thức mạng TCP/IP, HTTP/HTTPS, DNS, DHCP, SMTP/IMAP, ICMP và thực hành kết nối mạng (40 câu Trắc nghiệm • 5 câu Đúng/Sai).",
+      "chapter": "Chủ đề B: Mạng máy tính và Internet",
+      "theme": "purple",
+      "icon_svg": "<svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><line x1=\"2\" y1=\"12\" x2=\"22\" y2=\"12\"/><path d=\"M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z\"/></svg>",
+      "is_full": false,
+      "order_index": 2
     }
   ],
   "questions": [
@@ -8387,6 +8411,1656 @@
       "explanation": "a) SAI: Đổi tên theo nguyện vọng tha thiết của nhân dân TP Sài Gòn - Gia Định và nhân dân cả nước; Bác luôn giản dị, khiêm nhường.<br>b) ĐÚNG: Kết tinh và nâng tầm các giá trị văn hóa cao đẹp.<br>c) SAI: Người là NGUỒN CẢM HỨNG cho các văn nghệ sĩ sáng tác, không phải Người có nhiều tác phẩm nghệ thuật âm nhạc, kịch...<br>d) ĐÚNG: Hàng nghìn tác phẩm thơ ca, hội họa, điêu khắc, âm nhạc trong và ngoài nước ca ngợi Người.",
       "diagram": null,
       "order_index": 353
+    },
+    {
+      "id": "tin_c1_mc_001",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Trí tuệ nhân tạo (AI) là gì?",
+      "options": [
+        "Khả năng của máy tính thực hiện các công việc cơ học.",
+        "Khả năng của máy tính thực hiện các công việc trí tuệ của con người.",
+        "Khả năng của máy tính chơi trò chơi.",
+        "Khả năng của máy tính xử lý dữ liệu nhanh hơn."
+      ],
+      "correct_index": 1,
+      "accepted_answers": [],
+      "explanation": "Trí tuệ nhân tạo (AI - Artificial Intelligence) là khả năng của máy tính có thể làm những công việc mang tính trí tuệ của con người như học tập, suy luận, đọc hiểu ngôn ngữ và nhận thức môi trường. Đáp án B.",
+      "diagram": null,
+      "order_index": 1
+    },
+    {
+      "id": "tin_c1_mc_002",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Sự kiện nào đánh dấu sự khởi đầu của lịch sử trí tuệ nhân tạo?",
+      "options": [
+        "Hội thảo tại MIT vào năm 1960.",
+        "Hội thảo tại Stanford vào năm 1955.",
+        "Hội thảo Dartmouth năm 1956.",
+        "Sự phát triển của hệ thống MYCIN vào những năm 1970."
+      ],
+      "correct_index": 2,
+      "accepted_answers": [],
+      "explanation": "Hội thảo mùa hè tại trường Đại học Dartmouth (Mỹ) vào năm 1956 do John McCarthy khởi xướng đã lần đầu tiên đưa ra thuật ngữ Trí tuệ nhân tạo (Artificial Intelligence), đánh dấu sự ra đời chính thức của lĩnh vực AI. Đáp án C.",
+      "diagram": null,
+      "order_index": 2
+    },
+    {
+      "id": "tin_c1_mc_003",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "AI yếu (AI hẹp) thường được thiết kế nhằm mục đích gì?",
+      "options": [
+        "Thực hiện mọi công việc trí tuệ như con người.",
+        "Có năng lực tư duy tổng quát trong nhiều lĩnh vực như con người.",
+        "Tự phát triển mục tiêu bất kỳ mà không giới hạn nhiệm vụ.",
+        "Giải quyết một hoặc một số nhiệm vụ cụ thể."
+      ],
+      "correct_index": 3,
+      "accepted_answers": [],
+      "explanation": "AI hẹp (Narrow AI) hay AI yếu (Weak AI) được thiết kế và huấn luyện để giải quyết một hoặc một số nhiệm vụ chuyên biệt cụ thể (như nhận dạng khuôn mặt, chơi cờ, dịch thuật). Đáp án D.",
+      "diagram": null,
+      "order_index": 3
+    },
+    {
+      "id": "tin_c1_mc_004",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Hệ thống AI nào đã đánh bại kỳ thủ Lee Sedol trong loạt trận cờ vây năm 2016?",
+      "options": [
+        "Hệ chuyên gia MYCIN.",
+        "Google Translate.",
+        "AlphaGo.",
+        "IBM Watson."
+      ],
+      "correct_index": 2,
+      "accepted_answers": [],
+      "explanation": "Năm 2016, chương trình máy tính AlphaGo (do công ty DeepMind của Google phát triển) đã đánh bại nhà vô địch cờ vây thế giới Lee Sedol với tỉ số 4-1. Đáp án C.",
+      "diagram": null,
+      "order_index": 4
+    },
+    {
+      "id": "tin_c1_mc_005",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Khả năng nào sau đây KHÔNG phải là đặc trưng của AI?",
+      "options": [
+        "Khả năng học.",
+        "Khả năng nhận thức.",
+        "Khả năng bay.",
+        "Khả năng hiểu ngôn ngữ."
+      ],
+      "correct_index": 2,
+      "accepted_answers": [],
+      "explanation": "Các đặc trưng cơ bản của AI gồm: khả năng học, khả năng suy luận, khả năng nhận thức, khả năng hiểu ngôn ngữ và khả năng giải quyết vấn đề. 'Khả năng bay' là tính năng cơ học vật lí, không phải đặc trưng trí tuệ của AI. Đáp án C.",
+      "diagram": null,
+      "order_index": 5
+    },
+    {
+      "id": "tin_c1_mc_006",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Lĩnh vực nào nghiên cứu cách máy tính và con người giao tiếp với nhau?",
+      "options": [
+        "Học máy.",
+        "Xử lý ngôn ngữ tự nhiên.",
+        "Thị giác máy tính.",
+        "AI tạo sinh."
+      ],
+      "correct_index": 1,
+      "accepted_answers": [],
+      "explanation": "Xử lý ngôn ngữ tự nhiên (NLP - Natural Language Processing) là lĩnh vực nghiên cứu các mô hình và phương pháp giúp máy tính và con người giao tiếp với nhau bằng ngôn ngữ tự nhiên (văn bản và tiếng nói). Đáp án B.",
+      "diagram": null,
+      "order_index": 6
+    },
+    {
+      "id": "tin_c1_mc_007",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Lĩnh vực nào liên quan đến việc thu nhận và phân tích nhận dạng hình ảnh?",
+      "options": [
+        "Học máy.",
+        "Xử lý ngôn ngữ tự nhiên.",
+        "Thị giác máy tính.",
+        "AI tạo sinh."
+      ],
+      "correct_index": 2,
+      "accepted_answers": [],
+      "explanation": "Thị giác máy tính (Computer Vision) là lĩnh vực nghiên cứu việc thu nhận, xử lý, phân tích và nhận dạng hình ảnh hoặc video số từ thế giới thực. Đáp án C.",
+      "diagram": null,
+      "order_index": 7
+    },
+    {
+      "id": "tin_c1_mc_008",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Hoạt động nào sau đây KHÔNG trực tiếp sử dụng AI tạo sinh?",
+      "options": [
+        "Dùng ChatGPT tạo đoạn văn theo yêu cầu.",
+        "Dùng Mubert tạo bản nhạc từ mô tả.",
+        "Dùng công cụ tìm kiếm truyền thống để hiển thị danh sách liên kết trang web.",
+        "Dùng Midjourney tạo ảnh từ câu lệnh."
+      ],
+      "correct_index": 2,
+      "accepted_answers": [],
+      "explanation": "ChatGPT, Mubert và Midjourney đều là các ứng dụng AI tạo sinh (Generative AI) có khả năng tạo ra nội dung mới (văn bản, âm nhạc, hình ảnh). Công cụ tìm kiếm truyền thống chỉ truy xuất và liệt kê danh sách các liên kết trang web sẵn có. Đáp án C.",
+      "diagram": null,
+      "order_index": 8
+    },
+    {
+      "id": "tin_c1_mc_009",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Điểm khác biệt tiêu biểu giữa AI và hệ thống tự động hóa theo quy tắc cố định là gì?",
+      "options": [
+        "AI có thể học từ dữ liệu, nhận dạng mẫu hoặc suy luận để xử lý tình huống.",
+        "AI chỉ xử lý được số nguyên.",
+        "AI luôn hoạt động mà không cần sự giám sát của con người.",
+        "AI không thể cải thiện kết quả khi được huấn luyện thêm."
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "Hệ thống tự động hóa truyền thống chỉ lặp lại các thao tác theo quy tắc cố định đã lập trình sẵn, trong khi hệ thống AI có khả năng học từ dữ liệu, nhận dạng mẫu và suy luận để thích nghi, xử lý các tình huống mới. Đáp án A.",
+      "diagram": null,
+      "order_index": 9
+    },
+    {
+      "id": "tin_c1_mc_010",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Hệ thống AI nào dưới đây là trợ lý ảo có thể nhận lệnh bằng giọng nói và hỗ trợ người dùng thực hiện tác vụ?",
+      "options": [
+        "AlphaGo.",
+        "MYCIN.",
+        "IBM Watson (hệ thống trả lời câu hỏi nổi tiếng).",
+        "Siri của Apple."
+      ],
+      "correct_index": 3,
+      "accepted_answers": [],
+      "explanation": "Siri của Apple là trợ lý ảo thông minh được tích hợp trên các thiết bị của Apple, có thể nhận lệnh bằng giọng nói và hỗ trợ người dùng thực hiện nhiều tác vụ hàng ngày. Đáp án D.",
+      "diagram": null,
+      "order_index": 10
+    },
+    {
+      "id": "tin_c1_mc_011",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Trợ lý ảo có thể thực hiện chức năng nào dưới đây?",
+      "options": [
+        "Nhận dạng khuôn mặt từ ảnh.",
+        "Kiểm tra lỗi chính tả của văn bản đã in.",
+        "Tìm kiếm thông tin theo câu lệnh bằng giọng nói của người dùng.",
+        "Nhận dạng chữ viết tay trong ảnh."
+      ],
+      "correct_index": 2,
+      "accepted_answers": [],
+      "explanation": "Trợ lý ảo (như Siri, Google Assistant, Alexa) có khả năng nhận diện tiếng nói, hiểu yêu cầu và tìm kiếm thông tin hoặc thực hiện tác vụ theo câu lệnh bằng giọng nói của người dùng. Đáp án C.",
+      "diagram": null,
+      "order_index": 11
+    },
+    {
+      "id": "tin_c1_mc_012",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Ứng dụng nào sau đây của AI thuộc lĩnh vực y học?",
+      "options": [
+        "Dịch thuật tự động.",
+        "Bảo mật mật khẩu tài khoản.",
+        "Nhận dạng biển số xe.",
+        "Phát hiện dấu hiệu bất thường trên hình ảnh CT/MRI sọ não."
+      ],
+      "correct_index": 3,
+      "accepted_answers": [],
+      "explanation": "Trong y học và chăm sóc sức khỏe, AI được ứng dụng mạnh mẽ để phân tích hình ảnh y tế (X-quang, CT, MRI) nhằm phát hiện sớm các khối u hoặc dấu hiệu bất thường, hỗ trợ bác sĩ chẩn đoán bệnh. Đáp án D.",
+      "diagram": null,
+      "order_index": 12
+    },
+    {
+      "id": "tin_c1_mc_013",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Robot hình người ASIMO, được công bố năm 2000, do hãng nào phát triển?",
+      "options": [
+        "Honda.",
+        "NASA.",
+        "Toshiba.",
+        "Tesla."
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "Robot hình người ASIMO được hãng Honda (Nhật Bản) nghiên cứu và công bố vào năm 2000, tích hợp nhiều khả năng tự động điều khiển, nhận dạng hình ảnh và tiếng nói. Đáp án A.",
+      "diagram": null,
+      "order_index": 13
+    },
+    {
+      "id": "tin_c1_mc_014",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Thành tựu nào sau đây thuộc lĩnh vực thị giác máy tính?",
+      "options": [
+        "Hệ thống nhận dạng đối tượng trong hình ảnh và video.",
+        "Hệ thống chỉ lưu trữ tệp văn bản.",
+        "Hệ thống lắp ráp cơ khí thuần túy theo cơ cấu cố định.",
+        "Hệ thống tưới tiêu vận hành hoàn toàn bằng hẹn giờ cơ học."
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "Hệ thống nhận dạng đối tượng trong hình ảnh và video là ứng dụng cốt lõi của lĩnh vực Thị giác máy tính (Computer Vision). Đáp án A.",
+      "diagram": null,
+      "order_index": 14
+    },
+    {
+      "id": "tin_c1_mc_015",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Sự kết hợp IoT và AI (AIoT) giúp ích cho các nhà khoa học như thế nào?",
+      "options": [
+        "Giúp mô phỏng và mô hình hoá nhiều hiện tượng xã hội và nhân học.",
+        "Giúp cải thiện chất lượng hình ảnh y tế.",
+        "Giúp giám sát môi trường tự nhiên và theo dõi tình hình biến đổi khí hậu.",
+        "Giúp phát triển các nền tảng học trực tuyến thông minh."
+      ],
+      "correct_index": 2,
+      "accepted_answers": [],
+      "explanation": "Sự kết hợp giữa Internet vạn vật (IoT - thu thập dữ liệu qua cảm biến) và Trí tuệ nhân tạo (AI - phân tích, dự báo) tạo thành AIoT, giúp giám sát môi trường tự nhiên, rừng, đại dương và theo dõi biến đổi khí hậu hiệu quả. Đáp án C.",
+      "diagram": null,
+      "order_index": 15
+    },
+    {
+      "id": "tin_c1_mc_016",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Tình huống nào dưới đây mô tả trực tiếp rủi ro về an ninh mạng đối với hệ thống AI?",
+      "options": [
+        "AI tự động hóa công việc khiến nhu cầu tuyển dụng thay đổi.",
+        "Việc thu thập dữ liệu cá nhân làm phát sinh vấn đề về quyền riêng tư.",
+        "Kẻ tấn công xâm nhập, sửa dữ liệu hoặc mô hình khiến AI đưa ra kết quả sai.",
+        "Khó giải thích một số quyết định của hệ thống AI dạng 'hộp đen'."
+      ],
+      "correct_index": 2,
+      "accepted_answers": [],
+      "explanation": "Khi kẻ tấn công mạng xâm nhập vào hệ thống, làm nhiễm độc dữ liệu huấn luyện hoặc chỉnh sửa tham số mô hình khiến AI đưa ra quyết định sai lệch, đó là rủi ro trực tiếp về an ninh mạng đối với hệ thống AI. Đáp án C.",
+      "diagram": null,
+      "order_index": 16
+    },
+    {
+      "id": "tin_c1_mc_017",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Lĩnh vực nào sau đây có nhiệm vụ giúp máy tính hiểu và xử lý được ngôn ngữ tự nhiên của con người?",
+      "options": [
+        "Xử lý ngôn ngữ tự nhiên.",
+        "Học máy.",
+        "Điều khiển rô-bốt.",
+        "Thị giác máy tính."
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "Xử lý ngôn ngữ tự nhiên (Natural Language Processing - NLP) có nhiệm vụ giúp máy tính hiểu, phân tích và xử lý ngôn ngữ tự nhiên của con người. Đáp án A.",
+      "diagram": null,
+      "order_index": 17
+    },
+    {
+      "id": "tin_c1_mc_018",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Ứng dụng nào sau đây là một Chatbot có sử dụng Trí tuệ nhân tạo?",
+      "options": [
+        "Copilot.",
+        "Notepad.",
+        "Geogebra.",
+        "WinRAR."
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "Microsoft Copilot là trợ lý Chatbot thông minh ứng dụng mô hình ngôn ngữ lớn (AI tạo sinh), trong khi Notepad, Geogebra và WinRAR là các phần mềm tiện ích truyền thống. Đáp án A.",
+      "diagram": null,
+      "order_index": 18
+    },
+    {
+      "id": "tin_c1_mc_019",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Ứng dụng nào sau đây là một Chatbot có sử dụng Trí tuệ nhân tạo?",
+      "options": [
+        "Gemini.",
+        "Unikey.",
+        "Calculator.",
+        "Notepad."
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "Google Gemini là hệ thống Chatbot AI tạo sinh tiên tiến của Google, còn Unikey, Calculator và Notepad là các phần mềm công cụ thông thường không phải Chatbot AI. Đáp án A.",
+      "diagram": null,
+      "order_index": 19
+    },
+    {
+      "id": "tin_c1_mc_020",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Robot Asimo của hãng Honda là ví dụ điển hình về ứng dụng AI trong lĩnh vực nào?",
+      "options": [
+        "Robot và điều khiển.",
+        "Xử lí hoá đơn thương mại.",
+        "Tìm kiếm thông tin trên Internet.",
+        "Trợ lí ảo trên điện thoại thông minh."
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "Robot ASIMO của hãng Honda là thành tựu tiêu biểu của ứng dụng AI trong lĩnh vực phát triển người máy thông minh (Robot và điều khiển tự động). Đáp án A.",
+      "diagram": null,
+      "order_index": 20
+    },
+    {
+      "id": "tin_c1_mc_021",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Đặc trưng nào của AI thể hiện khả năng vận dụng logic và tri thức để đưa ra quyết định hoặc kết luận?",
+      "options": [
+        "Khả năng suy luận.",
+        "Khả năng nhận thức.",
+        "Khả năng học.",
+        "Khả năng hiểu ngôn ngữ."
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "Khả năng suy luận là khả năng vận dụng các quy tắc logic và tri thức đã có để phân tích, phán đoán nhằm đưa ra quyết định hoặc kết luận hợp lý. Đáp án A.",
+      "diagram": null,
+      "order_index": 21
+    },
+    {
+      "id": "tin_c1_mc_022",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Trong lĩnh vực tài chính và ngân hàng, AI hiện không đảm nhận vai trò nào sau đây?",
+      "options": [
+        "Trực tiếp in ấn và phân phát tiền giấy ra ngoài thị trường.",
+        "Phân tích dữ liệu lớn để hỗ trợ ra quyết định đầu tư.",
+        "Tự động cập nhật chứng từ và hóa đơn vào cơ sở dữ liệu.",
+        "Phát hiện và ngăn chặn kịp thời các hành vi gian lận thẻ."
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "Trong tài chính - ngân hàng, AI được dùng để phân tích dữ liệu đầu tư, tự động hóa đọc/nhập chứng từ và phát hiện giao dịch gian lận bất thường; việc phát hành, in ấn tiền giấy thuộc thẩm quyền quản lý tiền tệ của Ngân hàng Trung ương nhà nước. Đáp án A.",
+      "diagram": null,
+      "order_index": 22
+    },
+    {
+      "id": "tin_c1_mc_023",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Cảnh báo nào sau đây không phải là một nguy cơ phát sinh từ sự phát triển của Trí tuệ nhân tạo?",
+      "options": [
+        "Làm suy giảm trầm trọng tốc độ đường truyền mạng cáp quang.",
+        "Gây ra áp lực thất nghiệp lớn do khả năng tự động hóa công việc.",
+        "Xâm phạm quyền riêng tư khi thu thập lượng lớn dữ liệu người dùng.",
+        "Rủi ro về tính minh bạch do các cơ chế ra quyết định kiểu \"hộp đen\"."
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "Các nguy cơ chính của AI bao gồm: áp lực thất nghiệp, xâm phạm quyền riêng tư, thiếu minh bạch ('hộp đen') và rủi ro an ninh/an toàn. AI không làm suy giảm tốc độ vật lý của đường truyền cáp quang. Đáp án A.",
+      "diagram": null,
+      "order_index": 23
+    },
+    {
+      "id": "tin_c1_mc_024",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Thuật ngữ \"AI tạo sinh\" (Generative AI) được mô tả chính xác nhất là gì?",
+      "options": [
+        "Hệ thống có khả năng tự động tạo ra nội dung mới như hình ảnh, âm thanh, văn bản.",
+        "Hệ thống có khả năng tự động tiêu diệt các loại virus độc hại trên máy tính.",
+        "Hệ thống chuyên dùng để phân tích số liệu tài chính trên thị trường chứng khoán.",
+        "Hệ thống trí tuệ nhân tạo tổng quát có năng lực hoàn toàn vượt qua con người."
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "AI tạo sinh (Generative AI) là một nhánh của AI có khả năng tạo ra các nội dung mới hoàn toàn như văn bản, hình ảnh, âm thanh, video và mã nguồn dựa trên dữ liệu đã học và yêu cầu của người dùng. Đáp án A.",
+      "diagram": null,
+      "order_index": 24
+    },
+    {
+      "id": "tin_c1_mc_025",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Phương án nào sau đây mô tả đặc trưng của Trí tuệ nhân tạo tạo sinh?",
+      "options": [
+        "Tạo ra các nội dung mới như văn bản, hình ảnh, mã nguồn.",
+        "Xác thực danh tính người dùng thông qua sinh trắc học.",
+        "Phân tích dữ liệu để đưa ra dự đoán hoặc phân loại đối tượng.",
+        "Tìm kiếm và trả về thông tin có sẵn từ cơ sở dữ liệu lớn."
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "Đặc trưng cốt lõi của Trí tuệ nhân tạo tạo sinh (Generative AI) là khả năng sáng tạo, sinh ra các nội dung mới (văn bản, hình ảnh, âm thanh, mã nguồn...) chứ không chỉ phân loại hay truy xuất dữ liệu sẵn có. Đáp án A.",
+      "diagram": null,
+      "order_index": 25
+    },
+    {
+      "id": "tin_c1_mc_026",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Nhận định nào sau đây đúng khi nói về tác động của Trí tuệ nhân tạo (AI) đối với thị trường lao động?",
+      "options": [
+        "AI thúc đẩy tự động hóa các công việc có tính lặp lại.",
+        "Các công việc đòi hỏi sự thấu hiểu cảm xúc bị AI thay thế.",
+        "AI quyết định độ tuổi lao động của con người.",
+        "Lao động phổ thông bị AI thay thế hoàn toàn."
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "AI thúc đẩy mạnh mẽ quá trình tự động hóa các công việc có tính chất lặp đi lặp lại theo quy trình, từ đó đặt ra yêu cầu chuyển đổi kỹ năng cho người lao động. Đáp án A.",
+      "diagram": null,
+      "order_index": 26
+    },
+    {
+      "id": "tin_c1_mc_027",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Nhận định nào sau đây phản ánh đúng một rủi ro về an toàn thông tin do ảnh hưởng của Trí tuệ nhân tạo?",
+      "options": [
+        "Trí tuệ nhân tạo có thể bị lợi dụng để tạo ra các nội dung giả mạo.",
+        "Trí tuệ nhân tạo khiến cho tốc độ truyền dữ liệu qua Internet bị chậm lại.",
+        "Dung lượng bộ nhớ trên các thiết bị lưu trữ của người dùng giảm đáng kể.",
+        "Chi phí đầu tư hạ tầng mạng Internet tăng cao do yêu cầu xử lý dữ liệu lớn."
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "Công nghệ AI (như Deepfake, giọng nói nhân tạo, văn bản lừa đảo tự động) có thể bị kẻ xấu lợi dụng để tạo ra các nội dung giả mạo tinh vi nhằm lừa đảo, phát tán tin giả, gây mất an toàn thông tin. Đáp án A.",
+      "diagram": null,
+      "order_index": 27
+    },
+    {
+      "id": "tin_c1_mc_028",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Phần mềm dịch tự động (như Google Dịch) thể hiện rõ nhất năng lực trí tuệ nào của AI?",
+      "options": [
+        "Khả năng hiểu và xử lí ngôn ngữ tự nhiên của con người.",
+        "Khả năng giải quyết vấn đề quy hoạch đường đi thực tế.",
+        "Khả năng nhận thức môi trường vật lí qua cảm biến phần cứng.",
+        "Khả năng điều khiển các thiết bị máy móc tự động từ xa."
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "Phần mềm dịch thuật tự động như Google Dịch (Google Translate) là ứng dụng tiêu biểu thể hiện khả năng đọc hiểu, phân tích ngữ nghĩa và xử lý ngôn ngữ tự nhiên của con người. Đáp án A.",
+      "diagram": null,
+      "order_index": 28
+    },
+    {
+      "id": "tin_c1_mc_029",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Điểm khác biệt cốt lõi giữa một hệ thống tự động hoá thông thường và một hệ thống có ứng dụng AI là gì?",
+      "options": [
+        "Hệ thống AI cần có sự kết hợp của các đặc trưng trí tuệ, trong khi hệ thống tự động hoá chỉ lặp lại các thao tác cố định.",
+        "Hệ thống AI luôn sử dụng cánh tay robot cơ khí, trong khi hệ thống tự động hoá dùng toàn bộ phần mềm.",
+        "Hệ thống tự động hoá có thể tự ra quyết định phức tạp, còn hệ thống AI cần con người điều khiển liên tục.",
+        "Hệ thống tự động hoá có khả năng học từ dữ liệu môi trường, trong khi AI chỉ hoạt động theo lập trình cứng."
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "Hệ thống AI kết hợp các đặc trưng trí tuệ (học từ dữ liệu, nhận thức, suy luận, giải quyết vấn đề linh hoạt), còn hệ thống tự động hóa thông thường chỉ thực hiện lặp đi lặp lại các thao tác cố định đã được lập trình trước. Đáp án A.",
+      "diagram": null,
+      "order_index": 29
+    },
+    {
+      "id": "tin_c1_mc_030",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Tại sao hệ thống dự báo thời tiết dựa trên mô hình dữ liệu lại được đánh giá là một ứng dụng của AI?",
+      "options": [
+        "Vì hệ thống có khả năng tìm ra kết quả tình huống tương lai dựa trên tri thức và dữ liệu thời tiết trước đây.",
+        "Vì hệ thống có khả năng tự động bật và tắt các vệ tinh dự báo trên quỹ đạo.",
+        "Vì hệ thống chỉ thực hiện việc in ra một bản tin thời tiết cố định hằng ngày.",
+        "Vì hệ thống có thể nhận dạng được khuôn mặt của biên tập viên chương trình thời tiết."
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "Hệ thống dự báo thời tiết hiện đại sử dụng AI để học từ khối lượng dữ liệu khí tượng lịch sử khổng lồ, rút ra quy luật và suy luận, dự đoán diễn biến thời tiết trong tương lai. Đáp án A.",
+      "diagram": null,
+      "order_index": 30
+    },
+    {
+      "id": "tin_c1_mc_031",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Hệ thống y tế sử dụng AI để tự động làm nổi bật những cấu trúc bất thường bên trong hình ảnh X-quang. Hoạt động này thể hiện chức năng cốt lõi nào của AI?",
+      "options": [
+        "Khả năng cải thiện chất lượng hình ảnh và hỗ trợ bác sĩ đưa ra chẩn đoán chính xác.",
+        "Khả năng chữa trị dứt điểm mọi bệnh ung thư mà không cần can thiệp phẫu thuật.",
+        "Khả năng tự động thay thế y tá chăm sóc sức khỏe sinh hoạt hàng ngày cho người bệnh.",
+        "Khả năng tự động phẫu thuật cho bệnh nhân dựa trên dữ liệu bệnh án tải về từ mạng."
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "Trong chẩn đoán hình ảnh y khoa, AI giúp nâng cao chất lượng hình ảnh, khoanh vùng các cấu trúc tổn thương hoặc bất thường để hỗ trợ bác sĩ đưa ra chẩn đoán nhanh và chính xác hơn. Đáp án A.",
+      "diagram": null,
+      "order_index": 31
+    },
+    {
+      "id": "tin_c1_mc_032",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Hệ thống camera thông minh của một bãi gửi xe được trang bị khả năng nhận dạng biển số xe. Chức năng xử lý dữ liệu hình ảnh của camera này thuộc lĩnh vực nào sau đây của Trí tuệ nhân tạo?",
+      "options": [
+        "Thị giác máy tính.",
+        "Xử lý tiếng nói.",
+        "Điều khiển rô-bốt.",
+        "Xử lý ngôn ngữ tự nhiên."
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "Việc thu nhận hình ảnh từ camera, phát hiện vị trí biển số và nhận dạng các ký tự trên biển số xe thuộc lĩnh vực Thị giác máy tính (Computer Vision). Đáp án A.",
+      "diagram": null,
+      "order_index": 32
+    },
+    {
+      "id": "tin_c1_mc_033",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Nhiệm vụ nào sau đây thể hiện đặc trưng tạo nội dung mới của Trí tuệ nhân tạo tạo sinh?",
+      "options": [
+        "Tạo ra đoạn mã chương trình từ mô tả yêu cầu bằng ngôn ngữ tự nhiên.",
+        "Chẩn đoán bệnh dựa trên việc phân loại hình ảnh chụp X-quang.",
+        "Nhận diện và đếm số lượng phương tiện giao thông trong một bức ảnh.",
+        "Dự báo lượng mưa dựa trên dữ liệu khí tượng của mười năm trước đó."
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "Việc tự động viết ra đoạn mã chương trình mới từ câu lệnh mô tả bằng ngôn ngữ tự nhiên là ứng dụng tiêu biểu của AI tạo sinh (như GitHub Copilot, ChatGPT). Các phương án còn lại là bài toán phân loại, nhận diện hoặc dự báo truyền thống. Đáp án A.",
+      "diagram": null,
+      "order_index": 33
+    },
+    {
+      "id": "tin_c1_mc_034",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Một trường học muốn áp dụng AI để cải thiện kết quả học tập cho những học sinh có tốc độ tiếp thu khác nhau. Theo em, giải pháp thiết kế nào dưới đây áp dụng hiệu quả nhất thành tựu AI trong giáo dục?",
+      "options": [
+        "Xây dựng nền tảng học tập cá nhân hóa, đề xuất bài tập dựa trên lịch sử tiến độ của từng em.",
+        "Lắp đặt AI điểm danh khuôn mặt ở cổng trường để chống trốn học.",
+        "Cài đặt AI tự động chấm toàn bộ điểm thi tự luận bằng cách đếm số kí tự.",
+        "Sử dụng AI để tự động dịch các sách tiếng nước ngoài sang tiếng Việt cho thư viện."
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "Ứng dụng hiệu quả nhất của AI trong dạy và học là cá nhân hóa học tập (Adaptive Learning): phân tích năng lực, tốc độ tiếp thu và lịch sử làm bài của từng học sinh để đề xuất lộ trình và bài tập phù hợp nhất. Đáp án A.",
+      "diagram": null,
+      "order_index": 34
+    },
+    {
+      "id": "tin_c1_mc_035",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "mc",
+      "question_text": "Một công ty thương mại điện tử muốn phát triển hệ thống tự động phân tích hàng ngàn bình luận của người mua để gom nhóm thành \"Khen ngợi\", \"Phàn nàn\" và \"Góp ý\". Công nghệ cốt lõi nào của AI bắt buộc phải được ứng dụng trong trường hợp này?",
+      "options": [
+        "Công nghệ xử lí ngôn ngữ tự nhiên của con người.",
+        "Công nghệ nhận dạng khuôn mặt và hình ảnh.",
+        "Công nghệ tổng hợp và nhận dạng tín hiệu âm thanh.",
+        "Công nghệ định tuyến và điều khiển tự động hóa."
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "Bài toán phân tích cảm xúc và phân loại nội dung bình luận văn bản (Sentiment Analysis) bắt buộc phải sử dụng công nghệ Xử lý ngôn ngữ tự nhiên (NLP) để máy tính hiểu được ngữ nghĩa và sắc thái biểu đạt của khách hàng. Đáp án A.",
+      "diagram": null,
+      "order_index": 35
+    },
+    {
+      "id": "tin_c2_mc_036",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Thiết bị nào xác định cổng kết nối giữa thiết bị gửi và thiết bị nhận, sau đó thiết lập tạm thời kênh truyền giữa hai cổng kết nối để truyền dữ liệu và huỷ kết nối sau khi hoàn thành việc truyền?",
+      "options": [
+        "Switch.",
+        "Router.",
+        "Hub.",
+        "Modem."
+      ],
+      "correct_index": 1,
+      "accepted_answers": [],
+      "explanation": "Theo đáp án gạch chân chuẩn của đề cương trường: Chọn B (Router). (Lưu ý thêm theo SGK Tin học 12: Switch xác định cổng kết nối giữa thiết bị gửi và nhận trong mạng LAN để thiết lập kênh truyền tạm thời giảm xung đột, còn Router dùng để định tuyến đường đi cho gói tin giữa các mạng khác nhau). Đáp án B.",
+      "diagram": null,
+      "order_index": 36
+    },
+    {
+      "id": "tin_c2_mc_037",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Phát biểu nào sau đây đúng?",
+      "options": [
+        "Mạng viễn thông sử dụng các modem để chuyển tiếp dữ liệu.",
+        "Thông thường LAN kết nối có dây các máy tính qua các thiết bị như switch hay hub trong một phạm vi địa lí nhất định.",
+        "Khi dùng hub thì tín hiệu đi từ máy gửi đến máy nhận sẽ không gây xung đột với tín hiệu của các cuộc truyền ở cổng khác.",
+        "Switch có chi phí rẻ hơn rất nhiều so với một hub có cùng số cổng."
+      ],
+      "correct_index": 1,
+      "accepted_answers": [],
+      "explanation": "Mạng cục bộ (LAN) thông thường kết nối có dây các máy tính và thiết bị ngoại vi qua các thiết bị kết nối như Switch hoặc Hub trong một phạm vi địa lý hẹp (nhà ở, văn phòng, trường học). Đáp án B.",
+      "diagram": null,
+      "order_index": 37
+    },
+    {
+      "id": "tin_c2_mc_038",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Khi kết nối hai máy tính (có thể cách xa hàng nghìn kilômét) qua Internet, người ta sử dụng thiết bị nào để kết nối các LAN với nhau?",
+      "options": [
+        "Hub.",
+        "Wireless Access Point.",
+        "Switch.",
+        "Router."
+      ],
+      "correct_index": 3,
+      "accepted_answers": [],
+      "explanation": "Router (Bộ định tuyến) là thiết bị dùng để kết nối các mạng LAN khác nhau (hoặc kết nối mạng LAN với mạng diện rộng WAN/Internet) và dẫn đường cho các gói dữ liệu. Đáp án D.",
+      "diagram": null,
+      "order_index": 38
+    },
+    {
+      "id": "tin_c2_mc_039",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Wireless Access Point (WAP) có chức năng gì?",
+      "options": [
+        "Chuyển đổi tín hiệu từ tín hiệu số sang tín hiệu tương tự và ngược lại, thường dùng khi kết nối LAN với Internet.",
+        "Dùng để kết nối các máy tính trong cùng LAN trực tiếp qua cáp mạng.",
+        "Dùng để kết nối các thiết bị đầu cuối qua sóng Wifi giúp giảm chi phí thiết lập LAN hoặc kết nối với một LAN để mở rộng phạm vi làm việc.",
+        "Dùng để dẫn đường cho dữ liệu khi kết nối trên mạng diện rộng như Internet."
+      ],
+      "correct_index": 2,
+      "accepted_answers": [],
+      "explanation": "Wireless Access Point (WAP - Điểm truy cập không dây) dùng để thu phát sóng Wi-Fi, kết nối các thiết bị đầu cuối không dây vào mạng LAN có dây giúp giảm chi phí đi dây và mở rộng phạm vi làm việc. Đáp án C.",
+      "diagram": null,
+      "order_index": 39
+    },
+    {
+      "id": "tin_c2_mc_040",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Điểm khác nhau của switch và hub là gì?",
+      "options": [
+        "Hình dạng.",
+        "Số cổng.",
+        "Cách thức hoạt động.",
+        "Màu sắc."
+      ],
+      "correct_index": 2,
+      "accepted_answers": [],
+      "explanation": "Switch và Hub có hình dáng bên ngoài và số cổng rất giống nhau, nhưng khác nhau cốt lõi ở cách thức hoạt động: Hub phát quảng bá tín hiệu ra tất cả các cổng, còn Switch xác định địa chỉ MAC đích và chỉ chuyển dữ liệu tới đúng cổng nhận. Đáp án C.",
+      "diagram": null,
+      "order_index": 40
+    },
+    {
+      "id": "tin_c2_mc_041",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Mạng cục bộ còn được gọi là",
+      "options": [
+        "mạng WAN.",
+        "mạng PAN.",
+        "mạng MAN.",
+        "mạng LAN."
+      ],
+      "correct_index": 3,
+      "accepted_answers": [],
+      "explanation": "Mạng cục bộ có tên viết tắt tiếng Anh là LAN (Local Area Network). Đáp án D.",
+      "diagram": null,
+      "order_index": 41
+    },
+    {
+      "id": "tin_c2_mc_042",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Router là gì?",
+      "options": [
+        "Bộ chuyển mạch.",
+        "Bộ thu phát không dây.",
+        "Bộ định tuyến.",
+        "Bộ chia tín hiệu."
+      ],
+      "correct_index": 2,
+      "accepted_answers": [],
+      "explanation": "Router trong tiếng Việt được gọi là Bộ định tuyến (Switch là bộ chuyển mạch, Hub là bộ chia tín hiệu, WAP là bộ thu phát không dây). Đáp án C.",
+      "diagram": null,
+      "order_index": 42
+    },
+    {
+      "id": "tin_c2_mc_043",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Wi-Fi sử dụng loại sóng nào để truyền dữ liệu?",
+      "options": [
+        "Sóng điện từ.",
+        "Sóng vô tuyến điện.",
+        "Sóng ánh sáng.",
+        "Sóng mang."
+      ],
+      "correct_index": 1,
+      "accepted_answers": [],
+      "explanation": "Công nghệ kết nối không dây Wi-Fi sử dụng sóng vô tuyến điện (Radio waves) để truyền tải dữ liệu trong không gian. Đáp án B.",
+      "diagram": null,
+      "order_index": 43
+    },
+    {
+      "id": "tin_c2_mc_044",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Trên mỗi router, cổng để kết nối với các router khác gọi là gì?",
+      "options": [
+        "Cổng WAP.",
+        "Cổng WAN.",
+        "Cổng LAN.",
+        "Cổng AP."
+      ],
+      "correct_index": 1,
+      "accepted_answers": [],
+      "explanation": "Trên mỗi Router, cổng dùng để kết nối ra bên ngoài tới các Router khác hoặc kết nối với mạng Internet được gọi là cổng WAN (Wide Area Network). Đáp án B.",
+      "diagram": null,
+      "order_index": 44
+    },
+    {
+      "id": "tin_c2_mc_045",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Loại modem nào cho phép nối hai máy tính qua hệ thống chuyển mạch của mạng điện thoại công cộng?",
+      "options": [
+        "Modem quay số.",
+        "Modem GSM 3G, 4G, 5G,…",
+        "Modem ADSL.",
+        "Modem quang."
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "Modem quay số (Dial-up modem) cho phép kết nối các máy tính qua hệ thống chuyển mạch của mạng điện thoại cố định công cộng (PSTN). Đáp án A.",
+      "diagram": null,
+      "order_index": 45
+    },
+    {
+      "id": "tin_c2_mc_046",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Switch hoạt động chủ yếu ở tầng nào của mô hình OSI?",
+      "options": [
+        "Tầng vật lý",
+        "Tầng liên kết dữ liệu",
+        "Tầng mạng",
+        "Tầng vận chuyển"
+      ],
+      "correct_index": 1,
+      "accepted_answers": [],
+      "explanation": "Switch sử dụng địa chỉ vật lý MAC để chuyển mạch khung dữ liệu (Frame), hoạt động chủ yếu ở tầng 2 - Tầng liên kết dữ liệu (Data Link Layer) của mô hình OSI. Đáp án B.",
+      "diagram": null,
+      "order_index": 46
+    },
+    {
+      "id": "tin_c2_mc_047",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Hub khác với Switch ở điểm nào?",
+      "options": [
+        "Hub chỉ hoạt động ở tầng mạng.",
+        "Hub không thể kết nối nhiều thiết bị cùng lúc.",
+        "Hub phát sóng dữ liệu tới tất cả các cổng, còn Switch chỉ gửi đến cổng đích.",
+        "Hub có khả năng định tuyến lưu lượng mạng."
+      ],
+      "correct_index": 2,
+      "accepted_answers": [],
+      "explanation": "Khi nhận dữ liệu tại một cổng, Hub sẽ phát tán (broadcast) tín hiệu tới tất cả các cổng còn lại dễ gây xung đột; trong khi Switch chỉ chuyển tiếp dữ liệu trực tiếp tới đúng cổng của thiết bị đích. Đáp án C.",
+      "diagram": null,
+      "order_index": 47
+    },
+    {
+      "id": "tin_c2_mc_048",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Access Point có chức năng gì?",
+      "options": [
+        "Kết nối các thiết bị không dây với mạng có dây.",
+        "Mã hóa dữ liệu mạng.",
+        "Định tuyến lưu lượng mạng.",
+        "Giám sát và bảo vệ mạng."
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "Access Point (Điểm truy cập không dây) đóng vai trò cầu nối giúp kết nối các thiết bị không dây (điện thoại, laptop qua Wi-Fi) vào mạng cục bộ có dây (LAN). Đáp án A.",
+      "diagram": null,
+      "order_index": 48
+    },
+    {
+      "id": "tin_c2_mc_049",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Thiết bị nào thường được sử dụng để chia sẻ kết nối Internet trong gia đình?",
+      "options": [
+        "Switch",
+        "Hub",
+        "Router",
+        "Access Point"
+      ],
+      "correct_index": 2,
+      "accepted_answers": [],
+      "explanation": "Trong mạng gia đình, Router (thường là Router Wi-Fi tích hợp) được sử dụng phổ biến nhất để kết nối với Modem nhà mạng và chia sẻ kết nối Internet cho các thiết bị trong nhà. Đáp án C.",
+      "diagram": null,
+      "order_index": 49
+    },
+    {
+      "id": "tin_c2_mc_050",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Modem có nhiệm vụ gì trong mạng?",
+      "options": [
+        "Kết nối các mạng khác nhau.",
+        "Mã hóa dữ liệu truyền tải.",
+        "Chuyển đổi tín hiệu số thành tín hiệu tương tự và ngược lại.",
+        "Giám sát lưu lượng mạng."
+      ],
+      "correct_index": 2,
+      "accepted_answers": [],
+      "explanation": "Modem (Modulator/Demodulator) có nhiệm vụ điều chế tín hiệu số (Digital) từ máy tính thành tín hiệu tương tự (Analog/Quang) để truyền trên đường dây viễn thông và giải điều chế ngược lại. Đáp án C.",
+      "diagram": null,
+      "order_index": 50
+    },
+    {
+      "id": "tin_c2_mc_051",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Thiết bị nào có thể làm tăng phạm vi phủ sóng Wi-Fi trong nhà?",
+      "options": [
+        "Router",
+        "Hub",
+        "Repeater",
+        "Switch"
+      ],
+      "correct_index": 2,
+      "accepted_answers": [],
+      "explanation": "Repeater (Bộ tiếp sóng / Bộ khuếch đại sóng Wi-Fi) thu tín hiệu Wi-Fi từ Router gốc và phát lại để mở rộng phạm vi phủ sóng tới các khu vực xa trong nhà. Đáp án C.",
+      "diagram": null,
+      "order_index": 51
+    },
+    {
+      "id": "tin_c2_mc_052",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Firewall là gì?",
+      "options": [
+        "Thiết bị định tuyến lưu lượng mạng.",
+        "Thiết bị giám sát và lọc các gói dữ liệu ra vào mạng để bảo vệ mạng.",
+        "Thiết bị lưu trữ dữ liệu.",
+        "Thiết bị phát sóng Wi-Fi."
+      ],
+      "correct_index": 1,
+      "accepted_answers": [],
+      "explanation": "Firewall (Tường lửa) là hệ thống phần cứng hoặc phần mềm giúp giám sát, kiểm tra và lọc các gói dữ liệu ra vào mạng dựa trên các quy tắc bảo mật nhằm ngăn chặn truy cập trái phép. Đáp án B.",
+      "diagram": null,
+      "order_index": 52
+    },
+    {
+      "id": "tin_c2_mc_053",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Trong các thiết bị mạng sau, thiết bị nào chủ yếu dùng để kết nối các thiết bị trong cùng một mạng nội bộ?",
+      "options": [
+        "Router",
+        "Switch",
+        "Modem",
+        "Access Point"
+      ],
+      "correct_index": 1,
+      "accepted_answers": [],
+      "explanation": "Switch (Bộ chuyển mạch) là thiết bị trung tâm chủ yếu dùng để kết nối có dây các máy tính và thiết bị trong cùng một mạng cục bộ nội bộ (LAN). Đáp án B.",
+      "diagram": null,
+      "order_index": 53
+    },
+    {
+      "id": "tin_c2_mc_054",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Để thiết lập kết nối không dây (Wi-Fi) giữa máy tính và Router, bạn cần thực hiện bước nào đầu tiên trên máy tính?",
+      "options": [
+        "Kết nối cáp mạng từ Router tới máy tính.",
+        "Bật chế độ máy bay.",
+        "Mở danh sách mạng Wi-Fi khả dụng và chọn mạng của bạn.",
+        "Tắt bộ định tuyến (Router)."
+      ],
+      "correct_index": 2,
+      "accepted_answers": [],
+      "explanation": "Để kết nối Wi-Fi trên máy tính, bước đầu tiên là bật Wi-Fi, mở danh sách các mạng không dây khả dụng đang phát sóng, chọn tên mạng (SSID) cần kết nối và nhập mật khẩu. Đáp án C.",
+      "diagram": null,
+      "order_index": 54
+    },
+    {
+      "id": "tin_c2_mc_055",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Khi kết nối máy tính với một router bằng cáp mạng, đầu cáp nào sẽ được cắm vào cổng mạng của máy tính?",
+      "options": [
+        "Cổng USB",
+        "Cổng HDMI",
+        "Cổng Ethernet (RJ-45)",
+        "Cổng VGA"
+      ],
+      "correct_index": 2,
+      "accepted_answers": [],
+      "explanation": "Khi kết nối mạng có dây bằng cáp xoắn đôi (UTP), đầu bấm chuẩn RJ-45 sẽ được cắm vào cổng mạng Ethernet (RJ-45) trên máy tính và cổng LAN trên Router/Switch. Đáp án C.",
+      "diagram": null,
+      "order_index": 55
+    },
+    {
+      "id": "tin_c2_mc_056",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Việc trao đổi dữ liệu giữa các máy tính trong mạng cục bộ tuân thủ theo giao thức nào?",
+      "options": [
+        "Giao thức HTTPS.",
+        "Giao thức TCP/IP.",
+        "Giao thức DNS.",
+        "Giao thức Ethernet."
+      ],
+      "correct_index": 3,
+      "accepted_answers": [],
+      "explanation": "Việc truyền và trao đổi các khung dữ liệu giữa các máy tính trong mạng cục bộ (LAN) tuân thủ theo giao thức tầng liên kết dữ liệu là giao thức Ethernet (IEEE 802.3). Đáp án D.",
+      "diagram": null,
+      "order_index": 56
+    },
+    {
+      "id": "tin_c2_mc_057",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Việc truyền dữ liệu trong mạng cục bộ sẽ căn cứ vào địa chỉ gì?",
+      "options": [
+        "Địa chỉ IP.",
+        "Địa chỉ MAC.",
+        "Địa chỉ LAN.",
+        "Địa chỉ Server."
+      ],
+      "correct_index": 1,
+      "accepted_answers": [],
+      "explanation": "Trong nội bộ mạng cục bộ (LAN), Switch và giao thức Ethernet căn cứ trực tiếp vào địa chỉ vật lý MAC (Media Access Control) để định danh và chuyển tiếp dữ liệu đến đúng máy nhận. Đáp án B.",
+      "diagram": null,
+      "order_index": 57
+    },
+    {
+      "id": "tin_c2_mc_058",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Phát biểu nào sau đây sai?",
+      "options": [
+        "Theo phương pháp định tuyến tĩnh, mỗi router có một bảng định tuyến.",
+        "Giao thức TCP đảm bảo việc truyền dữ liệu theo từng ứng dụng một cách chính xác, tin cậy và hiệu quả.",
+        "MAC là địa chỉ vật lí của máy tính.",
+        "Giao thức IP đảm bảo chuyển dữ liệu từ mạng này đến mạng kia và chuyển dữ liệu đến một ứng dụng cụ thể trên một máy cụ thể."
+      ],
+      "correct_index": 3,
+      "accepted_answers": [],
+      "explanation": "Giao thức IP chỉ đảm nhận việc định địa chỉ và định tuyến chuyển gói tin từ máy gửi đến máy đích qua các mạng; còn việc phân phối dữ liệu đến đúng từng ứng dụng cụ thể trên máy đó (thông qua số hiệu cổng Port) là nhiệm vụ của giao thức tầng giao vận TCP/UDP. Phát biểu D sai. Đáp án D.",
+      "diagram": null,
+      "order_index": 58
+    },
+    {
+      "id": "tin_c2_mc_059",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Giao thức quy định cách biểu diễn (mã hoá) các trang web là",
+      "options": [
+        "SNMP.",
+        "DNS.",
+        "HTTP.",
+        "DHCP."
+      ],
+      "correct_index": 2,
+      "accepted_answers": [],
+      "explanation": "Trong các giao thức mạng được liệt kê, HTTP (Hypertext Transfer Protocol) là giao thức ứng dụng dùng để truyền tải và trao đổi dữ liệu siêu văn bản của các trang web giữa máy chủ và trình duyệt. Đáp án C.",
+      "diagram": null,
+      "order_index": 59
+    },
+    {
+      "id": "tin_c2_mc_060",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Địa chỉ email nào sau đây là không hợp lệ?",
+      "options": [
+        "baochau1805@gmail.com.",
+        "ngoc anh2007@gmail.com.",
+        "nguyenthutrang_k68@vnu.edu.vn.",
+        "minhtuan@yahoo.com.vn."
+      ],
+      "correct_index": 1,
+      "accepted_answers": [],
+      "explanation": "Địa chỉ email không được phép chứa ký tự khoảng trắng (dấu cách). Phương án B ('ngoc anh2007@gmail.com') có dấu cách giữa chữ 'ngoc' và 'anh' nên không hợp lệ. Đáp án B.",
+      "diagram": null,
+      "order_index": 60
+    },
+    {
+      "id": "tin_c2_mc_061",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Các quy định liên quan đến gửi thư có tên là gì?",
+      "options": [
+        "Giao thức IMAP.",
+        "Giao thức MQTT.",
+        "Giao thức SMTP.",
+        "Giao thức POP3."
+      ],
+      "correct_index": 2,
+      "accepted_answers": [],
+      "explanation": "SMTP (Simple Mail Transfer Protocol) là giao thức chuẩn quy định việc gửi và chuyển tiếp thư điện tử (email) trên mạng Internet; trong khi POP3 và IMAP là giao thức dùng để nhận/tải thư về. Đáp án C.",
+      "diagram": null,
+      "order_index": 61
+    },
+    {
+      "id": "tin_c2_mc_062",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Nhóm địa chỉ IP 172.18.*.* có cổng",
+      "options": [
+        "1.",
+        "2.",
+        "3.",
+        "4."
+      ],
+      "correct_index": 1,
+      "accepted_answers": [],
+      "explanation": "Trong bài toán định tuyến của SGK Tin học 12, bảng định tuyến quy định nhánh mạng 172.18.*.* được chuyển tiếp qua cổng số 2. Đáp án B.",
+      "diagram": null,
+      "order_index": 62
+    },
+    {
+      "id": "tin_c2_mc_063",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Hiện nay có những loại địa chỉ IP nào?",
+      "options": [
+        "IPv4 và IPv6.",
+        "IPv2 và IPv4.",
+        "IPv4 và IPv5.",
+        "IPv1 và IPv3."
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "Hiện nay trên mạng Internet đang sử dụng phổ biến hai phiên bản địa chỉ IP là IPv4 (độ dài 32 bit) và IPv6 (độ dài 128 bit). Đáp án A.",
+      "diagram": null,
+      "order_index": 63
+    },
+    {
+      "id": "tin_c2_mc_064",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Địa chỉ máy chủ của Bộ Giáo dục và Đào tạo có thể thay thế bằng",
+      "options": [
+        "moet.edu.com.",
+        "edu.com.vn.",
+        "moet.edu.vn.",
+        "edu.moet.vn"
+      ],
+      "correct_index": 2,
+      "accepted_answers": [],
+      "explanation": "Tên miền chính thức của Cổng thông tin điện tử Bộ Giáo dục và Đào tạo Việt Nam là moet.edu.vn (thay thế cho địa chỉ IP số của máy chủ). Đáp án C.",
+      "diagram": null,
+      "order_index": 64
+    },
+    {
+      "id": "tin_c2_mc_065",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Lệnh nào của giao thức ICMP (Internet Control Message Protocol) giúp kiểm tra máy tính có kết nối được với một máy tính hay một thiết bị mạng hay không?",
+      "options": [
+        "touch.",
+        "mkdir.",
+        "ping.",
+        "tracert."
+      ],
+      "correct_index": 2,
+      "accepted_answers": [],
+      "explanation": "Lệnh 'ping' sử dụng giao thức ICMP để gửi các gói tin Echo Request tới địa chỉ đích và chờ phản hồi, giúp kiểm tra trạng thái kết nối thông suốt và thời gian trễ giữa hai thiết bị mạng. Đáp án C.",
+      "diagram": null,
+      "order_index": 65
+    },
+    {
+      "id": "tin_c2_mc_066",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Giao thức TCP (Transmission Control Protocol) cung cấp tính năng gì quan trọng nhất?",
+      "options": [
+        "Giao thức không kết nối",
+        "Đảm bảo tính toàn vẹn của dữ liệu và kiểm soát lỗi",
+        "Xác thực người dùng",
+        "Mã hóa dữ liệu"
+      ],
+      "correct_index": 1,
+      "accepted_answers": [],
+      "explanation": "Giao thức TCP là giao thức hướng kết nối, cung cấp cơ chế đánh số thứ tự gói tin, xác nhận (ACK), kiểm soát luồng và truyền lại gói tin bị lỗi/mất nhằm đảm bảo tính toàn vẹn, tin cậy của dữ liệu. Đáp án B.",
+      "diagram": null,
+      "order_index": 66
+    },
+    {
+      "id": "tin_c2_mc_067",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Giao thức UDP (User Datagram Protocol) khác với TCP ở điểm nào?",
+      "options": [
+        "UDP cung cấp kết nối, còn TCP không cung cấp kết nối.",
+        "UDP không đảm bảo tính toàn vẹn của dữ liệu, còn TCP thì có.",
+        "UDP sử dụng mã hóa, còn TCP không sử dụng.",
+        "UDP có tính năng nén dữ liệu, còn TCP không có."
+      ],
+      "correct_index": 1,
+      "accepted_answers": [],
+      "explanation": "UDP là giao thức truyền dữ liệu không kết nối (connectionless), ưu tiên tốc độ nhanh nhưng không có cơ chế xác nhận hay khôi phục gói tin mất mát nên không đảm bảo tính toàn vẹn dữ liệu như TCP. Đáp án B.",
+      "diagram": null,
+      "order_index": 67
+    },
+    {
+      "id": "tin_c2_mc_068",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Giao thức HTTP (Hypertext Transfer Protocol) chủ yếu được sử dụng để làm gì?",
+      "options": [
+        "Truyền dữ liệu giữa máy chủ và máy khách trên web.",
+        "Kết nối các thiết bị mạng.",
+        "Quản lý địa chỉ IP.",
+        "Kiểm soát lưu lượng mạng."
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "HTTP (Hypertext Transfer Protocol) là giao thức tầng ứng dụng chủ yếu được sử dụng để truyền tải dữ liệu siêu văn bản (trang web) giữa máy chủ web (Web Server) và trình duyệt của máy khách (Web Client). Đáp án A.",
+      "diagram": null,
+      "order_index": 68
+    },
+    {
+      "id": "tin_c2_mc_069",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Giao thức nào là giao thức chính để gửi email?",
+      "options": [
+        "HTTP",
+        "FTP",
+        "SMTP",
+        "POP3"
+      ],
+      "correct_index": 2,
+      "accepted_answers": [],
+      "explanation": "SMTP (Simple Mail Transfer Protocol) là giao thức chính dùng để gửi email từ máy khách lên máy chủ thư và chuyển tiếp giữa các máy chủ thư. Đáp án C.",
+      "diagram": null,
+      "order_index": 69
+    },
+    {
+      "id": "tin_c2_mc_070",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Giao thức nào thường được sử dụng để nhận email từ máy chủ?",
+      "options": [
+        "SMTP",
+        "IMAP",
+        "DNS",
+        "HTTP"
+      ],
+      "correct_index": 1,
+      "accepted_answers": [],
+      "explanation": "IMAP (Internet Message Access Protocol) và POP3 là hai giao thức chuẩn dùng để nhận và đồng bộ email từ máy chủ thư về thiết bị của người dùng. Đáp án B.",
+      "diagram": null,
+      "order_index": 70
+    },
+    {
+      "id": "tin_c2_mc_071",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Giao thức nào đảm bảo việc truyền tải dữ liệu đến đúng địa chỉ IP?",
+      "options": [
+        "ARP",
+        "DHCP",
+        "DNS",
+        "ICMP"
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "Giao thức ARP (Address Resolution Protocol) giúp ánh xạ tìm địa chỉ vật lý MAC tương ứng với địa chỉ IP đích trong mạng, đảm bảo khung dữ liệu được chuyển tới đúng thiết bị mang địa chỉ IP đó. Đáp án A.",
+      "diagram": null,
+      "order_index": 71
+    },
+    {
+      "id": "tin_c2_mc_072",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Giao thức nào được sử dụng để phân giải tên miền thành địa chỉ IP?",
+      "options": [
+        "FTP",
+        "DNS",
+        "DHCP",
+        "SMTP"
+      ],
+      "correct_index": 1,
+      "accepted_answers": [],
+      "explanation": "Hệ thống phân giải tên miền DNS (Domain Name System) có chức năng dịch tên miền dạng chữ dễ nhớ (như google.com, moet.edu.vn) sang địa chỉ IP dạng số tương ứng để máy tính kết nối. Đáp án B.",
+      "diagram": null,
+      "order_index": 72
+    },
+    {
+      "id": "tin_c2_mc_073",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Giao thức nào giúp máy tính nhận địa chỉ IP tự động từ máy chủ?",
+      "options": [
+        "DNS",
+        "DHCP",
+        "HTTP",
+        "ICMP"
+      ],
+      "correct_index": 1,
+      "accepted_answers": [],
+      "explanation": "Giao thức cấu hình động máy chủ DHCP (Dynamic Host Configuration Protocol) giúp tự động cấp phát địa chỉ IP, Subnet Mask, Default Gateway và DNS cho các thiết bị khi tham gia vào mạng. Đáp án B.",
+      "diagram": null,
+      "order_index": 73
+    },
+    {
+      "id": "tin_c2_mc_074",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Lệnh tracert trong giao thức mạng dùng để làm gì?",
+      "options": [
+        "Gửi một gói tin đến một địa chỉ IP và đo thời gian phản hồi.",
+        "Xác định đường đi của gói tin đến máy chủ.",
+        "Kiểm tra sự kết nối đến một địa chỉ IP.",
+        "Phân giải tên miền thành địa chỉ IP."
+      ],
+      "correct_index": 1,
+      "accepted_answers": [],
+      "explanation": "Lệnh 'tracert' (Trace Route) dùng để theo dõi và liệt kê danh sách các trạm định tuyến (Router) mà gói tin đi qua trên hành trình từ máy nguồn đến máy chủ đích. Đáp án B.",
+      "diagram": null,
+      "order_index": 74
+    },
+    {
+      "id": "tin_c2_mc_075",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "mc",
+      "question_text": "Giao thức nào giúp kiểm tra và quản lý trạng thái kết nối mạng?",
+      "options": [
+        "ICMP",
+        "HTTP",
+        "FTP",
+        "TCP"
+      ],
+      "correct_index": 0,
+      "accepted_answers": [],
+      "explanation": "Giao thức thông báo điều khiển Internet ICMP (Internet Control Message Protocol) được dùng để gửi các thông báo lỗi và kiểm tra, chẩn đoán trạng thái kết nối mạng (như qua lệnh ping, tracert). Đáp án A.",
+      "diagram": null,
+      "order_index": 75
+    },
+    {
+      "id": "tin_c1_tf_001",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "tf",
+      "question_text": "Trí tuệ nhân tạo – AI (Artificial Intelligence) là khả năng của máy tính có thể làm những công việc mang tính trí tuệ con người.",
+      "options": [
+        {
+          "text": "Phần mềm máy tính AlphaGo của IBM đã đánh bại nhà vô địch cờ vây Lee Sedol vào năm 2016.",
+          "isCorrect": false
+        },
+        {
+          "text": "Hệ chuyên gia MYCIN dựa vào những quy tắc suy diễn dưới dạng “IF … THEN …” để xác định một số loại vi khuẩn gây nhiễm trùng nặng.",
+          "isCorrect": true
+        },
+        {
+          "text": "Hệ thống AI có các kĩ thuật, phương pháp phân tích dữ liệu từ đó trích xuất được tri thức, đề xuất cách giải quyết vấn đề và ra quyết định tối ưu để đạt được mục tiêu đặt ra.",
+          "isCorrect": true
+        },
+        {
+          "text": "Người máy Xoxe có camera tích hợp công nghệ nhận dạng khuôn mặt và cảm xúc, do đó trong quá trình tương tác Xoxe có thể dự đoán độ tuổi, nhận biết ngôn ngữ cơ thể và phát hiện cảm xúc của con người.",
+          "isCorrect": true
+        }
+      ],
+      "correct_index": null,
+      "accepted_answers": [],
+      "explanation": "a) SAI: AlphaGo là phần mềm của công ty DeepMind (Google), không phải của IBM (IBM nổi tiếng với Deep Blue và IBM Watson).<br>b) ĐÚNG: Hệ chuyên gia MYCIN trong y học hoạt động dựa trên khoảng 600 quy tắc suy diễn dạng IF...THEN để xác định vi khuẩn gây nhiễm trùng máu và đề xuất kháng sinh.<br>c) ĐÚNG: Đây là đặc trưng về khả năng học, trích xuất tri thức và giải quyết vấn đề của hệ thống AI.<br>d) ĐÚNG: Người máy Xoxe tích hợp thị giác máy tính và AI nhận diện khuôn mặt để nhận biết cảm xúc, độ tuổi và ngôn ngữ cơ thể khi giao tiếp.",
+      "diagram": null,
+      "order_index": 76
+    },
+    {
+      "id": "tin_c1_tf_002",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "tf",
+      "question_text": "Mục tiêu của việc phát triển ứng dụng AI là nhằm xây dựng các phần mềm giúp máy tính có được những năng lực trí tuệ như con người.",
+      "options": [
+        {
+          "text": "Khả năng học là khả năng vận dụng logic và tri thức để đưa ra quyết định hoặc kết luận.",
+          "isCorrect": false
+        },
+        {
+          "text": "Các dây chuyền lắp ráp là các hệ thống có ứng dụng AI.",
+          "isCorrect": false
+        },
+        {
+          "text": "Trí tuệ nhân tạo tổng quát hay Trí tuệ nhân tạo mạnh có khả năng tự học, tự thích nghi và thực hiện được nhiều công việc giống như con người.",
+          "isCorrect": true
+        },
+        {
+          "text": "Các máy tìm kiếm thông tin trên Internet như Google, Bing có thể hiểu yêu cầu tra cứu của người dùng được đưa vào bằng văn bản hay bằng tiếng nói.",
+          "isCorrect": true
+        }
+      ],
+      "correct_index": null,
+      "accepted_answers": [],
+      "explanation": "a) SAI: Vận dụng logic và tri thức để đưa ra quyết định hoặc kết luận là 'Khả năng suy luận'; còn 'Khả năng học' là khả năng nắm bắt tri thức, quy luật từ dữ liệu.<br>b) SAI: Các dây chuyền lắp ráp tự động thông thường chỉ hoạt động lặp đi lặp lại một cách cơ học theo chương trình cố định, chưa phải là hệ thống có ứng dụng AI.<br>c) ĐÚNG: AI tổng quát (AGI - AI mạnh) hướng tới khả năng tự học, tự thích nghi và thực hiện đa nhiệm vụ trí tuệ như con người.<br>d) ĐÚNG: Các công cụ tìm kiếm hiện đại tích hợp AI xử lý ngôn ngữ tự nhiên và nhận dạng tiếng nói để hiểu chính xác ý định tra cứu bằng cả văn bản lẫn giọng nói.",
+      "diagram": null,
+      "order_index": 77
+    },
+    {
+      "id": "tin_c1_tf_003",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "tf",
+      "question_text": "Ngày nay, các ứng dụng AI đang trở thành phổ biến trong nhiều lĩnh vực khác nhau.",
+      "options": [
+        {
+          "text": "Robot Asimo của hãng Tesla là robot hình người đầu tiên trên thế giới được tích hợp một loạt ứng dụng AI như tự động điều khiển, nhận dạng hình ảnh, nhận dạng tiếng nói.",
+          "isCorrect": false
+        },
+        {
+          "text": "Phiên bản Google dịch được dùng phổ biến hiện nay cho phép dịch nhiều dạng văn bản như các từ, cụm từ, tệp văn bản, trang web.",
+          "isCorrect": true
+        },
+        {
+          "text": "Hệ chuyên gia MYCIN sử dụng các kĩ thuật Học máy.",
+          "isCorrect": false
+        },
+        {
+          "text": "Facebook ứng dụng nhận dạng khuôn mặt để xác định và gán nhãn tên khá chính xác những người quen xuất hiện trong ảnh của người dùng đưa lên trang cá nhân.",
+          "isCorrect": true
+        }
+      ],
+      "correct_index": null,
+      "accepted_answers": [],
+      "explanation": "a) SAI: Robot ASIMO do hãng Honda (Nhật Bản) chế tạo, không phải hãng Tesla.<br>b) ĐÚNG: Google Dịch (Google Translate) ứng dụng AI xử lý ngôn ngữ tự nhiên hỗ trợ dịch từ, cụm từ, giọng nói, tài liệu và toàn bộ trang web.<br>c) SAI: MYCIN là hệ chuyên gia cổ điển (thập niên 1970) hoạt động dựa trên hệ thống luật suy diễn IF...THEN cố định do chuyên gia con người nạp vào, chưa sử dụng kĩ thuật Học máy (Machine Learning).<br>d) ĐÚNG: Tính năng gợi ý gắn thẻ (tag) bạn bè trên ảnh của Facebook là ứng dụng điển hình của công nghệ nhận dạng khuôn mặt trong AI.",
+      "diagram": null,
+      "order_index": 78
+    },
+    {
+      "id": "tin_c1_tf_004",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "tf",
+      "question_text": "Nhiều lĩnh vực khoa học, công nghệ và đời sống đã và đang nhận được rất nhiều lợi ích từ sự phát triển của AI.",
+      "options": [
+        {
+          "text": "Các chuyên gia y tế khẳng định phần mềm IBM Watson for Oncology đã góp phần nâng cao hiệu quả điều trị bệnh gan.",
+          "isCorrect": false
+        },
+        {
+          "text": "Hệ thống nhận dạng chữ viết tay là một thành tựu của xử lí ngôn ngữ tự nhiên trong AI.",
+          "isCorrect": false
+        },
+        {
+          "text": "Trong nông nghiệp, AI được sử dụng trong các trang trại thông minh để theo dõi những yếu tố có ảnh hưởng trực tiếp tới hiệu quả nuôi trồng.",
+          "isCorrect": true
+        },
+        {
+          "text": "Trong lĩnh vực khoa học xã hội và nhân văn, AI được sử dụng để mô phỏng và mô hình hoá nhiều hiện tượng xã hội và nhân học.",
+          "isCorrect": true
+        }
+      ],
+      "correct_index": null,
+      "accepted_answers": [],
+      "explanation": "a) SAI: IBM Watson for Oncology là hệ thống AI hỗ trợ phác đồ điều trị bệnh ung thư (Oncology là ung bướu học), không phải chuyên trị bệnh gan.<br>b) SAI: Hệ thống nhận dạng chữ viết tay (OCR/Handwriting recognition) thuộc lĩnh vực Nhận dạng mẫu / Thị giác máy tính.<br>c) ĐÚNG: AI kết hợp cảm biến trong nông nghiệp thông minh giúp theo dõi độ ẩm, nhiệt độ, sâu bệnh để tối ưu hóa năng suất nuôi trồng.<br>d) ĐÚNG: Trong khoa học xã hội và nhân văn, AI hỗ trợ mô phỏng các hành vi, xu hướng và hiện tượng xã hội phức tạp.",
+      "diagram": null,
+      "order_index": 79
+    },
+    {
+      "id": "tin_c1_tf_005",
+      "subject_id": "tinhoc",
+      "topic_id": "1",
+      "type": "tf",
+      "question_text": "Sự phát triển của AI đã và đang diễn ra với tốc độ nhanh chóng, có tiềm năng cách mạng hoá nhiều lĩnh vực khoa học và đời sống nhưng cũng kéo theo những nguy cơ cần được cảnh báo.",
+      "options": [
+        {
+          "text": "ChatGPT là một ví dụ điển hình của AI tạo sinh.",
+          "isCorrect": true
+        },
+        {
+          "text": "AI tạo sinh tập trung vào việc nghiên cứu làm cho máy tính có khả năng học từ dữ liệu thu được trong quá trình hoạt động để tự hoàn thiện và nâng cao năng lực nhận thức.",
+          "isCorrect": false
+        },
+        {
+          "text": "AI có khả năng tự động hoá nhiều công việc, điều này làm tăng mối lo ngại về quyền riêng tư có khả năng bị lạm dụng.",
+          "isCorrect": false
+        },
+        {
+          "text": "Những quyết định không chính xác do AI đưa ra có thể gây nguy hại trực tiếp cho con người, ví dụ chẩn đoán sai về tình trạng bệnh tật hay ra quyết định tấn công các mục tiêu dân sự trong xung đột vũ trang,…",
+          "isCorrect": true
+        }
+      ],
+      "correct_index": null,
+      "accepted_answers": [],
+      "explanation": "a) ĐÚNG: ChatGPT do OpenAI phát triển là ứng dụng tiêu biểu nhất của AI tạo sinh (Generative AI).<br>b) SAI: Khái niệm làm cho máy tính có khả năng học từ dữ liệu để tự hoàn thiện là định nghĩa của Học máy (Machine Learning), còn AI tạo sinh tập trung vào việc tạo ra nội dung văn bản, hình ảnh, âm thanh mới.<br>c) SAI: Tự động hóa nhiều công việc dẫn đến nguy cơ thất nghiệp; còn mối lo ngại về quyền riêng tư là do việc thu thập và sử dụng lượng lớn dữ liệu cá nhân.<br>d) ĐÚNG: Các quyết định sai lầm hoặc thiếu kiểm soát của AI trong y tế, giao thông tự hành hoặc quân sự có thể gây nguy hại trực tiếp đến tính mạng con người.",
+      "diagram": null,
+      "order_index": 80
+    },
+    {
+      "id": "tin_c2_tf_006",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "tf",
+      "question_text": "Mạng máy tính và các thiết bị mạng đóng vai trò quan trọng trong việc kết nối, truyền tải dữ liệu và trao đổi thông tin giữa các thiết bị số. Dưới đây là một số nhận định liên quan đến các khái niệm và thiết bị mạng:",
+      "options": [
+        {
+          "text": "Mạng máy tính chỉ bao gồm các thiết bị có dây được kết nối với nhau để truyền dữ liệu và trao đổi thông tin.",
+          "isCorrect": false
+        },
+        {
+          "text": "Switch là thiết bị mạng sử dụng địa chỉ MAC để chuyển tiếp dữ liệu đến thiết bị đích, giúp giảm xung đột tín hiệu trong mạng LAN.",
+          "isCorrect": true
+        },
+        {
+          "text": "Modem được sử dụng để kết nối các thiết bị trong mạng LAN và chuyển tiếp dữ liệu giữa chúng.",
+          "isCorrect": false
+        },
+        {
+          "text": "Router wifi có thể kết nối nhiều mạng LAN với nhau, chọn đường đi cho dữ liệu dựa vào địa chỉ IP, và đồng thời phát sóng wifi.",
+          "isCorrect": true
+        }
+      ],
+      "correct_index": null,
+      "accepted_answers": [],
+      "explanation": "a) SAI: Mạng máy tính bao gồm cả các thiết bị kết nối có dây (cáp đồng, cáp quang) và không dây (Wi-Fi, Bluetooth...).<br>b) ĐÚNG: Switch hoạt động dựa trên bảng địa chỉ MAC để chuyển tiếp gói tin trực tiếp tới đúng cổng đích, giúp tránh xung đột tín hiệu.<br>c) SAI: Thiết bị kết nối các máy tính trong mạng LAN là Switch/Hub; còn Modem có chức năng chuyển đổi tín hiệu số - tương tự để kết nối mạng LAN với nhà cung cấp dịch vụ Internet (ISP).<br>d) ĐÚNG: Router Wi-Fi tích hợp cả chức năng định tuyến giữa các mạng theo địa chỉ IP và chức năng của điểm truy cập không dây (WAP) để phát sóng Wi-Fi.",
+      "diagram": null,
+      "order_index": 81
+    },
+    {
+      "id": "tin_c2_tf_007",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "tf",
+      "question_text": "Các thiết bị mạng như Hub, Switch, Router và Modem đóng vai trò quan trọng trong việc kết nối và quản lý dữ liệu trong mạng máy tính. Dưới đây là một số nhận định về chức năng của các thiết bị này:",
+      "options": [
+        {
+          "text": "Hub và Switch đều có chức năng tương tự nhau, nhưng Hub thường gây ra nhiều xung đột tín hiệu hơn vì dữ liệu được gửi đến tất cả các thiết bị kết nối.",
+          "isCorrect": true
+        },
+        {
+          "text": "Modem chỉ được sử dụng để kết nối các thiết bị mạng trong cùng một tòa nhà và không có chức năng kết nối với Internet.",
+          "isCorrect": false
+        },
+        {
+          "text": "Router không thể chọn đường đi cho dữ liệu giữa các mạng LAN khác nhau, chức năng này chỉ có ở Switch.",
+          "isCorrect": false
+        },
+        {
+          "text": "Wireless Access Point có thể kết hợp cả mạng có dây và mạng không dây trong cùng một mạng LAN.",
+          "isCorrect": true
+        }
+      ],
+      "correct_index": null,
+      "accepted_answers": [],
+      "explanation": "a) ĐÚNG: Cả Hub và Switch đều dùng để kết nối các thiết bị trong mạng LAN, nhưng Hub phát quảng bá tín hiệu ra mọi cổng nên rất dễ gây xung đột (collision).<br>b) SAI: Modem là thiết bị thiết yếu để kết nối mạng nội bộ với mạng diện rộng Internet bên ngoài qua hạ tầng viễn thông.<br>c) SAI: Chức năng chọn đường đi (định tuyến) cho dữ liệu giữa các mạng LAN khác nhau là của Router, không phải của Switch.<br>d) ĐÚNG: Wireless Access Point (WAP) kết nối với Switch/Router bằng cáp mạng và phát sóng Wi-Fi cho các thiết bị di động, giúp hợp nhất mạng có dây và không dây trong cùng một mạng LAN.",
+      "diagram": null,
+      "order_index": 82
+    },
+    {
+      "id": "tin_c2_tf_008",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "tf",
+      "question_text": "Giao thức mạng đóng vai trò quan trọng trong việc truyền tải dữ liệu và đảm bảo tính tin cậy, chính xác khi các thiết bị giao tiếp với nhau. Dưới đây là một số nhận định về các giao thức mạng phổ biến:",
+      "options": [
+        {
+          "text": "HTTP là giao thức truyền tải dữ liệu trên web và không có tính năng bảo mật.",
+          "isCorrect": true
+        },
+        {
+          "text": "FTP là giao thức được sử dụng để gửi và nhận email trên mạng.",
+          "isCorrect": false
+        },
+        {
+          "text": "TCP và UDP đều là giao thức điều khiển truyền dữ liệu trong mạng, nhưng TCP có tính năng kiểm tra lỗi và đảm bảo dữ liệu được truyền tải đầy đủ.",
+          "isCorrect": true
+        },
+        {
+          "text": "SSH là giao thức dùng để truyền tải dữ liệu giữa các thiết bị không dây, giúp đảm bảo tính bảo mật.",
+          "isCorrect": false
+        }
+      ],
+      "correct_index": null,
+      "accepted_answers": [],
+      "explanation": "a) ĐÚNG: HTTP truyền dữ liệu dạng văn bản thuần (plaintext) không mã hóa nên không có tính năng bảo mật (phiên bản bảo mật có mã hóa SSL/TLS là HTTPS).<br>b) SAI: FTP (File Transfer Protocol) là giao thức truyền tải tệp tin; giao thức gửi nhận email là SMTP, POP3, IMAP.<br>c) ĐÚNG: Cả TCP và UDP đều thuộc tầng Giao vận, trong đó TCP hướng kết nối, kiểm tra lỗi và đảm bảo truyền dữ liệu đầy đủ, đúng thứ tự.<br>d) SAI: SSH (Secure Shell) là giao thức mạng dùng để thiết lập kết nối điều khiển từ xa an toàn trên mọi hạ tầng mạng (cả có dây và không dây), không phải chỉ dành riêng cho thiết bị không dây.",
+      "diagram": null,
+      "order_index": 83
+    },
+    {
+      "id": "tin_c2_tf_009",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "tf",
+      "question_text": "Giao thức TCP/IP là một trong những bộ giao thức mạng phổ biến nhất, bao gồm các giao thức TCP và IP. Dưới đây là một số nhận định liên quan đến giao thức này:",
+      "options": [
+        {
+          "text": "Giao thức IP chủ yếu liên quan đến việc kiểm soát luồng dữ liệu và đảm bảo các gói tin được truyền tải theo đúng thứ tự.",
+          "isCorrect": false
+        },
+        {
+          "text": "Giao thức TCP đảm bảo rằng dữ liệu được truyền tải an toàn và đầy đủ giữa các thiết bị trong mạng bằng cách kiểm tra lỗi và tái truyền lại gói tin nếu cần.",
+          "isCorrect": true
+        },
+        {
+          "text": "UDP là một phần của giao thức TCP/IP, được sử dụng khi yêu cầu truyền tải dữ liệu nhanh chóng mà không cần đảm bảo dữ liệu đến đầy đủ.",
+          "isCorrect": true
+        },
+        {
+          "text": "Giao thức TCP/IP chỉ sử dụng trong mạng cục bộ (LAN) và không thể hoạt động trên mạng diện rộng (WAN).",
+          "isCorrect": false
+        }
+      ],
+      "correct_index": null,
+      "accepted_answers": [],
+      "explanation": "a) SAI: Kiểm soát luồng dữ liệu và đảm bảo thứ tự gói tin là nhiệm vụ của giao thức TCP; còn giao thức IP phụ trách định địa chỉ và định tuyến gói tin.<br>b) ĐÚNG: TCP kiểm tra lỗi, yêu cầu xác nhận (ACK) và tự động truyền lại gói tin bị thất lạc.<br>c) ĐÚNG: UDP nằm trong bộ giao thức TCP/IP, truyền dữ liệu tốc độ cao với độ trễ thấp (dùng cho gọi video, livestream, game online) mà không cần kiểm tra truyền lại.<br>d) SAI: Bộ giao thức TCP/IP là nền tảng cốt lõi của mạng diện rộng WAN và mạng toàn cầu Internet.",
+      "diagram": null,
+      "order_index": 84
+    },
+    {
+      "id": "tin_c2_tf_010",
+      "subject_id": "tinhoc",
+      "topic_id": "2",
+      "type": "tf",
+      "question_text": "Xét các nhận định sau về kết nối mạng và giao thức mạng:",
+      "options": [
+        {
+          "text": "Wireless Access Point cho phép kết nối các thiết bị không dây với mạng có dây, nhưng không thể kết nối hai mạng LAN có dây với nhau.",
+          "isCorrect": true
+        },
+        {
+          "text": "Mạng LAN và mạng WAN đều có thể được kết nối với nhau thông qua một Router, cho phép các mạng cục bộ giao tiếp với nhau trên phạm vi toàn cầu.",
+          "isCorrect": true
+        },
+        {
+          "text": "Giao thức IP chịu trách nhiệm định tuyến dữ liệu trong mạng, đảm bảo dữ liệu đến đúng địa chỉ đích.",
+          "isCorrect": true
+        },
+        {
+          "text": "HTTPS là phiên bản bảo mật của giao thức HTTP, đảm bảo dữ liệu truyền trên web được mã hóa và an toàn.",
+          "isCorrect": true
+        }
+      ],
+      "correct_index": null,
+      "accepted_answers": [],
+      "explanation": "a) ĐÚNG: WAP chỉ mở rộng kết nối không dây cho một mạng LAN có dây chứ không phải thiết bị định tuyến nối hai mạng LAN có dây khác nhau.<br>b) ĐÚNG: Router kết nối mạng cục bộ (LAN) với mạng diện rộng (WAN/Internet), giúp các mạng giao tiếp xuyên suốt trên toàn cầu.<br>c) ĐÚNG: Giao thức IP gán địa chỉ IP nguồn/đích và định tuyến dẫn đường cho gói dữ liệu đi tới đúng máy đích.<br>d) ĐÚNG: HTTPS tích hợp giao thức bảo mật SSL/TLS giúp mã hóa dữ liệu truyền tải giữa trình duyệt và máy chủ web.",
+      "diagram": null,
+      "order_index": 85
     }
   ]
 }
